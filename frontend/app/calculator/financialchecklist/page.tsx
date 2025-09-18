@@ -304,49 +304,51 @@
 //                 </div>
 //                 {Object.values(sections).map(({ title, fields }) => (
 //                     <CollapsibleCard key={title} title={title} isComplete={isSectionComplete(fields)}>
-//                         <Table>
-//                             <TableHeader>
-//                                 <TableRow>
-//                                     <TableHead className="w-[30%]">Field</TableHead>
-//                                     <TableHead className="w-[20%]">Your Value</TableHead>
-//                                     {fields[0].type === 'rated' && (
-//                                         <>
-//                                             <TableHead className="text-center">Target</TableHead>
-//                                             <TableHead className="text-center">Gap</TableHead>
-//                                             <TableHead className="text-right">Rating</TableHead>
-//                                         </>
-//                                     )}
-//                                 </TableRow>
-//                             </TableHeader>
-//                             <TableBody>
-//                                 {fields.map((f) => (
-//                                     <TableRow key={f.key}>
-//                                         <TableCell className="font-medium">
-//                                             <div className="flex items-center gap-2">
-//                                                 <span>{f.label}</span>
-//                                                 <InfoPopup info={f.info} isDesktop={isDesktop} />
-//                                             </div>
-//                                         </TableCell>
-//                                         <TableCell>
-//                                             <Input 
-//                                                 type="text" 
-//                                                 value={f.type === 'core' && f.key !== 'familyMembers' ? formatCurrency(f.value) : (f.type === 'rated' ? formatCurrency(f.value) : f.value)}
-//                                                 onChange={(e) => updateNumericValue(f.key, e.target.value)} 
-//                                                 className="w-full" 
-//                                                 placeholder={f.defaultValue ? formatCurrency(f.defaultValue) : "Enter value"} 
-//                                             />
-//                                         </TableCell>
-//                                         {f.type === 'rated' ? (
+//                         <div className="overflow-x-auto">
+//                             <Table>
+//                                 <TableHeader>
+//                                     <TableRow>
+//                                         <TableHead className="w-[30%]">Field</TableHead>
+//                                         <TableHead className="w-[20%]">Your Value</TableHead>
+//                                         {fields[0].type === 'rated' && (
 //                                             <>
-//                                                 <TableCell className="text-center">{formatCurrency(f.defaultValue || 0)}</TableCell>
-//                                                 <TableCell className={`text-center font-medium ${computeGap(f) > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(computeGap(f))}</TableCell>
-//                                                 <TableCell className="text-right font-bold">{computeRating(f)} / 5</TableCell>
+//                                                 <TableHead className="text-center">Target</TableHead>
+//                                                 <TableHead className="text-center">Gap</TableHead>
+//                                                 <TableHead className="text-right">Rating</TableHead>
 //                                             </>
-//                                         ) : <TableCell colSpan={3}></TableCell>}
+//                                         )}
 //                                     </TableRow>
-//                                 ))}
-//                             </TableBody>
-//                         </Table>
+//                                 </TableHeader>
+//                                 <TableBody>
+//                                     {fields.map((f) => (
+//                                         <TableRow key={f.key}>
+//                                             <TableCell className="font-medium">
+//                                                 <div className="flex items-center gap-2">
+//                                                     <span>{f.label}</span>
+//                                                     <InfoPopup info={f.info} isDesktop={isDesktop} />
+//                                                 </div>
+//                                             </TableCell>
+//                                             <TableCell>
+//                                                 <Input 
+//                                                     type="text" 
+//                                                     value={f.type === 'core' && f.key !== 'familyMembers' ? formatCurrency(f.value) : (f.type === 'rated' ? formatCurrency(f.value) : f.value)}
+//                                                     onChange={(e) => updateNumericValue(f.key, e.target.value)} 
+//                                                     className="w-full" 
+//                                                     placeholder={f.defaultValue ? formatCurrency(f.defaultValue) : "Enter value"} 
+//                                                 />
+//                                             </TableCell>
+//                                             {f.type === 'rated' ? (
+//                                                 <>
+//                                                     <TableCell className="text-center">{formatCurrency(f.defaultValue || 0)}</TableCell>
+//                                                     <TableCell className={`text-center font-medium ${computeGap(f) > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(computeGap(f))}</TableCell>
+//                                                     <TableCell className="text-right font-bold">{computeRating(f)} / 5</TableCell>
+//                                                 </>
+//                                             ) : <TableCell colSpan={3}></TableCell>}
+//                                         </TableRow>
+//                                     ))}
+//                                 </TableBody>
+//                             </Table>
+//                         </div>
 //                     </CollapsibleCard>
 //                 ))}
 //                 <div className="flex justify-end pt-4"><Button onClick={handleNumericSubmit}>Submit & Continue</Button></div>
@@ -360,7 +362,7 @@
 //         <div className="w-full max-w-3xl">
 //             <Card className="bg-white">
 //                 <CardHeader>
-//                     <CardTitle>Step 2: Financial Habits (Pre-Requisites)</CardTitle>
+//                     <CardTitle>Step 2: Financial Habits</CardTitle>
 //                     <p className="text-sm text-gray-600">Answer these questions to help us understand your financial practices.</p>
 //                 </CardHeader>
 //                 <CardContent>
@@ -372,7 +374,8 @@
 //                                         <span>{y.label}</span>
 //                                         <InfoPopup info={y.info} isDesktop={isDesktop} />
 //                                     </div>
-//                                     <div className="flex items-center flex-shrink-0 gap-2">
+//                                     {/* FIX: Added flex-wrap and justify-end to the button container */}
+//                                     <div className="flex flex-wrap justify-end gap-2">
 //                                         <Button onClick={() => updateYesNoValue(y.key, 'yes')} variant={y.value === 'yes' ? 'default' : 'outline'} className={`w-24 ${y.value === 'yes' ? 'bg-green-600 hover:bg-green-700 text-white' : ''}`}>Yes</Button>
 //                                         <Button onClick={() => updateYesNoValue(y.key, 'no')} variant={y.value === 'no' ? 'default' : 'outline'} className={`w-24 ${y.value === 'no' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}`}>No</Button>
 //                                         <Button onClick={() => updateYesNoValue(y.key, 'dont_know')} variant={y.value === 'dont_know' ? 'default' : 'outline'} className={`w-28 ${y.value === 'dont_know' ? 'bg-gray-500 hover:bg-gray-600 text-white' : ''}`}>Don't Know</Button>
@@ -594,9 +597,6 @@
 // }
 
 
-
-
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -641,12 +641,15 @@ import {
     PopoverContent,
 } from "@/components/ui/popover";
 
+// Original Navbar and Footer Imports
+import { NavbarDemo } from "@/components/Navbar";
+import Footer4Col from "@/components/footer-column";
+
 // --- CUSTOM HOOK for Media Queries ---
 const useMediaQuery = (query: string) => {
     const [matches, setMatches] = useState(false);
 
     useEffect(() => {
-        // This code will only run on the client, where `window` is available.
         const media = window.matchMedia(query);
         if (media.matches !== matches) {
             setMatches(media.matches);
@@ -659,39 +662,6 @@ const useMediaQuery = (query: string) => {
     return matches;
 };
 
-
-// --- PLACEHOLDER COMPONENTS ---
-const Footer4Col = () => (
-    <footer className="bg-gray-100 p-8 mt-12">
-        <div className="container mx-auto text-center text-gray-600">
-            <p>&copy; {new Date().getFullYear()} Financial Health Services. All rights reserved.</p>
-            <div className="flex justify-center space-x-4 mt-4">
-                <a href="#" className="hover:text-gray-900">Privacy Policy</a>
-                <a href="#" className="hover:text-gray-900">Terms of Service</a>
-                <a href="#" className="hover:text-gray-900">Contact Us</a>
-            </div>
-        </div>
-    </footer>
-);
-
-const NavbarDemo = () => (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-                <div className="flex-shrink-0">
-                    <a href="#" className="text-2xl font-bold text-gray-800">FinHealth</a>
-                </div>
-                <div className="hidden md:block">
-                    <div className="ml-10 flex items-baseline space-x-4">
-                        <a href="#" className="text-gray-600 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                        <a href="#how-it-works" className="text-gray-600 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">How It Works</a>
-                        <a href="#" className="text-gray-600 hover:bg-gray-100 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">About</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
-);
 
 // --- HELPERS ---
 const formatCurrency = (value: number | string): string => {
@@ -714,13 +684,13 @@ const parseCurrency = (value: string): string => {
 // --- CONDITIONAL INFO COMPONENT ---
 const InfoPopup = ({ info, isDesktop }: { info: string; isDesktop: boolean }) => {
     const commonButtonClasses = "p-1 rounded-full hover:bg-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
-    const commonContentClasses = "w-80 z-50 bg-black text-white border-black";
+    const commonContentClasses = "w-80 z-50 bg-black text-white border-black p-2 rounded-md";
 
     if (isDesktop) {
         return (
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <button className={commonButtonClasses}>
+                    <button type="button" className={commonButtonClasses}>
                         <Info size={16} />
                     </button>
                 </TooltipTrigger>
@@ -734,7 +704,7 @@ const InfoPopup = ({ info, isDesktop }: { info: string; isDesktop: boolean }) =>
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <button onClick={(e) => e.stopPropagation()} className={commonButtonClasses}>
+                <button type="button" onClick={(e) => e.stopPropagation()} className={commonButtonClasses}>
                     <Info size={16} />
                 </button>
             </PopoverTrigger>
@@ -863,11 +833,11 @@ const CollapsibleCard = ({ title, children, isComplete }: { title: string; child
 
 const CollapsibleSection = ({ title, icon: Icon, isComplete, statusText, isOpen, setIsOpen, children }: CollapsibleSectionProps) => (
     <motion.div layout className="w-full max-w-3xl mb-6 bg-white border-t-4 rounded-xl shadow-md" style={{borderColor: isComplete ? '#22c55e' : '#e5e7eb'}}>
-        <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full p-6 text-left cursor-pointer focus:outline-none">
+        <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full p-4 md:p-6 text-left cursor-pointer focus:outline-none">
             <div className="flex items-center">
-                <Icon className={`w-8 h-8 mr-4 ${isComplete ? 'text-green-500' : 'text-gray-500'}`} />
+                <Icon className={`w-6 h-6 md:w-8 md:h-8 mr-4 ${isComplete ? 'text-green-500' : 'text-gray-500'}`} />
                 <div>
-                    <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+                    <h2 className="text-lg md:text-xl font-semibold text-gray-800">{title}</h2>
                     <p className={`text-sm font-semibold ${isComplete ? 'text-green-600' : 'text-gray-500'}`}>{statusText}</p>
                 </div>
             </div>
@@ -876,7 +846,7 @@ const CollapsibleSection = ({ title, icon: Icon, isComplete, statusText, isOpen,
         <AnimatePresence>
             {isOpen && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1, transition: { opacity: { delay: 0.15 } } }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: 'easeInOut' }} className="overflow-hidden">
-                    <div className="px-6 pb-6 border-t border-gray-200">{children}</div>
+                    <div className="px-4 md:px-6 pb-6 border-t border-gray-200">{children}</div>
                 </motion.div>
             )}
         </AnimatePresence>
@@ -899,13 +869,13 @@ const NumericFullscreen = ({ numericState, updateNumericValue, computeGap, compu
             <div className="w-full max-w-5xl space-y-6">
                 <div className="text-center">
                     <h2 className="text-3xl font-bold">Step 1: Your Financial Numbers</h2>
-                    <p className="text-gray-600 mt-2">Enter your details below. We'll use this to calculate your score.</p>
+                    <p className="text-gray-600 mt-2">Enter your details below to calculate your score.</p>
                 </div>
                 {Object.values(sections).map(({ title, fields }) => (
                     <CollapsibleCard key={title} title={title} isComplete={isSectionComplete(fields)}>
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader>
+                                <TableHeader className="hidden md:table-header-group">
                                     <TableRow>
                                         <TableHead className="w-[30%]">Field</TableHead>
                                         <TableHead className="w-[20%]">Your Value</TableHead>
@@ -920,14 +890,14 @@ const NumericFullscreen = ({ numericState, updateNumericValue, computeGap, compu
                                 </TableHeader>
                                 <TableBody>
                                     {fields.map((f) => (
-                                        <TableRow key={f.key}>
-                                            <TableCell className="font-medium">
+                                        <TableRow key={f.key} className="block md:table-row mb-4 md:mb-0 border rounded-lg md:border-none p-2 md:p-0">
+                                            <TableCell className="block md:table-cell font-medium" data-label="Field">
                                                 <div className="flex items-center gap-2">
                                                     <span>{f.label}</span>
                                                     <InfoPopup info={f.info} isDesktop={isDesktop} />
                                                 </div>
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="block md:table-cell" data-label="Your Value">
                                                 <Input 
                                                     type="text" 
                                                     value={f.type === 'core' && f.key !== 'familyMembers' ? formatCurrency(f.value) : (f.type === 'rated' ? formatCurrency(f.value) : f.value)}
@@ -938,11 +908,13 @@ const NumericFullscreen = ({ numericState, updateNumericValue, computeGap, compu
                                             </TableCell>
                                             {f.type === 'rated' ? (
                                                 <>
-                                                    <TableCell className="text-center">{formatCurrency(f.defaultValue || 0)}</TableCell>
-                                                    <TableCell className={`text-center font-medium ${computeGap(f) > 0 ? 'text-red-600' : 'text-green-600'}`}>{formatCurrency(computeGap(f))}</TableCell>
-                                                    <TableCell className="text-right font-bold">{computeRating(f)} / 5</TableCell>
+                                                    <TableCell className="block md:table-cell text-left md:text-center" data-label="Target">{formatCurrency(f.defaultValue || 0)}</TableCell>
+                                                    <TableCell className="block md:table-cell text-left md:text-center font-medium" data-label="Gap">
+                                                        <span className={computeGap(f) > 0 ? 'text-red-600' : 'text-green-600'}>{formatCurrency(computeGap(f))}</span>
+                                                    </TableCell>
+                                                    <TableCell className="block md:table-cell text-left md:text-right font-bold" data-label="Rating">{computeRating(f)} / 5</TableCell>
                                                 </>
-                                            ) : <TableCell colSpan={3}></TableCell>}
+                                            ) : <TableCell className="hidden md:table-cell" colSpan={3}></TableCell>}
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -962,7 +934,7 @@ const YesNoFullscreen = ({ yesNoState, updateYesNoValue, handleYesNoSubmit, isDe
             <Card className="bg-white">
                 <CardHeader>
                     <CardTitle>Step 2: Financial Habits</CardTitle>
-                    <p className="text-sm text-gray-600">Answer these questions to help us understand your financial practices.</p>
+                    <p className="text-sm text-gray-600">Answer these questions about your financial practices.</p>
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-4">
@@ -973,11 +945,10 @@ const YesNoFullscreen = ({ yesNoState, updateYesNoValue, handleYesNoSubmit, isDe
                                         <span>{y.label}</span>
                                         <InfoPopup info={y.info} isDesktop={isDesktop} />
                                     </div>
-                                    {/* FIX: Added flex-wrap and justify-end to the button container */}
-                                    <div className="flex flex-wrap justify-end gap-2">
-                                        <Button onClick={() => updateYesNoValue(y.key, 'yes')} variant={y.value === 'yes' ? 'default' : 'outline'} className={`w-24 ${y.value === 'yes' ? 'bg-green-600 hover:bg-green-700 text-white' : ''}`}>Yes</Button>
-                                        <Button onClick={() => updateYesNoValue(y.key, 'no')} variant={y.value === 'no' ? 'default' : 'outline'} className={`w-24 ${y.value === 'no' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}`}>No</Button>
-                                        <Button onClick={() => updateYesNoValue(y.key, 'dont_know')} variant={y.value === 'dont_know' ? 'default' : 'outline'} className={`w-28 ${y.value === 'dont_know' ? 'bg-gray-500 hover:bg-gray-600 text-white' : ''}`}>Don't Know</Button>
+                                    <div className="flex flex-wrap justify-end gap-2 w-full sm:w-auto">
+                                        <Button onClick={() => updateYesNoValue(y.key, 'yes')} variant={y.value === 'yes' ? 'default' : 'outline'} className={`flex-1 sm:flex-none sm:w-24 ${y.value === 'yes' ? 'bg-green-600 hover:bg-green-700 text-white' : ''}`}>Yes</Button>
+                                        <Button onClick={() => updateYesNoValue(y.key, 'no')} variant={y.value === 'no' ? 'default' : 'outline'} className={`flex-1 sm:flex-none sm:w-24 ${y.value === 'no' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}`}>No</Button>
+                                        <Button onClick={() => updateYesNoValue(y.key, 'dont_know')} variant={y.value === 'dont_know' ? 'default' : 'outline'} className={`w-full mt-2 sm:mt-0 sm:w-28 ${y.value === 'dont_know' ? 'bg-gray-500 hover:bg-gray-600 text-white' : ''}`}>Don't Know</Button>
                                     </div>
                                 </div>
                             </li>
@@ -994,22 +965,24 @@ const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted,
     <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-[#fdfbf7] text-black">
         <div className="w-full max-w-3xl">
             <Card className="bg-white">
-                <CardHeader><CardTitle>Your Financial Health Report</CardTitle></CardHeader>
+                <CardHeader>
+                    <CardTitle className="text-2xl md:text-3xl text-center">Your Financial Health Report</CardTitle>
+                </CardHeader>
                 <CardContent>
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex flex-col items-center gap-4">
                         <div>
-                            <h2 className="text-lg font-semibold">Final Score</h2>
-                            <p className="text-5xl font-bold">{finalScore} / 100</p>
-                            <p className="mt-1 text-sm text-gray-600">(Numeric: {numericScoreWeighted.toFixed(1)} / 60, Habits: {yesScoreWeighted.toFixed(1)} / 40)</p>
+                            <h2 className="text-lg font-semibold text-center">Final Score</h2>
+                            <p className="text-5xl md:text-6xl font-bold text-center">{finalScore} / 100</p>
+                            <p className="mt-1 text-sm text-gray-600 text-center">(Numeric: {numericScoreWeighted.toFixed(1)} / 60, Habits: {yesScoreWeighted.toFixed(1)} / 40)</p>
                         </div>
-                        <div className="space-x-2">
-                            <Button variant="ghost" onClick={() => setView("landing")}>Back to Home</Button>
-                            <Button>Download Report</Button>
+                        <div className="flex flex-col sm:flex-row gap-2 w-full mt-4">
+                            <Button variant="ghost" onClick={() => setView("landing")} className="w-full">Back to Home</Button>
+                            <Button className="w-full">Download Report</Button>
                         </div>
                     </div>
                     <div className="mt-8">
                         <h3 className="font-semibold text-lg">Personalized Tips for Improvement</h3>
-                        {allTips.length === 0 ? (<p className="mt-2 text-sm text-green-600">Great job — all fields meet or exceed targets!</p>) : (<ul className="mt-2 ml-5 space-y-2 text-sm list-disc">{allTips.map((t, i) => (<li key={i} dangerouslySetInnerHTML={{ __html: t }}></li>))}</ul>)}
+                        {allTips.length === 0 ? (<p className="mt-2 text-sm text-green-600">Great job—all fields meet or exceed targets!</p>) : (<ul className="mt-2 ml-5 space-y-2 text-sm list-disc">{allTips.map((t, i) => (<li key={i} dangerouslySetInnerHTML={{ __html: t }}></li>))}</ul>)}
                     </div>
                     <div className="mt-6 text-xs text-gray-500">
                         <p><strong>Notes:</strong></p>
@@ -1032,20 +1005,20 @@ const LandingView = ({ setView, numericDone, yesNoDone }: LandingViewProps) => {
     return (
         <div className="flex flex-col items-center min-h-screen px-4 pt-12 pb-24 bg-[#fdfbf7] text-black">
             <div className="mb-12 text-center">
-                <motion.h1 initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5}} className="mb-4 text-4xl font-bold text-gray-800 md:text-5xl">Your Financial Health Checkup</motion.h1>
-                <motion.p initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5, delay: 0.2}} className="max-w-2xl mx-auto text-lg text-gray-600">
+                <motion.h1 initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5}} className="mb-4 text-3xl md:text-5xl font-bold text-gray-800">Your Financial Health Checkup</motion.h1>
+                <motion.p initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5, delay: 0.2}} className="max-w-2xl mx-auto text-base md:text-lg text-gray-600">
                     Confused about money stuff? 😵‍💫 This quick checkup gives you a simple score and personalized tips to get your finances on track. ✨
                 </motion.p>
             </div>
 
             <CollapsibleSection title="Step 1: Numeric Inputs" icon={Calculator} isComplete={numericDone} statusText={numericDone ? '✓ Completed' : 'Required'} isOpen={isNumericOpen} setIsOpen={setIsNumericOpen}>
                 <p className="mb-4 text-gray-600">Enter your key financial figures. This section is crucial for calculating the quantitative part of your score.</p>
-                <Button onClick={() => setView("numeric")} className="w-full md:w-auto">{numericDone ? 'Edit Numeric Inputs' : 'Start Step 1'}</Button>
+                <Button onClick={() => setView("numeric")} className="w-full sm:w-auto">{numericDone ? 'Edit Numeric Inputs' : 'Start Step 1'}</Button>
             </CollapsibleSection>
 
             <CollapsibleSection title="Step 2: Pre-Requisites" icon={CheckSquare} isComplete={yesNoDone} statusText={yesNoDone ? '✓ Completed' : 'Required'} isOpen={isYesNoOpen} setIsOpen={setIsYesNoOpen}>
                 <p className="mb-4 text-gray-600">Answer a few simple questions about your financial habits and planning.</p>
-                <Button onClick={() => setView("yesno")} className="w-full md:w-auto">{yesNoDone ? 'Edit Pre-Requisites' : 'Start Step 2'}</Button>
+                <Button onClick={() => setView("yesno")} className="w-full sm:w-auto">{yesNoDone ? 'Edit Pre-Requisites' : 'Start Step 2'}</Button>
             </CollapsibleSection>
 
             <AnimatePresence>
@@ -1053,7 +1026,7 @@ const LandingView = ({ setView, numericDone, yesNoDone }: LandingViewProps) => {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="flex justify-center w-full">
                         <CollapsibleSection title="Results" icon={Trophy} isComplete={true} statusText="Ready to View" isOpen={isResultsOpen} setIsOpen={setIsResultsOpen}>
                             <p className="mb-4 text-gray-600">Great job! Your financial health score is calculated. View your detailed report and personalized tips.</p>
-                            <Button onClick={() => setView("results")} className="w-full md:w-auto">View Full Report</Button>
+                            <Button onClick={() => setView("results")} className="w-full sm:w-auto">View Full Report</Button>
                         </CollapsibleSection>
                     </motion.div>
                 )}
@@ -1101,7 +1074,6 @@ export default function FinancialHealthCheckupPage() {
     const [numericDone, setNumericDone] = useState(false);
     const [yesNoDone, setYesNoDone] = useState(false);
     
-    // Use the hook to check for desktop screen sizes (Tailwind's `md` breakpoint)
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const updateNumericValue = (key: string, newValue: string) => {
@@ -1191,6 +1163,24 @@ export default function FinancialHealthCheckupPage() {
                 </main>
                 <Footer4Col />
             </div>
+            <style jsx global>{`
+              @media (max-width: 767px) {
+                .md\\:table-cell[data-label]::before {
+                  content: attr(data-label);
+                  font-weight: 600;
+                  display: block;
+                  margin-bottom: 0.25rem;
+                  color: #4a5568; /* text-gray-600 */
+                }
+                .md\\:table-cell {
+                  padding-bottom: 0.75rem; /* pb-3 */
+                  border-bottom: 1px solid #e2e8f0; /* border-gray-200 */
+                }
+                 .md\\:table-row:last-child .md\\:table-cell:last-child {
+                   border-bottom: none;
+                 }
+              }
+            `}</style>
         </TooltipProvider>
     );
 }
