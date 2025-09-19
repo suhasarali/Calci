@@ -239,8 +239,8 @@ export const NavbarLogo = () => {
       <img
         src="/paisaMasteryLogo.png"
         alt="logo"
-        width={80}
-        height={80}
+        width={120}
+        height={100}
       />
     </a>
   );
