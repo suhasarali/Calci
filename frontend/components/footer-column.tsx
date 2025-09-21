@@ -88,13 +88,11 @@ export default function Footer4Col() {
           <div>
             <div className="text-primary flex justify-center gap-2 sm:justify-start">
               <img
-                src="https://assets.aceternity.com/logo-dark.png"
+                src="/paisaMasteryLogo.png"
                 alt="logo"
-                className="h-8 w-8 rounded-full"
+                className="h-12 w-40"
               />
-              <span className="text-2xl font-semibold">
-                {data.company.name}
-              </span>
+
             </div>
 
             <p className="text-foreground/50 mt-6 max-w-md text-center leading-relaxed sm:max-w-xs sm:text-left">
