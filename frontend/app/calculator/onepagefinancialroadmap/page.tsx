@@ -276,28 +276,29 @@ export default function OnePageFinancialRoadmap() {
     console.log("Pre ret rate: ",retPre);
     console.log("RSIP: ",rSip)
     const nSip = preRetYears * 12;
-    const retirementSIP = rSip === 0 || nSip === 0
-        ? (retirementCorpusRequired - Number(lumpsumNow)) / (nSip || 1)
-        : number(Math.abs(PMT(rSip, nSip, Number(lumpsumNow), -retirementCorpusRequired, 0)));
+    const retirementSIP = number(Math.abs(PMT(rSip, nSip, -Number(lumpsumNow), retirementCorpusRequired, 0)));
 
     // Step 5 & 6: Required Life Cover using PV function
-    const realRateClaim = (1 + Number(claimReturn) / 100) / (1 + Number(inflation) / 100) - 1;
-    const pvOfGoals = goalsWithCalc.reduce((acc, goal) => {
-        const goalYears = Number(goal.years);
-        const rate = Number(claimReturn) / 100;
-        // PV of a future lump sum (goal.futureValue)
-        const pvOfGoal = Math.abs(PV(rate, goalYears, 0, -goal.futureValue, 0));
-        return acc + pvOfGoal;
-    }, 0);
-
+    const realRateClaim = ((1 + (Number(claimReturn) / 100)) / (1 + (Number(inflation) / 100)) ) - 1;
+    console.log("Claim Return:", claimReturn);
+    console.log("Inflation:", inflation);
+    console.log("Real Rate on Claim Proceeds:", realRateClaim);
     const nperSpouse = Math.max(0, Number(lifeExpectancySpouse) - Number(spouseAge));
-    const annualExpenseToday = monthlyTotalExpenseToday * 12;
+    // const pvOfGoals = goalsWithCalc.reduce((acc, goal) => {
+    //     const goalYears = Number(goal.years);
+    //     const rate = Number(claimReturn) / 100;
+    //     // PV of a future lump sum (goal.futureValue)
+    //     const pvOfGoal = Math.abs(PV(rate, goalYears, 0, -goal.futureValue, 0));
+    //     return acc + pvOfGoal;
+    // }, 0);
+    const annualExpenseToday = monthlyExpensesNum  * 12;
     // PV of all future household expenses for the spouse (annuity)
     const pvOfExpensesForSpouse = realRateClaim <= 0
         ? number(annualExpenseToday * nperSpouse)
         : number(Math.abs(PV(realRateClaim, nperSpouse, annualExpenseToday, 0, 1)));
 
-    const requiredLifeCover = pvOfExpensesForSpouse + pvOfGoals;
+    const requiredLifeCover = pvOfExpensesForSpouse;
+
 
     // Step 7: Required Additional Cover
     const additionalLifeCover = Math.max(0, requiredLifeCover - Number(existingLifeCover));
