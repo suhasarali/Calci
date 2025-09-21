@@ -80,9 +80,27 @@ function PMT(rate: number, nper: number, pv: number, fv: number, type = 0): numb
     return -pmt;
 }
 
-// --- UTILITY FUNCTIONS ---
+// --- UTILITY & FORMATTING FUNCTIONS ---
 const number = (n: number) => (isFinite(n) ? n : 0);
-const currency = (n: number) => n.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+
+// Parses a formatted string (e.g., "₹ 1,00,000") into a raw number string ("100000").
+const parseFormattedValue = (value: string): string => {
+    if (typeof value !== 'string') return '';
+    return value.replace(/[^0-9]/g, '');
+};
+
+// Formats a raw number string or number into a display string (e.g., "₹ 1,00,000").
+const formatToCurrency = (value: string | number): string => {
+    if (value === '' || value === null || value === undefined) return '';
+    const num = Number(String(value).replace(/[^0-9.-]+/g, ''));
+    if (isNaN(num)) return '';
+    return num.toLocaleString("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+    });
+};
+
 
 // --- UI COMPONENTS ---
 
@@ -163,10 +181,16 @@ function LabeledNumber({ label, value, onChange, info, placeholder = "e.g. 35", 
   );
 }
 
-function LabeledAmount({ label, value, onChange, info, placeholder = "e.g. 50000", isDesktop }: LabeledInputProps) {
+function LabeledAmount({ label, value, onChange, info, placeholder = "e.g. ₹50,000", isDesktop }: LabeledInputProps) {
     return (
         <LabeledInputLayout label={label} info={info} isDesktop={isDesktop}>
-            <Input id={label} type="number" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}/>
+            <Input
+                id={label}
+                type="text"
+                value={formatToCurrency(value as string)}
+                onChange={(e) => onChange(parseFormattedValue(e.target.value))}
+                placeholder={placeholder}
+            />
         </LabeledInputLayout>
     );
 }
@@ -224,23 +248,23 @@ export default function OnePageFinancialRoadmap() {
   const updateGoal = (id: string, patch: Partial<Goal>) => setGoals((prev) => prev.map((g) => (g.id === id ? { ...g, ...patch } : g)));
 
   const isPersonalDetailsComplete = Number(yourAge) > 0 && Number(spouseAge) > 0 && Number(retirementAge) > 0 && Number(lifeExpectancySelf) > 0 && Number(lifeExpectancySpouse) > 0;
-  const isHouseholdComplete = Number(monthlyExpenses) > 0;
-  const isRetirementComplete = Number(retPre) > 0 && Number(retPost) > 0 && Number(inflation) > 0 && Number(lumpsumNow) >= 0;
-  const isLifeInsuranceComplete = Number(claimReturn) > 0 && Number(existingLifeCover) >= 0;
-  const isHealthInsuranceComplete = Number(requiredHealthCover) > 0 && Number(currentHealthCover) >= 0;
+  const isHouseholdComplete = Number(parseFormattedValue(monthlyExpenses)) > 0;
+  const isRetirementComplete = Number(retPre) > 0 && Number(retPost) > 0 && Number(inflation) > 0 && Number(parseFormattedValue(lumpsumNow)) >= 0;
+  const isLifeInsuranceComplete = Number(claimReturn) > 0 && Number(parseFormattedValue(existingLifeCover)) >= 0;
+  const isHealthInsuranceComplete = Number(parseFormattedValue(requiredHealthCover)) > 0 && Number(parseFormattedValue(currentHealthCover)) >= 0;
   const isEmergencyComplete = Number(emergencyMonths) > 0;
 
   const goalsWithCalc = useMemo(() => {
     return goals.map((g) => {
       const inflationRate = Number(g.inflation) / 100;
       const years = Number(g.years);
-      const currentCost = Number(g.currentCost);
+      const currentCost = Number(parseFormattedValue(g.currentCost as string));
       // Calculate future value of the goal
       const futureValue = Math.abs(FV(inflationRate, years, 0, -currentCost));
 
       const r = Number(g.expectedReturn) / 100 / 12;
       const n = years * 12;
-      const canInvestNow = Number(g.canInvestNow);
+      const canInvestNow = Number(parseFormattedValue(g.canInvestNow as string));
 
       // Step 8: Calculate SIP for each goal using PMT function
       const sip = r === 0 || n === 0
@@ -252,47 +276,39 @@ export default function OnePageFinancialRoadmap() {
   }, [goals]);
 
   const calculations = useMemo(() => {
+    // Parse formatted values before using them in calculations
+    const parsedMonthlyExpenses = Number(parseFormattedValue(monthlyExpenses));
+    const parsedOtherMonthlyExpenses = Number(parseFormattedValue(otherMonthlyExpenses));
+    const parsedLumpsumNow = Number(parseFormattedValue(lumpsumNow));
+    const parsedExistingLifeCover = Number(parseFormattedValue(existingLifeCover));
+    const parsedRequiredHealthCover = Number(parseFormattedValue(requiredHealthCover));
+    const parsedCurrentHealthCover = Number(parseFormattedValue(currentHealthCover));
+
     const retirementYears = Math.max(0, Number(retirementAge) - Number(yourAge));
     const postRetYears = Math.max(0, Number(lifeExpectancySelf) - Number(retirementAge));
     const preRetYears = Math.max(0, Number(retirementAge) - Number(yourAge));
-    const monthlyExpensesNum = Number(monthlyExpenses) || 0;
-    const monthlyTotalExpenseToday = Number(monthlyExpenses) + Number(otherMonthlyExpenses);
+    const monthlyTotalExpenseToday = parsedMonthlyExpenses + parsedOtherMonthlyExpenses;
     const totalGoalsSip = goalsWithCalc.reduce((s, g) => s + g.sipRequired, 0);
     const inflationRate = Number(inflation) / 100;
 
     // Step 1 & 2: FV of yearly expenses at retirement
-    const monthlyExpenseAtRetirement = Math.abs(FV(inflationRate, preRetYears, 0, -monthlyExpensesNum));
-    console.log("Monthly Expense at Retirement:", monthlyExpenseAtRetirement);
+    const monthlyExpenseAtRetirement = Math.abs(FV(inflationRate, preRetYears, 0, -parsedMonthlyExpenses));
     const yearlyExpenseAtRetirement = monthlyExpenseAtRetirement * 12;
-    console.log("Yearly Expense at Retirement:", yearlyExpenseAtRetirement);
-    const realRateReturn = ((1 + (Number(retPost) / 100)) / (1 + (Number(inflation) / 100)) ) - 1;
-    console.log("Real Rate of Return Post Retirement:", realRateReturn);
-    // Step 3: Required Retirement Corpus using PV function
     
+    // Step 3: Required Retirement Corpus using PV function
+    const realRateReturn = ((1 + (Number(retPost) / 100)) / (1 + (Number(inflation) / 100)) ) - 1;
     const retirementCorpusRequired =  number(Math.abs(PV(realRateReturn, postRetYears, yearlyExpenseAtRetirement, 0, 1)));
-    console.log("Retirement Corpus Required:", retirementCorpusRequired);
 
     // Step 4: Required Retirement SIP using PMT function
-    const rSip = (Number(retPre) /100 ) /12;
-    console.log("Pre ret rate: ",retPre);
-    console.log("RSIP: ",rSip)
+    const rSip = (Number(retPre) / 100) / 12;
     const nSip = preRetYears * 12;
-    const retirementSIP = number(Math.abs(PMT(rSip, nSip, Number(lumpsumNow), -retirementCorpusRequired, 0)));
+    const retirementSIP = number(Math.abs(PMT(rSip, nSip, parsedLumpsumNow, -retirementCorpusRequired, 0)));
 
     // Step 5 & 6: Required Life Cover using PV function
     const realRateClaim = ((1 + (Number(claimReturn) / 100)) / (1 + (Number(inflation) / 100)) ) - 1;
-    console.log("Claim Return:", claimReturn);
-    console.log("Inflation:", inflation);
-    console.log("Real Rate on Claim Proceeds:", realRateClaim);
     const nperSpouse = Math.max(0, Number(lifeExpectancySpouse) - Number(spouseAge));
-    // const pvOfGoals = goalsWithCalc.reduce((acc, goal) => {
-    //     const goalYears = Number(goal.years);
-    //     const rate = Number(claimReturn) / 100;
-    //     // PV of a future lump sum (goal.futureValue)
-    //     const pvOfGoal = Math.abs(PV(rate, goalYears, 0, -goal.futureValue, 0));
-    //     return acc + pvOfGoal;
-    // }, 0);
-    const annualExpenseToday = monthlyExpensesNum  * 12;
+    
+    const annualExpenseToday = parsedMonthlyExpenses * 12;
     // PV of all future household expenses for the spouse (annuity)
     const pvOfExpensesForSpouse = realRateClaim <= 0
         ? number(annualExpenseToday * nperSpouse)
@@ -300,11 +316,10 @@ export default function OnePageFinancialRoadmap() {
 
     const requiredLifeCover = pvOfExpensesForSpouse;
 
-
     // Step 7: Required Additional Cover
-    const additionalLifeCover = Math.max(0, requiredLifeCover - Number(existingLifeCover));
+    const additionalLifeCover = Math.max(0, requiredLifeCover - parsedExistingLifeCover);
 
-    const additionalHealthCover = Math.max(0, Number(requiredHealthCover) - Number(currentHealthCover));
+    const additionalHealthCover = Math.max(0, parsedRequiredHealthCover - parsedCurrentHealthCover);
     const emergencyFundRequired = monthlyTotalExpenseToday * Number(emergencyMonths);
     const totalRequiredSIP = retirementSIP + totalGoalsSip;
 
@@ -355,7 +370,7 @@ export default function OnePageFinancialRoadmap() {
                 <CardHeader><CardTitle className="text-base font-semibold">Household Expenses</CardTitle></CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <LabeledAmount isDesktop={isDesktop} label="Monthly expenses:" value={monthlyExpenses} onChange={setMonthlyExpenses} info="Your core monthly household expenses (rent, utilities, groceries, etc.)." />
-                  <LabeledAmount isDesktop={isDesktop} label="Other monthly expenses:" value={otherMonthlyExpenses} onChange={setOtherMonthlyExpenses} info="Include other regular monthly costs like EMIs, school fees, etc." placeholder="e.g. 10000" />
+                  <LabeledAmount isDesktop={isDesktop} label="Other monthly expenses:" value={otherMonthlyExpenses} onChange={setOtherMonthlyExpenses} info="Include other regular monthly costs like EMIs, school fees, etc." placeholder="e.g. ₹10,000" />
                 </CardContent>
               </Card>
 
@@ -363,16 +378,16 @@ export default function OnePageFinancialRoadmap() {
                 <CardHeader><CardTitle className="text-base font-semibold">Retirement & Inflation</CardTitle></CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <LabeledPercent isDesktop={isDesktop} label="Return (pre-retirement):" value={retPre} onChange={setRetPre} info="Annual % return you expect on your investments until you retire." placeholder="e.g. 15"/>
-                  <LabeledPercent isDesktop={isDesktop} label="Return (post-retirement):" value={retPost} onChange={setRetPost} info="Annual % return you expect on your investments after you retire."/>
+                  <LabeledPercent isDesktop={isDesktop} label="Return (post-retirement):" value={retPost} onChange={setRetPost} info="Annual % return you expect on your investments after you retire." placeholder="e.g. 8"/>
                   <LabeledPercent isDesktop={isDesktop} label="Assumed inflation:" value={inflation} onChange={setInflation} info="The average annual inflation rate you expect over the long term (e.g., 5-6%)." placeholder="e.g. 6"/>
-                  <LabeledAmount isDesktop={isDesktop} label="Lumpsum can invest now:" value={lumpsumNow} onChange={setLumpsumNow} info="Any one-time amount you can invest for retirement right now." placeholder="e.g. 500000"/>
+                  <LabeledAmount isDesktop={isDesktop} label="Lumpsum can invest now:" value={lumpsumNow} onChange={setLumpsumNow} info="Any one-time amount you can invest for retirement right now." placeholder="e.g. ₹5,00,000"/>
                 </CardContent>
               </Card>
 
               <Card className={`transition-all ${isLifeInsuranceComplete ? 'border-t-4 border-green-500' : ''}`}>
                 <CardHeader><CardTitle className="text-base font-semibold">Life Insurance</CardTitle></CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <LabeledAmount isDesktop={isDesktop} label="Existing Life Cover + Assets:" value={existingLifeCover} onChange={setExistingLifeCover} info="Total sum assured from all your existing life insurance policies plus any existing financial assets." placeholder="e.g. 5000000"/>
+                    <LabeledAmount isDesktop={isDesktop} label="Existing Life Cover + Assets:" value={existingLifeCover} onChange={setExistingLifeCover} info="Total sum assured from all your existing life insurance policies plus any existing financial assets." placeholder="e.g. ₹50,00,000"/>
                     <LabeledPercent isDesktop={isDesktop} label="Return on claim proceeds:" value={claimReturn} onChange={setClaimReturn} info="The annual % return you expect your family could earn by investing the insurance payout." placeholder="e.g. 8"/>
                 </CardContent>
               </Card>
@@ -380,8 +395,8 @@ export default function OnePageFinancialRoadmap() {
               <Card className={`transition-all ${isHealthInsuranceComplete && isEmergencyComplete ? 'border-t-4 border-green-500' : ''}`}>
                 <CardHeader><CardTitle className="text-base font-semibold">Health & Emergency</CardTitle></CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <LabeledAmount isDesktop={isDesktop} label="Required Health Cover:" value={requiredHealthCover} onChange={setRequiredHealthCover} info="The ideal total health cover you should have for your family." placeholder="e.g. 1000000" />
-                    <LabeledAmount isDesktop={isDesktop} label="Current Health Cover:" value={currentHealthCover} onChange={setCurrentHealthCover} info="The total coverage of your existing health insurance policy." placeholder="e.g. 500000" />
+                    <LabeledAmount isDesktop={isDesktop} label="Required Health Cover:" value={requiredHealthCover} onChange={setRequiredHealthCover} info="The ideal total health cover you should have for your family." placeholder="e.g. ₹10,00,000" />
+                    <LabeledAmount isDesktop={isDesktop} label="Current Health Cover:" value={currentHealthCover} onChange={setCurrentHealthCover} info="The total coverage of your existing health insurance policy." placeholder="e.g. ₹5,00,000" />
                     <LabeledNumber isDesktop={isDesktop} label="Emergency fund (months):" value={emergencyMonths} onChange={setEmergencyMonths} info="How many months of expenses you want to keep as an emergency fund (e.g., 6 months)." placeholder="e.g. 6"/>
                 </CardContent>
               </Card>
@@ -409,13 +424,13 @@ export default function OnePageFinancialRoadmap() {
                         {goalsWithCalc.map((g) => (
                             <TableRow key={g.id} className="block md:table-row mb-4 md:mb-0 border rounded-lg md:border-none p-2 md:p-0">
                                 <TableCell className="block md:table-cell" data-label="Goal Name"><Input placeholder="e.g. Vacation" value={g.name} onChange={(e) => updateGoal(g.id, { name: e.target.value })} /></TableCell>
-                                <TableCell className="block md:table-cell" data-label="Current Cost"><Input type="number" placeholder="e.g. 500000" value={g.currentCost} onChange={(e) => updateGoal(g.id, { currentCost: e.target.value })} /></TableCell>
+                                <TableCell className="block md:table-cell" data-label="Current Cost"><Input type="text" placeholder="e.g. ₹5,00,000" value={formatToCurrency(g.currentCost)} onChange={(e) => updateGoal(g.id, { currentCost: parseFormattedValue(e.target.value) })} /></TableCell>
                                 <TableCell className="block md:table-cell" data-label="Years"><Input type="number" placeholder="e.g. 3" value={g.years} onChange={(e) => updateGoal(g.id, { years: e.target.value })} /></TableCell>
                                 <TableCell className="block md:table-cell" data-label="Inflation %"><Input type="number" placeholder="e.g. 7" value={g.inflation} onChange={(e) => updateGoal(g.id, { inflation: e.target.value })} /></TableCell>
                                 <TableCell className="block md:table-cell" data-label="Return %"><Input type="number" placeholder="e.g. 12" value={g.expectedReturn} onChange={(e) => updateGoal(g.id, { expectedReturn: e.target.value })} /></TableCell>
-                                <TableCell className="block md:table-cell font-medium" data-label="Future Value">{currency(g.futureValue)}</TableCell>
-                                <TableCell className="block md:table-cell" data-label="Invest Now"><Input type="number" placeholder="e.g. 100000" value={g.canInvestNow} onChange={(e) => updateGoal(g.id, { canInvestNow: e.target.value })} /></TableCell>
-                                <TableCell className="block md:table-cell font-semibold text-purple-700" data-label="Monthly SIP">{currency(g.sipRequired)}</TableCell>
+                                <TableCell className="block md:table-cell font-medium" data-label="Future Value">{formatToCurrency(g.futureValue)}</TableCell>
+                                <TableCell className="block md:table-cell" data-label="Invest Now"><Input type="text" placeholder="e.g. ₹1,00,000" value={formatToCurrency(g.canInvestNow)} onChange={(e) => updateGoal(g.id, { canInvestNow: parseFormattedValue(e.target.value) })} /></TableCell>
+                                <TableCell className="block md:table-cell font-semibold text-purple-700" data-label="Monthly SIP">{formatToCurrency(g.sipRequired)}</TableCell>
                                 <TableCell className="block md:table-cell text-right pt-4 md:pt-2">
                                     <div className="flex justify-end space-x-2">
                                       <Button size="icon" variant="outline" onClick={() => editingId === g.id ? setEditingId(null) : setEditingId(g.id)}>
@@ -460,36 +475,36 @@ export default function OnePageFinancialRoadmap() {
                                 <div className="p-6 bg-gray-50 rounded-lg">
                                     <div className="flex items-center gap-3 mb-4"><UserCheck className="w-8 h-8 text-blue-600"/><h3 className="text-xl font-semibold">Life Insurance</h3></div>
                                     <div className="space-y-2 text-base sm:text-lg">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center"><span>Required Life Cover:</span><span className="font-bold text-gray-700 text-xl sm:text-2xl">{currency(reportData.requiredLifeCover)}</span></div>
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-2 border-t"><span className="text-blue-600">Required Additional Cover:</span><span className="font-bold text-blue-600 text-xl sm:text-2xl">{currency(reportData.additionalLifeCover)}</span></div>
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center"><span>Required Life Cover:</span><span className="font-bold text-gray-700 text-xl sm:text-2xl">{formatToCurrency(reportData.requiredLifeCover)}</span></div>
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-2 border-t"><span className="text-blue-600">Required Additional Cover:</span><span className="font-bold text-blue-600 text-xl sm:text-2xl">{formatToCurrency(reportData.additionalLifeCover)}</span></div>
                                     </div>
                                 </div>
 
                                 <div className="p-6 bg-gray-50 rounded-lg">
                                     <div className="flex items-center gap-3 mb-4"><HeartPulse className="w-8 h-8 text-red-600"/><h3 className="text-xl font-semibold">Health Insurance</h3></div>
                                     <div className="space-y-2 text-base sm:text-lg">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center"><span className="text-red-600">Additional Cover Needed:</span><span className="font-bold text-red-600 text-xl sm:text-2xl">{currency(reportData.additionalHealthCover)}</span></div>
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center"><span className="text-red-600">Additional Cover Needed:</span><span className="font-bold text-red-600 text-xl sm:text-2xl">{formatToCurrency(reportData.additionalHealthCover)}</span></div>
                                     </div>
                                 </div>
 
                                 <div className="p-6 bg-gray-50 rounded-lg">
                                     <div className="flex items-center gap-3 mb-4"><ShieldCheck className="w-8 h-8 text-green-600"/><h3 className="text-xl font-semibold">Emergency Fund</h3></div>
                                     <div className="space-y-2 text-base sm:text-lg">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center"><span className="text-green-600">Total Emergency Fund:</span><span className="font-bold text-green-600 text-xl sm:text-2xl">{currency(reportData.emergencyFundRequired)}</span></div>
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center"><span className="text-green-600">Total Emergency Fund:</span><span className="font-bold text-green-600 text-xl sm:text-2xl">{formatToCurrency(reportData.emergencyFundRequired)}</span></div>
                                     </div>
                                 </div>
 
                                 <div className="p-6 bg-gray-50 rounded-lg">
                                     <div className="flex items-center gap-3 mb-4"><Briefcase className="w-8 h-8 text-yellow-600"/><h3 className="text-xl font-semibold">Retirement Details</h3></div>
                                     <div className="space-y-2 text-base sm:text-lg">
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center"><span>Required Corpus:</span><span className="font-bold text-gray-700 text-xl sm:text-2xl">{currency(reportData.retirementCorpusRequired)}</span></div>
-                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-2 border-t"><span className="text-yellow-600">Required Monthly SIP:</span><span className="font-bold text-yellow-600 text-xl sm:text-2xl">{currency(reportData.retirementSIP)}</span></div>
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center"><span>Required Corpus:</span><span className="font-bold text-gray-700 text-xl sm:text-2xl">{formatToCurrency(reportData.retirementCorpusRequired)}</span></div>
+                                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-2 border-t"><span className="text-yellow-600">Required Monthly SIP:</span><span className="font-bold text-yellow-600 text-xl sm:text-2xl">{formatToCurrency(reportData.retirementSIP)}</span></div>
                                     </div>
                                 </div>
 
                                 <div className="md:col-span-2 bg-purple-700 text-white rounded-xl p-8 flex flex-col items-center text-center">
                                     <div className="flex items-center gap-3"><PiggyBank className="w-8 h-8"/><h3 className="text-xl font-semibold">Total Required Monthly Investment</h3></div>
-                                    <div className="text-4xl sm:text-5xl font-extrabold my-2">{currency(reportData.totalRequiredSIP)}</div>
+                                    <div className="text-4xl sm:text-5xl font-extrabold my-2">{formatToCurrency(reportData.totalRequiredSIP)}</div>
                                     <p className="text-sm opacity-80">(Retirement SIP + Goals SIP)</p>
                                 </div>
                             </CardContent>
