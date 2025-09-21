@@ -409,7 +409,7 @@ const NumericFullscreen = ({
                             </p>
                           </div>
                           <div>
-                            <p className="text-gray-500 font-medium">Rating</p>
+                            <p className="text-gray-500 font-medium">Score</p>
                             <p className="font-bold">{computeRating(f)} / 5</p>
                           </div>
                         </div>
