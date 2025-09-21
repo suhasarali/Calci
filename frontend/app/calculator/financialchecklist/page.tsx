@@ -275,6 +275,14 @@ const NumericFullscreen = ({ numericState, updateNumericValue, computeGap, compu
                 {Object.values(sections).map(({ title, fields }) => (
                     <CollapsibleCard key={title} title={title} isComplete={isSectionComplete(fields)}>
                         <div className="overflow-x-auto">
+                            {title === "Long-Term Security" && (
+            <div className="text-xs mb-2 flex items-center gap-3">
+                <span className="text-green-600 font-bold">*</span>
+                <span className="text-gray-700">Surplus (Good)</span>
+                <span className="text-red-600 font-bold">*</span>
+                <span className="text-gray-700">Shortfall (Bad)</span>
+            </div>
+        )}
                             <Table>
                                 <TableHeader className="hidden md:table-header-group">
                                     <TableRow>
@@ -311,7 +319,12 @@ const NumericFullscreen = ({ numericState, updateNumericValue, computeGap, compu
                                                 <>
                                                     <TableCell className="block md:table-cell text-left md:text-center" data-label="Target">{formatCurrency(f.defaultValue || 0)}</TableCell>
                                                     <TableCell className="block md:table-cell text-left md:text-center font-medium" data-label="Gap">
-                                                        <span className={computeGap(f) > 0 ? 'text-red-600' : 'text-green-600'}>{formatCurrency(computeGap(f))}</span>
+                                                    {(() => {
+                                                    const gap = computeGap(f);
+                                                    const absGap = Math.abs(gap); // ✅ remove minus sign for display
+                                                    return (
+                                                <span className={gap > 0 ? "text-red-600" : "text-green-600"}>{formatCurrency(absGap)}</span>);
+                                                    })()}
                                                     </TableCell>
                                                     <TableCell className="block md:table-cell text-left md:text-right font-bold" data-label="Rating">{computeRating(f)} / 5</TableCell>
                                                 </>
@@ -467,7 +480,7 @@ function HowItWorks() {
     );
 }
 
-// --- MAIN PAGE COMPONENT ---
+/// --- MAIN PAGE COMPONENT ---
 export default function FinancialHealthCheckupPage() {
     const [view, setView] = useState<View>("landing");
     const [numericState, setNumericState] = useState<NumericField[]>(initialNumeric);
@@ -477,11 +490,48 @@ export default function FinancialHealthCheckupPage() {
     
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
+    // ✅ UPDATED FUNCTION
     const updateNumericValue = (key: string, newValue: string) => {
-        const parsedValue = (key === 'familyMembers') ? newValue.replace(/[^0-9]/g, '') : parseCurrency(newValue);
-        setNumericState((prev) => prev.map((p) => (p.key === key ? { ...p, value: parsedValue } : p))); 
+        const parsedValue = key === 'familyMembers'
+            ? newValue.replace(/[^0-9]/g, '')
+            : parseCurrency(newValue);
+
+        setNumericState(prev => {
+            // update the selected field first
+            const updated = prev.map(p =>
+                p.key === key ? { ...p, value: parsedValue } : p
+            );
+
+            // ✅ dynamically recalculate defaultValues based on monthlyIncome & monthlyExpenses
+            const monthlyIncome = Number(updated.find(f => f.key === "monthlyIncome")?.value || 0);
+            const monthlyExpenses = Number(updated.find(f => f.key === "monthlyExpenses")?.value || 0);
+            const annualIncome = monthlyIncome * 12;
+
+            return updated.map(field => {
+                switch (field.key) {
+                    case "incomeProtection":
+                        return { ...field, defaultValue: annualIncome * 20 };
+                    case "emergencyFund":
+                        return { ...field, defaultValue: monthlyExpenses * 3 };
+                    case "healthInsurance":
+                        return { ...field, defaultValue: annualIncome * 8 }; // can tweak to 10 if needed
+                    case "criticalIllness":
+                        return { ...field, defaultValue: annualIncome * 3 };
+                    case "disabilityInsurance":
+                        return { ...field, defaultValue: annualIncome * 3 * 0.7 }; // 70% income replacement
+                    case "retirementGoals":
+                        return { ...field, defaultValue: monthlyExpenses * 300 };
+                    case "childEducation":
+                        return { ...field, defaultValue: 5000000 }; // or make dynamic later
+                    case "debtManagement":
+                        return { ...field, defaultValue: monthlyIncome * 0.4 }; // 40% max recommended
+                    default:
+                        return field;
+                }
+            });
+        });
     };
-    
+
     const updateYesNoValue = (key: string, value: YesNoValue) => { 
         setYesNoState((prev) => prev.map((p) => (p.key === key ? { ...p, value } : p))); 
     };
