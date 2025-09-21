@@ -255,92 +255,182 @@ const CollapsibleSection = ({ title, icon: Icon, isComplete, statusText, isOpen,
 );
 
 // --- VIEW COMPONENTS ---
-const NumericFullscreen = ({ numericState, updateNumericValue, computeGap, computeRating, handleNumericSubmit, isDesktop }: NumericFullscreenProps) => {
-    const sections = {
-        core: { title: "Core Financials", fields: numericState.filter(f => f.type === 'core') },
-        security: { title: "Long-Term Security", fields: numericState.filter(f => ["incomeProtection", "emergencyFund", "retirementGoals"].includes(f.key)) },
-        insurance: { title: "Insurance Coverage", fields: numericState.filter(f => ["healthInsurance", "criticalIllness", "disabilityInsurance"].includes(f.key)) },
-        goals: { title: "Other Financial Goals", fields: numericState.filter(f => ["childEducation", "debtManagement"].includes(f.key)) },
-    };
+const NumericFullscreen = ({
+  numericState,
+  updateNumericValue,
+  computeGap,
+  computeRating,
+  handleNumericSubmit,
+  isDesktop,
+}: NumericFullscreenProps) => {
+  const sections = {
+    core: { title: "Core Financials", fields: numericState.filter(f => f.type === "core") },
+    security: { title: "Long-Term Security", fields: numericState.filter(f => ["incomeProtection", "emergencyFund", "retirementGoals"].includes(f.key)) },
+    insurance: { title: "Insurance Coverage", fields: numericState.filter(f => ["healthInsurance", "criticalIllness", "disabilityInsurance"].includes(f.key)) },
+    goals: { title: "Other Financial Goals", fields: numericState.filter(f => ["childEducation", "debtManagement"].includes(f.key)) },
+  };
 
-    const isSectionComplete = (fields: NumericField[]) => fields.every(f => f.value !== "" && !isNaN(Number(f.value)));
+  const isSectionComplete = (fields: NumericField[]) =>
+    fields.every(f => f.value !== "" && !isNaN(Number(f.value)));
 
-    return (
-        <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-[#fdfbf7] text-black">
-            <div className="w-full max-w-5xl space-y-6">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold">Step 1: Your Financial Numbers</h2>
-                    <p className="text-gray-600 mt-2">Enter your details below to calculate your score.</p>
-                </div>
-                {Object.values(sections).map(({ title, fields }) => (
-                    <CollapsibleCard key={title} title={title} isComplete={isSectionComplete(fields)}>
-                        <div className="overflow-x-auto">
-                            {title === "Long-Term Security" && (
-            <div className="text-xs mb-2 flex items-center gap-3">
-                <span className="text-green-600 font-bold">*</span>
-                <span className="text-gray-700">Surplus (Good)</span>
-                <span className="text-red-600 font-bold">*</span>
-                <span className="text-gray-700">Shortfall (Bad)</span>
-            </div>
-        )}
-                            <Table>
-                                <TableHeader className="hidden md:table-header-group">
-                                    <TableRow>
-                                        <TableHead className="w-[30%]">Field</TableHead>
-                                        <TableHead className="w-[20%]">Your Value</TableHead>
-                                        {fields[0].type === 'rated' && (
-                                            <>
-                                                <TableHead className="text-center">Target</TableHead>
-                                                <TableHead className="text-center">Gap</TableHead>
-                                                <TableHead className="text-right">Score</TableHead>
-                                            </>
-                                        )}
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {fields.map((f) => (
-                                        <TableRow key={f.key} className="block md:table-row mb-4 md:mb-0 border rounded-lg md:border-none p-2 md:p-0">
-                                            <TableCell className="block md:table-cell font-medium" data-label="Field">
-                                                <div className="flex items-center gap-2">
-                                                    <span>{f.label}</span>
-                                                    <InfoPopup info={f.info} isDesktop={isDesktop} />
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="block md:table-cell" data-label="Your Value">
-                                                <Input 
-                                                    type="text" 
-                                                    value={f.type === 'core' && f.key !== 'familyMembers' ? formatCurrency(f.value) : (f.type === 'rated' ? formatCurrency(f.value) : f.value)}
-                                                    onChange={(e) => updateNumericValue(f.key, e.target.value)} 
-                                                    className="w-full" 
-                                                    placeholder={f.defaultValue ? formatCurrency(f.defaultValue) : "Enter value"} 
-                                                />
-                                            </TableCell>
-                                            {f.type === 'rated' ? (
-                                                <>
-                                                    <TableCell className="block md:table-cell text-left md:text-center" data-label="Target">{formatCurrency(f.defaultValue || 0)}</TableCell>
-                                                    <TableCell className="block md:table-cell text-left md:text-center font-medium" data-label="Gap">
-                                                    {(() => {
-                                                    const gap = computeGap(f);
-                                                    const absGap = Math.abs(gap); // ✅ remove minus sign for display
-                                                    return (
-                                                <span className={gap > 0 ? "text-red-600" : "text-green-600"}>{formatCurrency(absGap)}</span>);
-                                                    })()}
-                                                    </TableCell>
-                                                    <TableCell className="block md:table-cell text-left md:text-right font-bold" data-label="Rating">{computeRating(f)} / 5</TableCell>
-                                                </>
-                                            ) : <TableCell className="hidden md:table-cell" colSpan={3}></TableCell>}
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </CollapsibleCard>
-                ))}
-                <div className="flex justify-end pt-4"><Button onClick={handleNumericSubmit}>Submit & Continue</Button></div>
-            </div>
+  return (
+    <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-[#fdfbf7] text-black">
+      <div className="w-full max-w-5xl space-y-6">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold">Step 1: Your Financial Numbers</h2>
+          <p className="text-gray-600 mt-2">Enter your details below to calculate your score.</p>
         </div>
-    );
+
+        {Object.values(sections).map(({ title, fields }) => (
+          <CollapsibleCard key={title} title={title} isComplete={isSectionComplete(fields)}>
+            {isDesktop ? (
+              // ✅ DESKTOP VIEW — unchanged table layout
+              <div className="overflow-x-auto">
+                {title === "Long-Term Security" && (
+                  <div className="text-xs mb-2 flex items-center gap-3">
+                    <span className="text-green-600 font-bold">*</span>
+                    <span className="text-gray-700">Surplus (Good)</span>
+                    <span className="text-red-600 font-bold">*</span>
+                    <span className="text-gray-700">Shortfall (Bad)</span>
+                  </div>
+                )}
+                <Table>
+                  <TableHeader className="hidden md:table-header-group">
+                    <TableRow>
+                      <TableHead className="w-[30%]">Field</TableHead>
+                      <TableHead className="w-[20%]">Your Value</TableHead>
+                      {fields[0].type === "rated" && (
+                        <>
+                          <TableHead className="text-center">Target</TableHead>
+                          <TableHead className="text-center">Gap</TableHead>
+                          <TableHead className="text-right">Score</TableHead>
+                        </>
+                      )}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {fields.map(f => (
+                      <TableRow key={f.key} className="block md:table-row mb-4 md:mb-0 border rounded-lg md:border-none p-2 md:p-0">
+                        {/* Field */}
+                        <TableCell className="block md:table-cell font-medium" data-label="Field">
+                          <div className="flex items-center gap-2">
+                            <span>{f.label}</span>
+                            <InfoPopup info={f.info} isDesktop={isDesktop} />
+                          </div>
+                        </TableCell>
+
+                        {/* User Input */}
+                        <TableCell className="block md:table-cell" data-label="Your Value">
+                          <Input
+                            type="text"
+                            value={
+                              f.type === "core" && f.key !== "familyMembers"
+                                ? formatCurrency(f.value)
+                                : f.type === "rated"
+                                ? formatCurrency(f.value)
+                                : f.value
+                            }
+                            onChange={e => updateNumericValue(f.key, e.target.value)}
+                            className="w-full"
+                            placeholder={f.defaultValue ? formatCurrency(f.defaultValue) : "Enter value"}
+                          />
+                        </TableCell>
+
+                        {/* Target / Gap / Rating (only for rated fields) */}
+                        {f.type === "rated" ? (
+                          <>
+                            <TableCell className="block md:table-cell text-left md:text-center" data-label="Target">
+                              {formatCurrency(f.defaultValue || 0)}
+                            </TableCell>
+                            <TableCell className="block md:table-cell text-left md:text-center font-medium" data-label="Gap">
+                              {(() => {
+                                const gap = computeGap(f);
+                                const absGap = Math.abs(gap);
+                                return (
+                                  <span className={gap > 0 ? "text-red-600" : "text-green-600"}>
+                                    {formatCurrency(absGap)}
+                                  </span>
+                                );
+                              })()}
+                            </TableCell>
+                            <TableCell className="block md:table-cell text-left md:text-right font-bold" data-label="Rating">
+                              {computeRating(f)} / 5
+                            </TableCell>
+                          </>
+                        ) : (
+                          <TableCell className="hidden md:table-cell" colSpan={3}></TableCell>
+                        )}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              // ✅ MOBILE VIEW — card layout
+              <div className="space-y-4">
+                {fields.map(f => {
+                  const gap = computeGap(f);
+                  const absGap = Math.abs(gap);
+
+                  return (
+                    <div key={f.key} className="border rounded-xl p-4 bg-white shadow-sm">
+                      {/* Field + Info */}
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-semibold">{f.label}</span>
+                        <InfoPopup info={f.info} isDesktop={isDesktop} />
+                      </div>
+
+                      {/* Input */}
+                      <Input
+                        type="text"
+                        value={
+                          f.type === "core" && f.key !== "familyMembers"
+                            ? formatCurrency(f.value)
+                            : f.type === "rated"
+                            ? formatCurrency(f.value)
+                            : f.value
+                        }
+                        onChange={e => updateNumericValue(f.key, e.target.value)}
+                        placeholder={f.defaultValue ? formatCurrency(f.defaultValue) : "Enter value"}
+                        className="mb-3"
+                      />
+
+                      {/* Target/Gap/Rating only for rated fields */}
+                      {f.type === "rated" && (
+                        <div className="grid grid-cols-3 gap-3 text-sm text-center">
+                          <div>
+                            <p className="text-gray-500 font-medium">Target</p>
+                            <p className="font-semibold">{formatCurrency(f.defaultValue || 0)}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 font-medium">Gap</p>
+                            <p className={`font-semibold ${gap > 0 ? "text-red-600" : "text-green-600"}`}>
+                              {formatCurrency(absGap)}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 font-medium">Rating</p>
+                            <p className="font-bold">{computeRating(f)} / 5</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CollapsibleCard>
+        ))}
+
+        {/* Submit button */}
+        <div className="flex justify-end pt-4">
+          <Button onClick={handleNumericSubmit}>Submit & Continue</Button>
+        </div>
+      </div>
+    </div>
+  );
 };
+
 
 const YesNoFullscreen = ({ yesNoState, updateYesNoValue, handleYesNoSubmit, isDesktop }: YesNoFullscreenProps) => (
     <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-[#fdfbf7] text-black">
@@ -376,40 +466,73 @@ const YesNoFullscreen = ({ yesNoState, updateYesNoValue, handleYesNoSubmit, isDe
 );
 
 const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted, allTips, setView }: ResultsFullscreenProps) => (
-    <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-[#fdfbf7] text-black">
-        <div className="w-full max-w-3xl">
-            <Card className="bg-white">
-                <CardHeader>
-                    <CardTitle className="text-2xl md:text-3xl text-center">Your Financial Health Report</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="flex flex-col items-center gap-4">
-                        <div>
-                            <h2 className="text-lg font-semibold text-center">Final Score</h2>
-                            <p className="text-5xl md:text-6xl font-bold text-center">{finalScore} / 100</p>
-                            <p className="mt-1 text-sm text-gray-600 text-center">(Numeric: {numericScoreWeighted.toFixed(1)} / 60, Habits: {yesScoreWeighted.toFixed(1)} / 40)</p>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-2 w-full mt-4">
-                            <Button variant="ghost" onClick={() => setView("landing")} className="w-full">Back to Home</Button>
-                            <Button className="w-full">Download Report</Button>
-                        </div>
-                    </div>
-                    <div className="mt-8">
-                        <h3 className="font-semibold text-lg">Personalized Tips for Improvement</h3>
-                        {allTips.length === 0 ? (<p className="mt-2 text-sm text-green-600">Great job—all fields meet or exceed targets!</p>) : (<ul className="mt-2 ml-5 space-y-2 text-sm list-disc">{allTips.map((t, i) => (<li key={i} dangerouslySetInnerHTML={{ __html: t }}></li>))}</ul>)}
-                    </div>
-                    <div className="mt-6 text-xs text-gray-500">
-                        <p><strong>Notes:</strong></p>
-                        <ul className="ml-5 list-disc">
-                            <li>Your score is an estimate based on standard financial benchmarks.</li>
-                            <li>Numeric ratings are calculated based on how close you are to the target value.</li>
-                        </ul>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
+  <div className="flex items-start justify-center min-h-screen px-2 py-6 md:px-6 md:py-10 bg-[#fdfbf7] text-black">
+    <div className="w-full max-w-4xl">
+      <Card className="bg-white shadow-lg rounded-2xl">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-2xl md:text-3xl text-center">
+            Your Financial Health Report
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <div className="flex flex-col items-center gap-4">
+            <div>
+              <h2 className="text-lg font-semibold text-center">Final Score</h2>
+              <p className="text-5xl md:text-6xl font-bold text-center">
+                {finalScore} / 100
+              </p>
+              <p className="mt-1 text-sm text-gray-600 text-center">
+                (Numeric: {numericScoreWeighted.toFixed(1)} / 60, Habits:{" "}
+                {yesScoreWeighted.toFixed(1)} / 40)
+              </p>
+            </div>
+
+            {/* Buttons Section */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mt-3">
+              <Button
+                variant="ghost"
+                onClick={() => setView("landing")}
+                className="w-full sm:w-1/2 border border-gray-200 hover:bg-gray-100"
+              >
+                Back to Home
+              </Button>
+              <Button
+                className="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Download Report
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <h3 className="font-semibold text-lg">Personalized Tips for Improvement</h3>
+            {allTips.length === 0 ? (
+              <p className="mt-2 text-sm text-green-600">
+                Great job—all fields meet or exceed targets!
+              </p>
+            ) : (
+              <ul className="mt-2 ml-5 space-y-2 text-sm list-disc">
+                {allTips.map((t, i) => (
+                  <li key={i} dangerouslySetInnerHTML={{ __html: t }}></li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="mt-6 text-xs text-gray-500">
+            <p><strong>Notes:</strong></p>
+            <ul className="ml-5 list-disc">
+              <li>Your score is an estimate based on standard financial benchmarks.</li>
+              <li>Numeric ratings are calculated based on how close you are to the target value.</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
     </div>
+  </div>
 );
+
 
 const LandingView = ({ setView, numericDone, yesNoDone }: LandingViewProps) => {
     const [isNumericOpen, setIsNumericOpen] = useState(true);
