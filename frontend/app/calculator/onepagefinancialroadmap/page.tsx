@@ -76,7 +76,7 @@ function PMT(rate: number, nper: number, pv: number, fv: number, type = 0): numb
     if (rate === 0) {
         return -(pv + fv) / nper;
     }
-    const pmt = (pv * Math.pow(1 + rate, nper) + fv) / (((Math.pow(1 + rate, nper) - 1) / rate) * (1 + rate * type));
+    const pmt = -(pv * Math.pow(1 + rate, nper) + fv) / (((Math.pow(1 + rate, nper) - 1) / rate) * (1 + rate * type));
     return -pmt;
 }
 
@@ -265,10 +265,11 @@ export default function OnePageFinancialRoadmap() {
     console.log("Monthly Expense at Retirement:", monthlyExpenseAtRetirement);
     const yearlyExpenseAtRetirement = monthlyExpenseAtRetirement * 12;
     console.log("Yearly Expense at Retirement:", yearlyExpenseAtRetirement);
-
+    const realRateReturn = ((1 + (Number(retPost) / 100)) / (1 + (Number(inflation) / 100)) ) - 1;
+    console.log("Real Rate of Return Post Retirement:", realRateReturn);
     // Step 3: Required Retirement Corpus using PV function
     
-    const retirementCorpusRequired =  number(Math.abs(PV(0.0667, postRetYears, yearlyExpenseAtRetirement, 0, 1)));
+    const retirementCorpusRequired =  number(Math.abs(PV(realRateReturn, postRetYears, yearlyExpenseAtRetirement, 0, 1)));
     console.log("Retirement Corpus Required:", retirementCorpusRequired);
 
     // Step 4: Required Retirement SIP using PMT function
