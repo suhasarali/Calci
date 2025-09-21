@@ -32,17 +32,55 @@ const useMediaQuery = (query: string) => {
 };
 
 // --- TYPE DEFINITIONS ---
-type Goal = { 
-  id: string; 
-  name: string; 
-  currentCost: number | string; 
-  years: number | string; 
-  inflation: number | string; 
-  canInvestNow: number | string; 
-  expectedReturn: number | string; 
+type Goal = {
+  id: string;
+  name: string;
+  currentCost: number | string;
+  years: number | string;
+  inflation: number | string;
+  canInvestNow: number | string;
+  expectedReturn: number | string;
 };
 
-// --- HELPER & UTILITY FUNCTIONS ---
+// --- FINANCIAL HELPER FUNCTIONS (as provided) ---
+
+/**
+ * Calculates the Future Value.
+ * Returns a negative value by convention.
+ */
+function FV(rate: number, nper: number, pmt: number, pv: number, type = 0): number {
+    if (rate === 0) {
+        return -(pv + pmt * nper);
+    }
+    const fv = pv * Math.pow(1 + rate, nper) +pmt * ((Math.pow(1 + rate, nper) - 1) / rate) * (1 + rate * type);
+    return -fv;
+}
+
+/**
+ * Calculates the Present Value.
+ * Returns a negative value by convention.
+ */
+function PV(rate: number, nper: number, pmt: number, fv: number, type = 0): number {
+    if (rate === 0) {
+        return -(fv + pmt * nper);
+    }
+    const pv = (fv + pmt * ((Math.pow(1 + rate, nper) - 1) / rate) * (1 + rate * type)) / Math.pow(1 + rate, nper);
+    return -pv;
+}
+
+/**
+ * Calculates the Payment (e.g., SIP).
+ * Returns a negative value by convention.
+ */
+function PMT(rate: number, nper: number, pv: number, fv: number, type = 0): number {
+    if (rate === 0) {
+        return -(pv + fv) / nper;
+    }
+    const pmt = (pv * Math.pow(1 + rate, nper) + fv) / (((Math.pow(1 + rate, nper) - 1) / rate) * (1 + rate * type));
+    return -pmt;
+}
+
+// --- UTILITY FUNCTIONS ---
 const number = (n: number) => (isFinite(n) ? n : 0);
 const currency = (n: number) => n.toLocaleString("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 
@@ -173,7 +211,7 @@ export default function OnePageFinancialRoadmap() {
   const [requiredHealthCover, setRequiredHealthCover] = useState<string>("");
   const [currentHealthCover, setCurrentHealthCover] = useState<string>("");
   const [emergencyMonths, setEmergencyMonths] = useState<string>("");
-  
+
   const [goals, setGoals] = useState<Goal[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -192,50 +230,84 @@ export default function OnePageFinancialRoadmap() {
   const isHealthInsuranceComplete = Number(requiredHealthCover) > 0 && Number(currentHealthCover) >= 0;
   const isEmergencyComplete = Number(emergencyMonths) > 0;
 
-  const pow = (r: number, n: number) => Math.pow(1 + r, n);
-  const fv = (pv: number, ratePct: number, years: number) => number(pv * pow(ratePct / 100, years));
-  const pv = (fv_val: number, ratePct: number, years: number) => number(fv_val / pow(ratePct / 100, years));
-
   const goalsWithCalc = useMemo(() => {
     return goals.map((g) => {
-      const futureValue = fv(Number(g.currentCost), Number(g.inflation), Number(g.years));
+      const inflationRate = Number(g.inflation) / 100;
+      const years = Number(g.years);
+      const currentCost = Number(g.currentCost);
+      // Calculate future value of the goal
+      const futureValue = Math.abs(FV(inflationRate, years, 0, -currentCost));
+
       const r = Number(g.expectedReturn) / 100 / 12;
-      const n = Number(g.years) * 12;
-      const lumpsumFvForGoal = fv(Number(g.canInvestNow), Number(g.expectedReturn), Number(g.years));
-      const fvNeededFromSip = futureValue - lumpsumFvForGoal;
-      const sip = r === 0 || n === 0 ? fvNeededFromSip / (n || 1) : fvNeededFromSip * (r / (pow(1 + r, n) - 1));
-      return { ...g, futureValue, sipRequired: Math.max(0, sip) } as Goal & { futureValue: number; sipRequired: number };
+      const n = years * 12;
+      const canInvestNow = Number(g.canInvestNow);
+
+      // Step 8: Calculate SIP for each goal using PMT function
+      const sip = r === 0 || n === 0
+        ? (futureValue - canInvestNow) / (n || 1)
+        : Math.abs(PMT(r, n, canInvestNow, -futureValue, 0));
+
+      return { ...g, futureValue: number(futureValue), sipRequired: number(Math.max(0, sip)) };
     });
   }, [goals]);
 
   const calculations = useMemo(() => {
     const retirementYears = Math.max(0, Number(retirementAge) - Number(yourAge));
+    const postRetYears = Math.max(0, Number(lifeExpectancySelf) - Number(retirementAge));
+    const preRetYears = Math.max(0, Number(retirementAge) - Number(yourAge));
+    const monthlyExpensesNum = Number(monthlyExpenses) || 0;
     const monthlyTotalExpenseToday = Number(monthlyExpenses) + Number(otherMonthlyExpenses);
     const totalGoalsSip = goalsWithCalc.reduce((s, g) => s + g.sipRequired, 0);
-    
-    const postRetYears = Math.max(0, Number(lifeExpectancySelf) - Number(retirementAge));
-    const monthlyExpenseAtRetirement = fv(monthlyTotalExpenseToday, Number(inflation), retirementYears);
+    const inflationRate = Number(inflation) / 100;
+
+    // Step 1 & 2: FV of yearly expenses at retirement
+    const monthlyExpenseAtRetirement = Math.abs(FV(inflationRate, preRetYears, 0, -monthlyExpensesNum));
+    console.log("Monthly Expense at Retirement:", monthlyExpenseAtRetirement);
     const yearlyExpenseAtRetirement = monthlyExpenseAtRetirement * 12;
-    const realRatePost = (1 + Number(retPost) / 100) / (1 + Number(inflation) / 100) - 1;
-    const retirementCorpusRequired = realRatePost <= 0 ? number(yearlyExpenseAtRetirement * postRetYears) : number((yearlyExpenseAtRetirement / realRatePost) * (1 - pow(1 + realRatePost, -postRetYears)) * (1 + realRatePost));
+    console.log("Yearly Expense at Retirement:", yearlyExpenseAtRetirement);
 
-    const rSip = Number(retPre) / 100 / 12;
-    const nSip = retirementYears * 12;
-    const lumpsumFvAtRetirement = fv(Number(lumpsumNow), Number(retPre), retirementYears);
-    const corpusNeededViaSip = Math.max(0, retirementCorpusRequired - lumpsumFvAtRetirement);
-    const retirementSIP = rSip === 0 || nSip === 0 ? corpusNeededViaSip / (nSip || 1) : corpusNeededViaSip * (rSip / (pow(1 + rSip, nSip) - 1));
+    // Step 3: Required Retirement Corpus using PV function
+    
+    const retirementCorpusRequired =  number(Math.abs(PV(0.0667, postRetYears, yearlyExpenseAtRetirement, 0, 1)));
+    console.log("Retirement Corpus Required:", retirementCorpusRequired);
 
-    const pvOfRetirementCorpus = pv(retirementCorpusRequired, Number(claimReturn), retirementYears);
-    const pvOfGoals = goalsWithCalc.reduce((acc, goal) => acc + pv(goal.futureValue, Number(claimReturn), goal.years as number), 0);
-    const requiredLifeCover = pvOfRetirementCorpus + pvOfGoals;
-    const additionalLifeCover = requiredLifeCover - Number(existingLifeCover);
+    // Step 4: Required Retirement SIP using PMT function
+    const rSip = Number(retPre) / 100 /12;
+    console.log("Pre ret rate: ",retPre);
+    console.log("RSIP: ",rSip)
+    const nSip = preRetYears * 12;
+    const retirementSIP = rSip === 0 || nSip === 0
+        ? (retirementCorpusRequired - Number(lumpsumNow)) / (nSip || 1)
+        : number(Math.abs(PMT(rSip, nSip, Number(lumpsumNow), -retirementCorpusRequired, 0)));
 
-    const additionalHealthCover = Number(requiredHealthCover) - Number(currentHealthCover);
+    // Step 5 & 6: Required Life Cover using PV function
+    const realRateClaim = (1 + Number(claimReturn) / 100) / (1 + Number(inflation) / 100) - 1;
+    const pvOfGoals = goalsWithCalc.reduce((acc, goal) => {
+        const goalYears = Number(goal.years);
+        const rate = Number(claimReturn) / 100;
+        // PV of a future lump sum (goal.futureValue)
+        const pvOfGoal = Math.abs(PV(rate, goalYears, 0, -goal.futureValue, 0));
+        return acc + pvOfGoal;
+    }, 0);
+
+    const nperSpouse = Math.max(0, Number(lifeExpectancySpouse) - Number(spouseAge));
+    const annualExpenseToday = monthlyTotalExpenseToday * 12;
+    // PV of all future household expenses for the spouse (annuity)
+    const pvOfExpensesForSpouse = realRateClaim <= 0
+        ? number(annualExpenseToday * nperSpouse)
+        : number(Math.abs(PV(realRateClaim, nperSpouse, annualExpenseToday, 0, 1)));
+
+    const requiredLifeCover = pvOfExpensesForSpouse + pvOfGoals;
+
+    // Step 7: Required Additional Cover
+    const additionalLifeCover = Math.max(0, requiredLifeCover - Number(existingLifeCover));
+
+    const additionalHealthCover = Math.max(0, Number(requiredHealthCover) - Number(currentHealthCover));
     const emergencyFundRequired = monthlyTotalExpenseToday * Number(emergencyMonths);
     const totalRequiredSIP = retirementSIP + totalGoalsSip;
 
     return { requiredLifeCover, additionalLifeCover, additionalHealthCover, emergencyFundRequired, retirementCorpusRequired, retirementSIP, totalRequiredSIP };
-  }, [yourAge, retirementAge, lifeExpectancySelf, monthlyExpenses, otherMonthlyExpenses, retPre, retPost, inflation, lumpsumNow, claimReturn, existingLifeCover, requiredHealthCover, currentHealthCover, emergencyMonths, goalsWithCalc]);
+  }, [yourAge, spouseAge, retirementAge, lifeExpectancySelf, lifeExpectancySpouse, monthlyExpenses, otherMonthlyExpenses, retPre, retPost, inflation, lumpsumNow, claimReturn, existingLifeCover, requiredHealthCover, currentHealthCover, emergencyMonths, goalsWithCalc]);
 
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [showReport, setShowReport] = useState<boolean>(false);
@@ -249,7 +321,7 @@ export default function OnePageFinancialRoadmap() {
     setShowReport(true);
     document.getElementById("report-section")?.scrollIntoView({ behavior: 'smooth' });
   };
-  
+
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50 text-gray-800">
@@ -291,7 +363,7 @@ export default function OnePageFinancialRoadmap() {
                   <LabeledPercent isDesktop={isDesktop} label="Return (pre-retirement):" value={retPre} onChange={setRetPre} info="Annual % return you expect on your investments until you retire." placeholder="e.g. 15"/>
                   <LabeledPercent isDesktop={isDesktop} label="Return (post-retirement):" value={retPost} onChange={setRetPost} info="Annual % return you expect on your investments after you retire."/>
                   <LabeledPercent isDesktop={isDesktop} label="Assumed inflation:" value={inflation} onChange={setInflation} info="The average annual inflation rate you expect over the long term (e.g., 5-6%)." placeholder="e.g. 6"/>
-                  <LabeledAmount isDesktop={isDesktop} label="Lumpsum for retirement:" value={lumpsumNow} onChange={setLumpsumNow} info="Any one-time amount you can invest for retirement right now." placeholder="e.g. 500000"/>
+                  <LabeledAmount isDesktop={isDesktop} label="Lumpsum can invest now:" value={lumpsumNow} onChange={setLumpsumNow} info="Any one-time amount you can invest for retirement right now." placeholder="e.g. 500000"/>
                 </CardContent>
               </Card>
 
@@ -364,10 +436,10 @@ export default function OnePageFinancialRoadmap() {
             </Button>
           </div>
         </main>
-        
+
         <AnimatePresence>
             {showReport && (
-                <motion.div 
+                <motion.div
                     id="report-section"
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -382,7 +454,7 @@ export default function OnePageFinancialRoadmap() {
                                 <p className="text-gray-600">Here's the detailed breakdown based on your inputs.</p>
                             </CardHeader>
                             <CardContent className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                
+
                                 <div className="p-6 bg-gray-50 rounded-lg">
                                     <div className="flex items-center gap-3 mb-4"><UserCheck className="w-8 h-8 text-blue-600"/><h3 className="text-xl font-semibold">Life Insurance</h3></div>
                                     <div className="space-y-2 text-base sm:text-lg">
@@ -397,7 +469,7 @@ export default function OnePageFinancialRoadmap() {
                                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center"><span className="text-red-600">Additional Cover Needed:</span><span className="font-bold text-red-600 text-xl sm:text-2xl">{currency(reportData.additionalHealthCover)}</span></div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="p-6 bg-gray-50 rounded-lg">
                                     <div className="flex items-center gap-3 mb-4"><ShieldCheck className="w-8 h-8 text-green-600"/><h3 className="text-xl font-semibold">Emergency Fund</h3></div>
                                     <div className="space-y-2 text-base sm:text-lg">
@@ -412,7 +484,7 @@ export default function OnePageFinancialRoadmap() {
                                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-2 border-t"><span className="text-yellow-600">Required Monthly SIP:</span><span className="font-bold text-yellow-600 text-xl sm:text-2xl">{currency(reportData.retirementSIP)}</span></div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="md:col-span-2 bg-purple-700 text-white rounded-xl p-8 flex flex-col items-center text-center">
                                     <div className="flex items-center gap-3"><PiggyBank className="w-8 h-8"/><h3 className="text-xl font-semibold">Total Required Monthly Investment</h3></div>
                                     <div className="text-4xl sm:text-5xl font-extrabold my-2">{currency(reportData.totalRequiredSIP)}</div>
