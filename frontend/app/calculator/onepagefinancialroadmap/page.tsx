@@ -272,11 +272,11 @@ export default function OnePageFinancialRoadmap() {
     console.log("Retirement Corpus Required:", retirementCorpusRequired);
 
     // Step 4: Required Retirement SIP using PMT function
-    const rSip = Number(retPre) / 100 /12;
+    const rSip = (Number(retPre) /100 ) /12;
     console.log("Pre ret rate: ",retPre);
     console.log("RSIP: ",rSip)
     const nSip = preRetYears * 12;
-    const retirementSIP = number(Math.abs(PMT(rSip, nSip, -Number(lumpsumNow), retirementCorpusRequired, 0)));
+    const retirementSIP = number(Math.abs(PMT(rSip, nSip, Number(lumpsumNow), -retirementCorpusRequired, 0)));
 
     // Step 5 & 6: Required Life Cover using PV function
     const realRateClaim = ((1 + (Number(claimReturn) / 100)) / (1 + (Number(inflation) / 100)) ) - 1;
