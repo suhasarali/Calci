@@ -224,6 +224,7 @@ export default function OnePageFinancialRoadmap() {
   const [retirementAge, setRetirementAge] = useState<string>("");
   const [lifeExpectancySelf, setLifeExpectancySelf] = useState<string>("");
   const [lifeExpectancySpouse, setLifeExpectancySpouse] = useState<string>("");
+  const [monthlyIncome, setMonthlyIncome] = useState<string>("");
   const [monthlyExpenses, setMonthlyExpenses] = useState<string>("");
   const [otherMonthlyExpenses, setOtherMonthlyExpenses] = useState<string>("");
   const [retPre, setRetPre] = useState<string>("");
@@ -360,6 +361,7 @@ export default function OnePageFinancialRoadmap() {
                     <LabeledNumber isDesktop={isDesktop} label="Retirement age:" value={retirementAge} onChange={setRetirementAge} info="The age you plan to retire." placeholder="e.g. 60"/>
                     <LabeledNumber isDesktop={isDesktop} label="Life expectancy (self):" value={lifeExpectancySelf} onChange={setLifeExpectancySelf} info="The age you expect to live to." placeholder="e.g. 85"/>
                     <LabeledNumber isDesktop={isDesktop} label="Life expectancy (spouse):" value={lifeExpectancySpouse} onChange={setLifeExpectancySpouse} info="The age you expect your spouse to live to." placeholder="e.g. 85"/>
+                    <LabeledAmount isDesktop={isDesktop} label="Monthly income" value={monthlyIncome} onChange={setMonthlyIncome} info="The age you expect your spouse to live to." placeholder="e.g. ₹20,000"/>
                 </CardContent>
             </Card>
           </Section>

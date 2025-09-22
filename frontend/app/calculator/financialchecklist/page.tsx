@@ -733,10 +733,11 @@ export default function FinancialHealthCheckupPage() {
             const actualEMI = Number(currentField.value);
             const maxEMI = currentField.defaultValue || 0;
             if (actualEMI <= 0) return 5;
-            if (maxEMI <= 0 && actualEMI > 0) return 0;
+            if (maxEMI <= 0 && actualEMI > 0) return 1; // If no income but has debt, score is 1
             if (actualEMI <= maxEMI) return 5;
             const score = (maxEMI / actualEMI) * 5;
-            return Math.max(0, Math.min(5, score));
+            // Ensure the score is at least 1 if a value is entered
+            return Math.max(1, Math.min(5, Math.round(score)));
         }
         const actual = Number(currentField.value) || 0.0001;
         const target = Number(currentField.targetValue || currentField.defaultValue) || 0.0001;
@@ -853,4 +854,6 @@ export default function FinancialHealthCheckupPage() {
         </TooltipProvider>
     );
 }
+
+
 
