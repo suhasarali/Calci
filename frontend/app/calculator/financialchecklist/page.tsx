@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from 'next/link';
 
 // Lucide Icons Import
 import { 
@@ -11,18 +10,12 @@ import {
     CheckSquare, 
     Trophy, 
     ChevronDown,
-    Dribbble,
-    Facebook,
-    Github,
-    Instagram,
-    Mail,
-    MapPin,
-    Phone,
-    Twitter,
     HelpCircle,
     TrendingUp,
     Sparkles,
-    CheckCircle2
+    CheckCircle2,
+    Lock,
+    X // Added for modal close button
 } from "lucide-react";
 
 // Shadcn UI Imports
@@ -49,20 +42,19 @@ import Footer4Col from "@/components/footer-column";
 // --- CUSTOM HOOK for Media Queries ---
 const useMediaQuery = (query: string) => {
     const [matches, setMatches] = useState(false);
-
     useEffect(() => {
-        const media = window.matchMedia(query);
-        if (media.matches !== matches) {
-            setMatches(media.matches);
+        if (typeof window !== 'undefined') {
+            const media = window.matchMedia(query);
+            if (media.matches !== matches) {
+                setMatches(media.matches);
+            }
+            const listener = () => setMatches(media.matches);
+            window.addEventListener("resize", listener);
+            return () => window.removeEventListener("resize", listener);
         }
-        const listener = () => setMatches(media.matches);
-        window.addEventListener("resize", listener);
-        return () => window.removeEventListener("resize", listener);
     }, [matches, query]);
-
     return matches;
 };
-
 
 // --- HELPERS ---
 const formatCurrency = (value: number | string): string => {
@@ -129,6 +121,8 @@ type NumericField = {
   type: 'core' | 'rated';
   defaultValue?: number; 
   higherBetter?: boolean; 
+  targetValue?: string; 
+  targetLabel?: string; 
 };
 
 type YesNoField = { 
@@ -140,9 +134,9 @@ type YesNoField = {
 
 type NumericFullscreenProps = { 
     numericState: NumericField[]; 
-    updateNumericValue: (key: string, newValue: string) => void; 
-    computeGap: (f: NumericField) => number; 
-    computeRating: (f: NumericField) => number; 
+    updateNumericValue: (key: string, newValue: string, isTarget?: boolean) => void; 
+    computeGap: (f: NumericField) => number;
+    computeRating: (f: NumericField) => number;
     handleNumericSubmit: () => void; 
     setView: React.Dispatch<React.SetStateAction<View>>;
     isDesktop: boolean;
@@ -160,8 +154,8 @@ type ResultsFullscreenProps = {
     finalScore: number; 
     numericScoreWeighted: number; 
     yesScoreWeighted: number; 
-    allTips: string[]; 
-    setView: React.Dispatch<React.SetStateAction<View>>; 
+    setView: React.Dispatch<React.SetStateAction<View>>;
+    onOpenReport: () => void;
 };
 
 type LandingViewProps = { 
@@ -178,22 +172,32 @@ type CollapsibleSectionProps = {
     isOpen: boolean;
     setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
     children: React.ReactNode;
+    isDisabled?: boolean;
 };
+
+type ReportModalProps = {
+    isOpen: boolean;
+    onClose: () => void;
+    tips: string[];
+};
+
 
 // --- DATA CONSTANTS ---
 const initialNumeric: NumericField[] = [
     { key: "monthlyIncome", label: "Monthly Income", value: "", info: "Your gross monthly income from all sources.", type: 'core' },
     { key: "monthlyExpenses", label: "Monthly Expenses", value: "", info: "Your total monthly spending.", type: 'core' },
     { key: "familyMembers", label: "Family Members", value: "", info: "Number of dependents you support financially.", type: 'core' },
-    { key: "incomeProtection", label: "Income Protection (life cover)", defaultValue: 2000000, value: "", higherBetter: true, info: "Recommended life cover (example: annual income × ~20).", type: 'rated' },
-    { key: "emergencyFund", label: "Emergency Fund", defaultValue: 120000, value: "", higherBetter: true, info: "Emergency fund typically 3-6 months of expenses. Default uses 3 months.", type: 'rated' },
-    { key: "retirementGoals", label: "Retirement Corpus Goal", defaultValue: 12000000, value: "", higherBetter: true, info: "Estimated retirement corpus required (placeholder rule).", type: 'rated' },
-    { key: "healthInsurance", label: "Health Insurance Sum Insured", defaultValue: 800000, value: "", higherBetter: true, info: "Recommended health cover relative to annual income and family size.", type: 'rated' },
-    { key: "criticalIllness", label: "Critical Illness Cover", defaultValue: 300000, value: "", higherBetter: true, info: "Recommended sum assured for critical illness policies (rule-of-thumb).", type: 'rated' },
-    { key: "disabilityInsurance", label: "Disability Insurance", defaultValue: 1500000, value: "", higherBetter: true, info: "Income replacement cover in case of long-term disability.", type: 'rated' },
-    { key: "childEducation", label: "Child Education Fund", defaultValue: 2000000, value: "", higherBetter: true, info: "Target corpus for child education (placeholder).", type: 'rated' },
-    { key: "debtManagement", label: "Debt Management (acceptable EMI)", defaultValue: 40000, value: "", higherBetter: false, info: "Acceptable EMI threshold (rule-of-thumb: ≤ 40% of income).", type: 'rated' },
+    { key: "incomeProtection", label: "Income Protection (life cover)", defaultValue: 0, value: "", higherBetter: true, info: "Recommended life cover (example: annual income × ~20).", type: 'rated' },
+    { key: "emergencyFund", label: "Emergency Fund", defaultValue: 0, value: "", higherBetter: true, info: "Recommended emergency fund is 6 months of your expenses.", type: 'rated' },
+    { key: "retirementGoals", label: "Retirement Corpus Goal", defaultValue: 0, value: "", higherBetter: true, info: "Estimated retirement corpus required (placeholder rule).", type: 'rated' },
+    { key: "healthInsurance", label: "Health Insurance Sum Insured", defaultValue: 0, value: "", higherBetter: true, info: "Recommended health cover is ₹10 Lakh per family member.", type: 'rated' },
+    { key: "criticalIllness", label: "Critical Illness Cover", defaultValue: 0, value: "", higherBetter: true, info: "Recommended cover is 3-5 times your annual income. We use 4x as a target.", type: 'rated' },
+    { key: "disabilityInsurance", label: "Disability Insurance", defaultValue: 0, value: "", higherBetter: true, info: "Recommended cover is 5-10 times your annual income. We use 7.5x as a target.", type: 'rated' },
+    { key: "debtManagement", label: "Total Monthly EMIs", defaultValue: 0, value: "", higherBetter: false, info: "Your total EMIs should be less than 40% of your monthly income for a good score.", type: 'rated' },
+    { key: "childEducation", label: "Child Education Fund", value: "", targetValue: "", targetLabel: "Your Goal", higherBetter: true, info: "Enter your target corpus (Your Goal) and your current savings for your child's education.", type: 'rated' },
+    { key: "childMarriage", label: "Child Marriage Fund", value: "", targetValue: "", targetLabel: "Your Goal", higherBetter: true, info: "Enter your target corpus (Your Goal) and your current savings for your child's marriage.", type: 'rated' },
 ];
+
 
 const initialYesNo: YesNoField[] = [
     { key: "budgetPlanning", label: "Budget Planning", value: null, info: "Do you maintain a monthly/quarterly budget?" },
@@ -232,9 +236,9 @@ const CollapsibleCard = ({ title, children, isComplete }: { title: string; child
     );
 };
 
-const CollapsibleSection = ({ title, icon: Icon, isComplete, statusText, isOpen, setIsOpen, children }: CollapsibleSectionProps) => (
-    <motion.div layout className="w-full max-w-3xl mb-6 bg-white border-t-4 rounded-xl shadow-md" style={{borderColor: isComplete ? '#22c55e' : '#e5e7eb'}}>
-        <button onClick={() => setIsOpen(!isOpen)} className="flex items-center justify-between w-full p-4 md:p-6 text-left cursor-pointer focus:outline-none">
+const CollapsibleSection = ({ title, icon: Icon, isComplete, statusText, isOpen, setIsOpen, children, isDisabled = false }: CollapsibleSectionProps) => (
+    <motion.div layout className={`w-full max-w-3xl mb-6 bg-white border-t-4 rounded-xl shadow-md ${isDisabled ? 'bg-gray-50 opacity-60' : ''}`} style={{borderColor: isComplete ? '#22c55e' : (isDisabled ? '#d1d5db' : '#e5e7eb')}}>
+        <button onClick={() => !isDisabled && setIsOpen(!isOpen)} className={`flex items-center justify-between w-full p-4 md:p-6 text-left focus:outline-none ${isDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
             <div className="flex items-center">
                 <Icon className={`w-6 h-6 md:w-8 md:h-8 mr-4 ${isComplete ? 'text-green-500' : 'text-gray-500'}`} />
                 <div>
@@ -242,10 +246,10 @@ const CollapsibleSection = ({ title, icon: Icon, isComplete, statusText, isOpen,
                     <p className={`text-sm font-semibold ${isComplete ? 'text-green-600' : 'text-gray-500'}`}>{statusText}</p>
                 </div>
             </div>
-            <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}><ChevronDown className="w-6 h-6 text-gray-500" /></motion.div>
+            {isDisabled ? <Lock className="w-6 h-6 text-gray-400" /> : <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.3 }}><ChevronDown className="w-6 h-6 text-gray-500" /></motion.div>}
         </button>
         <AnimatePresence>
-            {isOpen && (
+            {isOpen && !isDisabled && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1, transition: { opacity: { delay: 0.15 } } }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: 'easeInOut' }} className="overflow-hidden">
                     <div className="px-4 md:px-6 pb-6 border-t border-gray-200">{children}</div>
                 </motion.div>
@@ -261,17 +265,24 @@ const NumericFullscreen = ({
   computeGap,
   computeRating,
   handleNumericSubmit,
+  setView,
   isDesktop,
 }: NumericFullscreenProps) => {
   const sections = {
     core: { title: "Core Financials", fields: numericState.filter(f => f.type === "core") },
     security: { title: "Long-Term Security", fields: numericState.filter(f => ["incomeProtection", "emergencyFund", "retirementGoals"].includes(f.key)) },
     insurance: { title: "Insurance Coverage", fields: numericState.filter(f => ["healthInsurance", "criticalIllness", "disabilityInsurance"].includes(f.key)) },
-    goals: { title: "Other Financial Goals", fields: numericState.filter(f => ["childEducation", "debtManagement"].includes(f.key)) },
+    goals: { title: "Other Financial Goals", fields: numericState.filter(f => ["debtManagement", "childEducation", "childMarriage"].includes(f.key)) },
   };
 
   const isSectionComplete = (fields: NumericField[]) =>
-    fields.every(f => f.value !== "" && !isNaN(Number(f.value)));
+    fields.every(f => {
+        const hasValue = f.value !== "" && !isNaN(Number(f.value));
+        if (f.targetLabel) {
+            return hasValue && f.targetValue !== "" && !isNaN(Number(f.targetValue));
+        }
+        return hasValue;
+    });
 
   return (
     <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-[#fdfbf7] text-black">
@@ -284,26 +295,17 @@ const NumericFullscreen = ({
         {Object.values(sections).map(({ title, fields }) => (
           <CollapsibleCard key={title} title={title} isComplete={isSectionComplete(fields)}>
             {isDesktop ? (
-              // ✅ DESKTOP VIEW — unchanged table layout
               <div className="overflow-x-auto">
-                {title === "Long-Term Security" && (
-                  <div className="text-xs mb-2 flex items-center gap-3">
-                    <span className="text-green-600 font-bold">*</span>
-                    <span className="text-gray-700">Surplus (Good)</span>
-                    <span className="text-red-600 font-bold">*</span>
-                    <span className="text-gray-700">Shortfall (Bad)</span>
-                  </div>
-                )}
                 <Table>
                   <TableHeader className="hidden md:table-header-group">
                     <TableRow>
                       <TableHead className="w-[30%]">Field</TableHead>
                       <TableHead className="w-[20%]">Your Value</TableHead>
-                      {fields[0].type === "rated" && (
+                      {fields.some(f => f.type === "rated") && (
                         <>
-                          <TableHead className="text-center">Target</TableHead>
-                          <TableHead className="text-center">Gap</TableHead>
-                          <TableHead className="text-right">Score</TableHead>
+                          <TableHead className="text-center w-[20%]">Target</TableHead>
+                          <TableHead className="text-center w-[15%]">Gap</TableHead>
+                          <TableHead className="text-right w-[15%]">Score</TableHead>
                         </>
                       )}
                     </TableRow>
@@ -311,44 +313,49 @@ const NumericFullscreen = ({
                   <TableBody>
                     {fields.map(f => (
                       <TableRow key={f.key} className="block md:table-row mb-4 md:mb-0 border rounded-lg md:border-none p-2 md:p-0">
-                        {/* Field */}
                         <TableCell className="block md:table-cell font-medium" data-label="Field">
                           <div className="flex items-center gap-2">
                             <span>{f.label}</span>
                             <InfoPopup info={f.info} isDesktop={isDesktop} />
                           </div>
                         </TableCell>
-
-                        {/* User Input */}
                         <TableCell className="block md:table-cell" data-label="Your Value">
                           <Input
                             type="text"
-                            value={
-                              f.type === "core" && f.key !== "familyMembers"
-                                ? formatCurrency(f.value)
-                                : f.type === "rated"
-                                ? formatCurrency(f.value)
-                                : f.value
-                            }
+                            value={f.key !== "familyMembers" ? formatCurrency(f.value) : f.value}
                             onChange={e => updateNumericValue(f.key, e.target.value)}
                             className="w-full"
-                            placeholder={f.defaultValue ? formatCurrency(f.defaultValue) : "Enter value"}
+                            placeholder={"Enter value"}
                           />
                         </TableCell>
 
-                        {/* Target / Gap / Rating (only for rated fields) */}
                         {f.type === "rated" ? (
                           <>
                             <TableCell className="block md:table-cell text-left md:text-center" data-label="Target">
-                              {formatCurrency(f.defaultValue || 0)}
+                                {f.targetLabel ? (
+                                    <Input
+                                        type="text"
+                                        value={formatCurrency(f.targetValue || "")}
+                                        onChange={e => updateNumericValue(f.key, e.target.value, true)}
+                                        className="w-full"
+                                        placeholder={f.targetLabel}
+                                    />
+                                ) : (
+                                    <Input 
+                                      type="text"
+                                      value={formatCurrency(f.defaultValue || 0)}
+                                      disabled
+                                      className="w-full bg-gray-100 border-gray-300 text-gray-700 text-center disabled:cursor-default"
+                                    />
+                                )}
                             </TableCell>
                             <TableCell className="block md:table-cell text-left md:text-center font-medium" data-label="Gap">
                               {(() => {
                                 const gap = computeGap(f);
-                                const absGap = Math.abs(gap);
+                                const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 ? "text-red-600" : "text-green-600");
                                 return (
-                                  <span className={gap > 0 ? "text-red-600" : "text-green-600"}>
-                                    {formatCurrency(absGap)}
+                                  <span className={colorClass}>
+                                    {formatCurrency(Math.abs(gap))}
                                   </span>
                                 );
                               })()}
@@ -366,46 +373,43 @@ const NumericFullscreen = ({
                 </Table>
               </div>
             ) : (
-              // ✅ MOBILE VIEW — card layout
               <div className="space-y-4">
                 {fields.map(f => {
                   const gap = computeGap(f);
-                  const absGap = Math.abs(gap);
-
+                  const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 ? "text-red-600" : "text-green-600");
                   return (
                     <div key={f.key} className="border rounded-xl p-4 bg-white shadow-sm">
-                      {/* Field + Info */}
                       <div className="flex justify-between items-center mb-2">
                         <span className="font-semibold">{f.label}</span>
                         <InfoPopup info={f.info} isDesktop={isDesktop} />
                       </div>
-
-                      {/* Input */}
                       <Input
                         type="text"
-                        value={
-                          f.type === "core" && f.key !== "familyMembers"
-                            ? formatCurrency(f.value)
-                            : f.type === "rated"
-                            ? formatCurrency(f.value)
-                            : f.value
-                        }
+                        value={f.key !== "familyMembers" ? formatCurrency(f.value) : f.value}
                         onChange={e => updateNumericValue(f.key, e.target.value)}
-                        placeholder={f.defaultValue ? formatCurrency(f.defaultValue) : "Enter value"}
+                        placeholder={"Your current value"}
                         className="mb-3"
                       />
+                      {f.targetLabel && (
+                          <Input
+                            type="text"
+                            value={formatCurrency(f.targetValue || "")}
+                            onChange={e => updateNumericValue(f.key, e.target.value, true)}
+                            placeholder={f.targetLabel}
+                            className="mb-3"
+                          />
+                      )}
 
-                      {/* Target/Gap/Rating only for rated fields */}
                       {f.type === "rated" && (
                         <div className="grid grid-cols-3 gap-3 text-sm text-center">
                           <div>
                             <p className="text-gray-500 font-medium">Target</p>
-                            <p className="font-semibold">{formatCurrency(f.defaultValue || 0)}</p>
+                            <p className="font-semibold">{f.targetLabel ? formatCurrency(f.targetValue || 0) : formatCurrency(f.defaultValue || 0)}</p>
                           </div>
                           <div>
                             <p className="text-gray-500 font-medium">Gap</p>
-                            <p className={`font-semibold ${gap > 0 ? "text-red-600" : "text-green-600"}`}>
-                              {formatCurrency(absGap)}
+                            <p className={`font-semibold ${colorClass}`}>
+                              {formatCurrency(Math.abs(gap))}
                             </p>
                           </div>
                           <div>
@@ -422,17 +426,16 @@ const NumericFullscreen = ({
           </CollapsibleCard>
         ))}
 
-        {/* Submit button */}
-        <div className="flex justify-end pt-4">
-          <Button onClick={handleNumericSubmit}>Submit & Continue</Button>
+        <div className="flex justify-between items-center pt-4">
+          <Button variant="ghost" onClick={() => setView('landing')}>Back to Home</Button>
+          <Button onClick={handleNumericSubmit}>Submit & Continue to Step 2</Button>
         </div>
       </div>
     </div>
   );
 };
 
-
-const YesNoFullscreen = ({ yesNoState, updateYesNoValue, handleYesNoSubmit, isDesktop }: YesNoFullscreenProps) => (
+const YesNoFullscreen = ({ yesNoState, updateYesNoValue, handleYesNoSubmit, setView, isDesktop }: YesNoFullscreenProps) => (
     <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-[#fdfbf7] text-black">
         <div className="w-full max-w-3xl">
             <Card className="bg-white">
@@ -458,14 +461,17 @@ const YesNoFullscreen = ({ yesNoState, updateYesNoValue, handleYesNoSubmit, isDe
                             </li>
                         ))}
                     </ul>
-                    <div className="flex justify-end mt-6"><Button onClick={handleYesNoSubmit}>Submit</Button></div>
+                    <div className="flex justify-between mt-6">
+                        <Button variant="ghost" onClick={() => setView('numeric')}>Back to Step 1</Button>
+                        <Button onClick={handleYesNoSubmit}>Submit & View Results</Button>
+                    </div>
                 </CardContent>
             </Card>
         </div>
     </div>
 );
 
-const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted, allTips, setView }: ResultsFullscreenProps) => (
+const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted, setView, onOpenReport }: ResultsFullscreenProps) => (
   <div className="flex items-start justify-center min-h-screen px-2 py-6 md:px-6 md:py-10 bg-[#fdfbf7] text-black">
     <div className="w-full max-w-4xl">
       <Card className="bg-white shadow-lg rounded-2xl">
@@ -477,6 +483,14 @@ const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted,
 
         <CardContent>
           <div className="flex flex-col items-center gap-4">
+
+            <div className={`text-center p-3 rounded-lg font-semibold text-lg w-full max-w-md ${finalScore >= 50 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                {finalScore >= 50
+                    ? `Congratulations! You've passed the financial health check.`
+                    : `It looks like there's room for improvement.`
+                }
+            </div>
+
             <div>
               <h2 className="text-lg font-semibold text-center">Final Score</h2>
               <p className="text-5xl md:text-6xl font-bold text-center">
@@ -488,7 +502,6 @@ const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted,
               </p>
             </div>
 
-            {/* Buttons Section */}
             <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mt-3">
               <Button
                 variant="ghost"
@@ -498,6 +511,7 @@ const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted,
                 Back to Home
               </Button>
               <Button
+                onClick={onOpenReport}
                 className="w-full sm:w-1/2 bg-blue-600 hover:bg-blue-700 text-white"
               >
                 Download Report
@@ -505,26 +519,10 @@ const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted,
             </div>
           </div>
 
-          <div className="mt-8">
-            <h3 className="font-semibold text-lg">Personalized Tips for Improvement</h3>
-            {allTips.length === 0 ? (
-              <p className="mt-2 text-sm text-green-600">
-                Great job—all fields meet or exceed targets!
-              </p>
-            ) : (
-              <ul className="mt-2 ml-5 space-y-2 text-sm list-disc">
-                {allTips.map((t, i) => (
-                  <li key={i} dangerouslySetInnerHTML={{ __html: t }}></li>
-                ))}
-              </ul>
-            )}
-          </div>
-
           <div className="mt-6 text-xs text-gray-500">
             <p><strong>Notes:</strong></p>
             <ul className="ml-5 list-disc">
               <li>Your score is an estimate based on standard financial benchmarks.</li>
-              <li>Numeric ratings are calculated based on how close you are to the target value.</li>
             </ul>
           </div>
         </CardContent>
@@ -533,11 +531,78 @@ const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted,
   </div>
 );
 
+const ReportModal = ({ isOpen, onClose, tips }: ReportModalProps) => {
+    const [isUnlocked, setIsUnlocked] = useState(false);
+    const initialTipsCount = Math.max(1, Math.ceil(tips.length * 0.15));
+    const displayedTips = isUnlocked ? tips : tips.slice(0, initialTipsCount);
+
+    if (!isOpen) return null;
+
+    return (
+        <AnimatePresence>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+                onClick={onClose}
+            >
+                <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className="p-6 border-b flex justify-between items-center">
+                        <h2 className="text-xl font-bold">Your Personalized Report</h2>
+                        <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full">
+                            <X size={24} />
+                        </Button>
+                    </div>
+                    <div className="p-6 overflow-y-auto relative">
+                        {tips.length === 0 ? (
+                            <p className="text-green-600">Great job—all fields meet or exceed targets!</p>
+                        ) : (
+                            <ul className="space-y-3 list-disc pl-5">
+                                {displayedTips.map((tip, i) => (
+                                    <li key={i} dangerouslySetInnerHTML={{ __html: tip }}></li>
+                                ))}
+                            </ul>
+                        )}
+
+                        {!isUnlocked && tips.length > initialTipsCount && (
+                            <div className="relative mt-4 pt-16 text-center">
+                                <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                                <div className="absolute bottom-0 left-0 w-full p-4 bg-white">
+                                    <p className="font-semibold mb-2">Unlock {tips.length - initialTipsCount} more personalized tips!</p>
+                                    <Button onClick={() => setIsUnlocked(true)} className="w-full sm:w-auto">
+                                        View Full Report
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
+            </motion.div>
+        </AnimatePresence>
+    );
+};
+
 
 const LandingView = ({ setView, numericDone, yesNoDone }: LandingViewProps) => {
     const [isNumericOpen, setIsNumericOpen] = useState(true);
-    const [isYesNoOpen, setIsYesNoOpen] = useState(true);
-    const [isResultsOpen, setIsResultsOpen] = useState(true);
+    const [isYesNoOpen, setIsYesNoOpen] = useState(false);
+    const [isResultsOpen, setIsResultsOpen] = useState(false);
+
+    const handleYesNoClick = () => {
+        if (numericDone) {
+            setView("yesno");
+        } else {
+            // This case might not be strictly needed if button is disabled, but good for safety
+            alert("Please complete Step 1 first.");
+        }
+    };
 
     return (
         <div className="flex flex-col items-center min-h-screen px-4 pt-12 pb-24 bg-[#fdfbf7] text-black">
@@ -553,9 +618,19 @@ const LandingView = ({ setView, numericDone, yesNoDone }: LandingViewProps) => {
                 <Button onClick={() => setView("numeric")} className="w-full sm:w-auto">{numericDone ? 'Edit Numeric Inputs' : 'Start Step 1'}</Button>
             </CollapsibleSection>
 
-            <CollapsibleSection title="Step 2: Pre-Requisites" icon={CheckSquare} isComplete={yesNoDone} statusText={yesNoDone ? '✓ Completed' : 'Required'} isOpen={isYesNoOpen} setIsOpen={setIsYesNoOpen}>
+            <CollapsibleSection
+                title="Step 2: Pre-Requisites"
+                icon={CheckSquare}
+                isComplete={yesNoDone}
+                statusText={numericDone ? (yesNoDone ? '✓ Completed' : 'Required') : 'Locked'}
+                isOpen={isYesNoOpen}
+                setIsOpen={setIsYesNoOpen}
+                isDisabled={!numericDone}
+            >
                 <p className="mb-4 text-gray-600">Answer a few simple questions about your financial habits and planning.</p>
-                <Button onClick={() => setView("yesno")} className="w-full sm:w-auto">{yesNoDone ? 'Edit Pre-Requisites' : 'Start Step 2'}</Button>
+                <Button onClick={handleYesNoClick} className="w-full sm:w-auto" disabled={!numericDone}>
+                    {yesNoDone ? 'Edit Pre-Requisites' : 'Start Step 2'}
+                </Button>
             </CollapsibleSection>
 
             <AnimatePresence>
@@ -568,7 +643,7 @@ const LandingView = ({ setView, numericDone, yesNoDone }: LandingViewProps) => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            
+
             <HowItWorks />
         </div>
     );
@@ -585,10 +660,10 @@ function HowItWorks() {
              <motion.h2 initial={{opacity: 0, y: 20}} whileInView={{opacity: 1, y: 0}} viewport={{ once: true, amount: 0.8 }} transition={{duration: 0.5}} className="mb-8 text-3xl font-bold text-gray-800">How It Works</motion.h2>
              <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                 {steps.map((step, index) => (
-                    <motion.div 
+                    <motion.div
                         key={step.title}
-                        initial={{opacity: 0, y: 20}} 
-                        whileInView={{opacity: 1, y: 0}} 
+                        initial={{opacity: 0, y: 20}}
+                        whileInView={{opacity: 1, y: 0}}
                         viewport={{ once: true, amount: 0.5 }}
                         transition={{duration: 0.5, delay: index * 0.2}}
                         className="flex flex-col items-center p-6 bg-white rounded-xl shadow-md"
@@ -610,110 +685,132 @@ export default function FinancialHealthCheckupPage() {
     const [yesNoState, setYesNoState] = useState<YesNoField[]>(initialYesNo);
     const [numericDone, setNumericDone] = useState(false);
     const [yesNoDone, setYesNoDone] = useState(false);
-    
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
-    // ✅ UPDATED FUNCTION
-    const updateNumericValue = (key: string, newValue: string) => {
-        const parsedValue = key === 'familyMembers'
-            ? newValue.replace(/[^0-9]/g, '')
-            : parseCurrency(newValue);
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [view]);
 
+    const recalculateTargets = useCallback((currentState: NumericField[]): NumericField[] => {
+        const monthlyIncome = Number(currentState.find(f => f.key === "monthlyIncome")?.value || 0);
+        const monthlyExpenses = Number(currentState.find(f => f.key === "monthlyExpenses")?.value || 0);
+        const familyMembers = Number(currentState.find(f => f.key === "familyMembers")?.value || 1);
+        const annualIncome = monthlyIncome * 12;
+
+        return currentState.map(field => {
+            switch (field.key) {
+                case "incomeProtection": return { ...field, defaultValue: annualIncome * 20 };
+                case "emergencyFund": return { ...field, defaultValue: monthlyExpenses * 6 };
+                case "healthInsurance": return { ...field, defaultValue: familyMembers * 1000000 };
+                case "criticalIllness": return { ...field, defaultValue: annualIncome * 4 };
+                case "disabilityInsurance": return { ...field, defaultValue: annualIncome * 7.5 };
+                case "retirementGoals": return { ...field, defaultValue: monthlyExpenses * 300 };
+                case "debtManagement": return { ...field, defaultValue: monthlyIncome * 0.4 };
+                default: return field;
+            }
+        });
+    }, []);
+
+    const updateNumericValue = (key: string, newValue: string, isTarget: boolean = false) => {
+        const parsedValue = key === 'familyMembers' ? newValue.replace(/[^0-9]/g, '') : parseCurrency(newValue);
         setNumericState(prev => {
-            // update the selected field first
-            const updated = prev.map(p =>
-                p.key === key ? { ...p, value: parsedValue } : p
-            );
-
-            // ✅ dynamically recalculate defaultValues based on monthlyIncome & monthlyExpenses
-            const monthlyIncome = Number(updated.find(f => f.key === "monthlyIncome")?.value || 0);
-            const monthlyExpenses = Number(updated.find(f => f.key === "monthlyExpenses")?.value || 0);
-            const annualIncome = monthlyIncome * 12;
-
-            return updated.map(field => {
-                switch (field.key) {
-                    case "incomeProtection":
-                        return { ...field, defaultValue: annualIncome * 20 };
-                    case "emergencyFund":
-                        return { ...field, defaultValue: monthlyExpenses * 3 };
-                    case "healthInsurance":
-                        return { ...field, defaultValue: annualIncome * 8 }; // can tweak to 10 if needed
-                    case "criticalIllness":
-                        return { ...field, defaultValue: annualIncome * 3 };
-                    case "disabilityInsurance":
-                        return { ...field, defaultValue: annualIncome * 3 * 0.7 }; // 70% income replacement
-                    case "retirementGoals":
-                        return { ...field, defaultValue: monthlyExpenses * 300 };
-                    case "childEducation":
-                        return { ...field, defaultValue: 5000000 }; // or make dynamic later
-                    case "debtManagement":
-                        return { ...field, defaultValue: monthlyIncome * 0.4 }; // 40% max recommended
-                    default:
-                        return field;
-                }
-            });
+            const updated = prev.map(p => (p.key === key ? (isTarget ? { ...p, targetValue: parsedValue } : { ...p, value: parsedValue }) : p));
+            return recalculateTargets(updated);
         });
     };
 
-    const updateYesNoValue = (key: string, value: YesNoValue) => { 
-        setYesNoState((prev) => prev.map((p) => (p.key === key ? { ...p, value } : p))); 
-    };
-    
-    const computeRating = (f: NumericField): number => { 
-      if (f.type !== 'rated' || typeof f.defaultValue === 'undefined' || typeof f.higherBetter === 'undefined' || f.value === '') return 0;
-      const actual = Number(f.value) <= 0 ? 0.0001 : Number(f.value); 
-      const def = f.defaultValue <= 0 ? 0.0001 : f.defaultValue; 
-      let percent = f.higherBetter ? actual / def : def / actual; 
-      if (!isFinite(percent) || percent <= 0) percent = 0; 
-      if (percent > 1) percent = 1; 
-      return Math.max(0, Math.min(5, Math.ceil(percent * 5))); 
-    };
-    
-    const computeGap = (f: NumericField): number => {
-      if (f.type !== 'rated' || typeof f.defaultValue === 'undefined' || f.value === '') return 0;
-      return f.defaultValue - Number(f.value); 
+    const updateYesNoValue = (key: string, value: YesNoValue) => {
+        setYesNoState((prev) => prev.map((p) => (p.key === key ? { ...p, value } : p)));
     };
 
-    const ratedNumericFields = numericState.filter(f => f.type === 'rated');
-    const numericComplete = numericState.every((n) => n.value !== "" && !isNaN(Number(n.value)));
-    
-    const numericSum = ratedNumericFields.reduce((acc, cur) => acc + computeRating(cur), 0);
-    const numericMax = ratedNumericFields.length * 5;
-    const numericScoreWeighted = numericMax > 0 ? (numericSum / numericMax) * 60 : 60;
-    
-    const yesCount = yesNoState.filter(y => y.value === 'yes').length;
-    const totalYesNo = yesNoState.length;
-    const yesScoreWeighted = totalYesNo > 0 ? (yesCount / totalYesNo) * 40 : 40;
-    const finalScore = Math.round(numericScoreWeighted + yesScoreWeighted);
+    const computeRating = useCallback((f: NumericField): number => {
+        const recomputedState = recalculateTargets(numericState);
+        const currentField = recomputedState.find(field => field.key === f.key)!;
+        if (currentField.type !== 'rated' || typeof currentField.higherBetter === 'undefined' || currentField.value === '') return 0;
+        if (currentField.key === "debtManagement") {
+            const actualEMI = Number(currentField.value);
+            const maxEMI = currentField.defaultValue || 0;
+            if (actualEMI <= 0) return 5;
+            if (maxEMI <= 0 && actualEMI > 0) return 0;
+            if (actualEMI <= maxEMI) return 5;
+            const score = (maxEMI / actualEMI) * 5;
+            return Math.max(0, Math.min(5, score));
+        }
+        const actual = Number(currentField.value) || 0.0001;
+        const target = Number(currentField.targetValue || currentField.defaultValue) || 0.0001;
+        let percent = currentField.higherBetter ? actual / target : target / actual;
+        if (!isFinite(percent) || isNaN(percent) || percent <= 0) percent = 0;
+        if (percent > 1) percent = 1;
+        return Math.max(0, Math.min(5, Math.ceil(percent * 5)));
+    }, [numericState, recalculateTargets]);
 
-    const numericTips: string[] = [];
-    ratedNumericFields.forEach((f) => { 
-        const rating = computeRating(f); 
-        if (rating < 5) { 
-            const gap = computeGap(f); 
-            const formattedValue = formatCurrency(Number(f.value));
-            const formattedDefault = formatCurrency(f.defaultValue!);
-            const formattedGap = formatCurrency(gap);
-            const tip = `For <strong>${f.label}</strong>, your current value is ${formattedValue} against a target of ${formattedDefault} (a gap of ${formattedGap}). Aim to increase your amount to better meet this goal.`; 
-            numericTips.push(tip); 
-        } 
-    });
-    
-    const yesNoTips: string[] = [];
-    yesNoState.forEach((y) => { 
-      if (y.value === 'no' || y.value === 'dont_know') { 
-        yesNoTips.push(`Consider addressing <strong>"${y.label}"</strong>. ${y.info}`); 
-      } 
-    });
-    const allTips = [...numericTips, ...yesNoTips];
+    const computeGap = useCallback((f: NumericField): number => {
+        const recomputedState = recalculateTargets(numericState);
+        const currentField = recomputedState.find(field => field.key === f.key)!;
+        if (currentField.type !== 'rated' || currentField.value === '') return 0;
+        const target = Number(currentField.targetValue || currentField.defaultValue);
+        if (isNaN(target)) return 0;
+        return target - Number(currentField.value);
+    }, [numericState, recalculateTargets]);
 
-    const handleNumericSubmit = () => { 
-      if (!numericComplete) { 
-        alert("Please ensure all numeric fields have a valid number entered."); 
-        return; 
-      } 
-      setNumericDone(true); 
-      setView("landing"); 
+    const { finalScore, numericScoreWeighted, yesScoreWeighted, allTips, numericComplete } = useMemo(() => {
+        const ratedNumericFields = numericState.filter(f => f.type === 'rated');
+
+        const numComplete = numericState.every((n) => {
+            const hasValue = n.value !== "" && !isNaN(Number(n.value));
+            return n.targetLabel ? hasValue && n.targetValue !== "" && !isNaN(Number(n.targetValue)) : hasValue;
+        });
+
+        const numericSum = ratedNumericFields.reduce((acc, cur) => acc + computeRating(cur), 0);
+        const numericMax = ratedNumericFields.length * 5;
+        const numScoreWeighted = numericMax > 0 ? (numericSum / numericMax) * 60 : 0;
+
+        const yesCount = yesNoState.filter(y => y.value === 'yes').length;
+        const totalYesNo = yesNoState.length;
+        const yScoreWeighted = totalYesNo > 0 ? (yesCount / totalYesNo) * 40 : 0;
+
+        const finScore = Math.round(numScoreWeighted + yScoreWeighted);
+
+        const numTips: string[] = [];
+        const recomputedNumericState = recalculateTargets(numericState);
+        ratedNumericFields.forEach((f) => {
+            if (computeRating(f) < 5) {
+                const gap = computeGap(f);
+                const target = f.targetValue || recomputedNumericState.find(field => field.key === f.key)!.defaultValue;
+                const formattedValue = formatCurrency(Number(f.value));
+                const formattedDefault = formatCurrency(target!);
+                const formattedGap = formatCurrency(Math.abs(gap));
+                let tip = ``;
+                if (f.key === "debtManagement") {
+                    tip = `For <strong>${f.label}</strong>, your EMIs of ${formattedValue} are higher than the recommended limit of ${formattedDefault}. Try to reduce your debt to improve your score.`;
+                } else if (gap > 0) {
+                    tip = `For <strong>${f.label}</strong>, your current value is ${formattedValue} against a target of ${formattedDefault}. You have a shortfall of ${formattedGap}. Aim to increase your savings to meet this goal.`;
+                }
+                if (tip) numTips.push(tip);
+            }
+        });
+
+        const yNoTips: string[] = yesNoState.filter(y => y.value === 'no' || y.value === 'dont_know')
+            .map(y => `Consider addressing <strong>"${y.label}"</strong>. ${y.info}`);
+
+        return {
+            finalScore: finScore,
+            numericScoreWeighted: numScoreWeighted,
+            yesScoreWeighted: yScoreWeighted,
+            allTips: [...numTips, ...yNoTips],
+            numericComplete: numComplete,
+        };
+    }, [numericState, yesNoState, computeGap, computeRating, recalculateTargets]);
+
+    const handleNumericSubmit = () => {
+      if (!numericComplete) {
+        alert("Please ensure all numeric fields have a valid number entered, including any 'Your Goal' fields.");
+        return;
+      }
+      setNumericDone(true);
+      setView("yesno");
     };
 
     const handleYesNoSubmit = () => {
@@ -721,40 +818,39 @@ export default function FinancialHealthCheckupPage() {
           alert("Please answer all questions before submitting.");
           return;
       }
-      setYesNoDone(true); 
-      setView("landing"); 
+      setYesNoDone(true);
+      setView("landing");
     };
-    
+
     return (
         <TooltipProvider>
             <div className="flex flex-col min-h-screen bg-gray-50">
                 <NavbarDemo />
                 <main className="flex-grow">
                     {view === "landing" && <LandingView setView={setView} numericDone={numericDone} yesNoDone={yesNoDone} />}
-                    {view === "numeric" && <NumericFullscreen numericState={numericState} updateNumericValue={updateNumericValue} computeGap={computeGap} computeRating={computeRating} handleNumericSubmit={handleNumericSubmit} setView={setView} isDesktop={isDesktop} />}
+                    {view === "numeric" && <NumericFullscreen
+                        numericState={recalculateTargets(numericState)}
+                        updateNumericValue={updateNumericValue}
+                        computeGap={computeGap}
+                        computeRating={computeRating}
+                        handleNumericSubmit={handleNumericSubmit}
+                        setView={setView}
+                        isDesktop={isDesktop}
+                    />}
                     {view === "yesno" && <YesNoFullscreen yesNoState={yesNoState} updateYesNoValue={updateYesNoValue} handleYesNoSubmit={handleYesNoSubmit} setView={setView} isDesktop={isDesktop} />}
-                    {view === "results" && <ResultsFullscreen finalScore={finalScore} numericScoreWeighted={numericScoreWeighted} yesScoreWeighted={yesScoreWeighted} allTips={allTips} setView={setView} />}
+                    {view === "results" && <ResultsFullscreen finalScore={finalScore} numericScoreWeighted={numericScoreWeighted} yesScoreWeighted={yesScoreWeighted} setView={setView} onOpenReport={() => setIsReportModalOpen(true)} />}
                 </main>
                 <Footer4Col />
+                <ReportModal isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} tips={allTips} />
             </div>
             <style jsx global>{`
               @media (max-width: 767px) {
-                .md\\:table-cell[data-label]::before {
-                  content: attr(data-label);
-                  font-weight: 600;
-                  display: block;
-                  margin-bottom: 0.25rem;
-                  color: #4a5568; /* text-gray-600 */
-                }
-                .md\\:table-cell {
-                  padding-bottom: 0.75rem; /* pb-3 */
-                  border-bottom: 1px solid #e2e8f0; /* border-gray-200 */
-                }
-                 .md\\:table-row:last-child .md\\:table-cell:last-child {
-                   border-bottom: none;
-                 }
+                .md\\:table-cell[data-label]::before { content: attr(data-label); font-weight: 600; display: block; margin-bottom: 0.25rem; color: #4a5568; }
+                .md\\:table-cell { padding-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0; }
+                .md\\:table-row:last-child .md\\:table-cell:last-child { border-bottom: none; }
               }
             `}</style>
         </TooltipProvider>
     );
 }
+
