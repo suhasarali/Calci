@@ -193,7 +193,7 @@ const initialNumeric: NumericField[] = [
     { key: "healthInsurance", label: "Health Insurance Sum Insured", defaultValue: 0, value: "", higherBetter: true, info: "Recommended health cover is ₹10 Lakh per family member.", type: 'rated' },
     { key: "criticalIllness", label: "Critical Illness Cover", defaultValue: 0, value: "", higherBetter: true, info: "Recommended cover is 3-5 times your annual income. We use 4x as a target.", type: 'rated' },
     { key: "disabilityInsurance", label: "Disability Insurance", defaultValue: 0, value: "", higherBetter: true, info: "Recommended cover is 5-10 times your annual income. We use 7.5x as a target.", type: 'rated' },
-    { key: "debtManagement", label: "Total Monthly EMIs", defaultValue: 0, value: "", higherBetter: false, info: "Your total EMIs should be less than 40% of your monthly income for a good score.", type: 'rated' },
+    { key: "debtManagement", label: "Debt Management", defaultValue: 0, value: "", higherBetter: false, info: "Your total EMIs should be less than 40% of your monthly income for a good score.", type: 'rated' },
     { key: "childEducation", label: "Child Education Fund", value: "", targetValue: "", targetLabel: "Your Goal", higherBetter: true, info: "Enter your target corpus (Your Goal) and your current savings for your child's education.", type: 'rated' },
     { key: "childMarriage", label: "Child Marriage Fund", value: "", targetValue: "", targetLabel: "Your Goal", higherBetter: true, info: "Enter your target corpus (Your Goal) and your current savings for your child's marriage.", type: 'rated' },
 ];
