@@ -352,7 +352,7 @@ const NumericFullscreen = ({
                             <TableCell className="block md:table-cell text-left md:text-center font-medium" data-label="Gap">
                               {(() => {
                                 const gap = computeGap(f);
-                                const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 ? "text-red-600" : "text-green-600");
+                                const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 && f.higherBetter ? "text-red-600" : "text-green-600");
                                 return (
                                   <span className={colorClass}>
                                     {formatCurrency(Math.abs(gap))}
@@ -376,7 +376,7 @@ const NumericFullscreen = ({
               <div className="space-y-4">
                 {fields.map(f => {
                   const gap = computeGap(f);
-                  const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 ? "text-red-600" : "text-green-600");
+                  const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 && f.higherBetter ? "text-red-600" : "text-green-600");
                   return (
                     <div key={f.key} className="border rounded-xl p-4 bg-white shadow-sm">
                       <div className="flex justify-between items-center mb-2">
@@ -392,11 +392,11 @@ const NumericFullscreen = ({
                       />
                       {f.targetLabel && (
                           <Input
-                            type="text"
-                            value={formatCurrency(f.targetValue || "")}
-                            onChange={e => updateNumericValue(f.key, e.target.value, true)}
-                            placeholder={f.targetLabel}
-                            className="mb-3"
+                              type="text"
+                              value={formatCurrency(f.targetValue || "")}
+                              onChange={e => updateNumericValue(f.key, e.target.value, true)}
+                              placeholder={f.targetLabel}
+                              className="mb-3"
                           />
                       )}
 
@@ -854,6 +854,3 @@ export default function FinancialHealthCheckupPage() {
         </TooltipProvider>
     );
 }
-
-
-
