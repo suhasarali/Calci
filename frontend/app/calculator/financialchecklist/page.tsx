@@ -193,7 +193,7 @@ const initialNumeric: NumericField[] = [
     { key: "healthInsurance", label: "Health Insurance Sum Insured", defaultValue: 0, value: "", higherBetter: true, info: "Recommended health cover is ₹10 Lakh per family member.", type: 'rated' },
     { key: "criticalIllness", label: "Critical Illness Cover", defaultValue: 0, value: "", higherBetter: true, info: "Recommended cover is 3-5 times your annual income. We use 4x as a target.", type: 'rated' },
     { key: "disabilityInsurance", label: "Disability Insurance", defaultValue: 0, value: "", higherBetter: true, info: "Recommended cover is 5-10 times your annual income. We use 7.5x as a target.", type: 'rated' },
-    { key: "debtManagement", label: "Total Monthly EMIs", defaultValue: 0, value: "", higherBetter: false, info: "Your total EMIs should be less than 40% of your monthly income for a good score.", type: 'rated' },
+    { key: "debtManagement", label: "Debt Management", defaultValue: 0, value: "", higherBetter: false, info: "Your total EMIs should be less than 40% of your monthly income for a good score.", type: 'rated' },
     { key: "childEducation", label: "Child Education Fund", value: "", targetValue: "", targetLabel: "Your Goal", higherBetter: true, info: "Enter your target corpus (Your Goal) and your current savings for your child's education.", type: 'rated' },
     { key: "childMarriage", label: "Child Marriage Fund", value: "", targetValue: "", targetLabel: "Your Goal", higherBetter: true, info: "Enter your target corpus (Your Goal) and your current savings for your child's marriage.", type: 'rated' },
 ];
@@ -352,7 +352,7 @@ const NumericFullscreen = ({
                             <TableCell className="block md:table-cell text-left md:text-center font-medium" data-label="Gap">
                               {(() => {
                                 const gap = computeGap(f);
-                                const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 ? "text-red-600" : "text-green-600");
+                                const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 && f.higherBetter ? "text-red-600" : "text-green-600");
                                 return (
                                   <span className={colorClass}>
                                     {formatCurrency(Math.abs(gap))}
@@ -376,7 +376,7 @@ const NumericFullscreen = ({
               <div className="space-y-4">
                 {fields.map(f => {
                   const gap = computeGap(f);
-                  const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 ? "text-red-600" : "text-green-600");
+                  const colorClass = f.higherBetter === false && gap < 0 ? "text-red-600" : (gap > 0 && f.higherBetter ? "text-red-600" : "text-green-600");
                   return (
                     <div key={f.key} className="border rounded-xl p-4 bg-white shadow-sm">
                       <div className="flex justify-between items-center mb-2">
@@ -392,11 +392,11 @@ const NumericFullscreen = ({
                       />
                       {f.targetLabel && (
                           <Input
-                            type="text"
-                            value={formatCurrency(f.targetValue || "")}
-                            onChange={e => updateNumericValue(f.key, e.target.value, true)}
-                            placeholder={f.targetLabel}
-                            className="mb-3"
+                              type="text"
+                              value={formatCurrency(f.targetValue || "")}
+                              onChange={e => updateNumericValue(f.key, e.target.value, true)}
+                              placeholder={f.targetLabel}
+                              className="mb-3"
                           />
                       )}
 
@@ -854,6 +854,3 @@ export default function FinancialHealthCheckupPage() {
         </TooltipProvider>
     );
 }
-
-
-
