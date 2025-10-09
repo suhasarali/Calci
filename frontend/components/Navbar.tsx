@@ -44,7 +44,7 @@ export function NavbarDemo() {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <div className="relative w-full mt-3">
+    <div className="relative w-full  mt-3">
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>

@@ -12,6 +12,10 @@ export default function LandingPage() {
     <div className="min-h-screen w-full bg-background text-foreground">
       <NavbarDemo />
       <HeroSection />
+      <Logos3Demo />
+      <Features />
+      <CTA/>
+      <Footer4Col/>
       
     </div>
   );
