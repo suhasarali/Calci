@@ -10,17 +10,9 @@ import { CTA } from "@/components/Cta";
 export default function LandingPage() {
   return (
     <div className="min-h-screen w-full bg-background text-foreground">
-      <div className="flex justify-center mt-5">
-        <NavbarDemo />
-      </div>
-      <div className="flex justify-center">
-        <HeroSection />
-      </div>
-      <Logos3Demo />
-      <Features />
-      <CTA/>
-      <Footer4Col/>
-      {/* Your landing page content will go here */}
+      <NavbarDemo />
+      <HeroSection />
+      
     </div>
   );
 }
