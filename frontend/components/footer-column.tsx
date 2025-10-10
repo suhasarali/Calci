@@ -1,219 +1,103 @@
-import {
-  Dribbble,
-  Facebook,
-  Github,
-  Instagram,
-  Mail,
-  MapPin,
-  Phone,
-  Twitter,
-} from 'lucide-react';
-import Link from 'next/link';
-
-const data = {
-  facebookLink: 'https://facebook.com/mvpblocks',
-  instaLink: 'https://instagram.com/mvpblocks',
-  twitterLink: 'https://twitter.com/mvpblocks',
-  githubLink: 'https://github.com/mvpblocks',
-  dribbbleLink: 'https://dribbble.com/mvpblocks',
-  services: {
-    webdev: '/web-development',
-    webdesign: '/web-design',
-    marketing: '/marketing',
-    googleads: '/google-ads',
-  },
-  about: {
-    history: '/company-history',
-    team: '/meet-the-team',
-    handbook: '/employee-handbook',
-    careers: '/careers',
-  },
-  help: {
-    faqs: '/faqs',
-    support: '/support',
-    livechat: '/live-chat',
-  },
-  contact: {
-    email: 'hello@mvpblocks.com',
-    phone: '+91 8637373116',
-    address: 'Kolkata, West Bengal, India',
-  },
-  company: {
-    name: 'Mvpblocks',
-    description:
-      'Building beautiful and functional web experiences with modern technologies. We help startups and businesses create their digital presence.',
-    logo: '/logo.webp',
-  },
-};
-
-const socialLinks = [
-  { icon: Facebook, label: 'Facebook', href: data.facebookLink },
-  { icon: Instagram, label: 'Instagram', href: data.instaLink },
-  { icon: Twitter, label: 'Twitter', href: data.twitterLink },
-  { icon: Github, label: 'GitHub', href: data.githubLink },
-  { icon: Dribbble, label: 'Dribbble', href: data.dribbbleLink },
-];
-
-const aboutLinks = [
-  { text: 'Company History', href: data.about.history },
-  { text: 'Meet the Team', href: data.about.team },
-  { text: 'Employee Handbook', href: data.about.handbook },
-  { text: 'Careers', href: data.about.careers },
-];
-
-const serviceLinks = [
-  { text: 'Web Development', href: data.services.webdev },
-  { text: 'Web Design', href: data.services.webdesign },
-  { text: 'Marketing', href: data.services.marketing },
-  { text: 'Google Ads', href: data.services.googleads },
-];
-
-const helpfulLinks = [
-  { text: 'FAQs', href: data.help.faqs },
-  { text: 'Support', href: data.help.support },
-  { text: 'Live Chat', href: data.help.livechat, hasIndicator: true },
-];
-
-const contactInfo = [
-  { icon: Mail, text: data.contact.email },
-  { icon: Phone, text: data.contact.phone },
-  { icon: MapPin, text: data.contact.address, isAddress: true },
-];
+import { Facebook, Twitter, Instagram, Github, Mail } from "lucide-react";
+import Link from "next/link";
 
 export default function Footer4Col() {
   return (
-    <footer className="bg-gray-50 dark:bg-secondary/20 mt-16 w-full place-self-end rounded-t-xl">
-      <div className="mx-auto max-w-screen-xl px-4 pt-16 pb-6 sm:px-6 lg:px-8 lg:pt-24">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          <div>
-            <div className="text-primary flex justify-center gap-2 sm:justify-start">
-              <img
-                src="/paisaMasteryLogo.png"
-                alt="logo"
-                className="h-12 w-40"
-              />
+    <footer className="relative py-10 mt-20 overflow-hidden dark:bg-transparent">
 
-            </div>
-
-            <p className="text-foreground/50 mt-6 max-w-md text-center leading-relaxed sm:max-w-xs sm:text-left">
-              {data.company.description}
-            </p>
-
-            <ul className="mt-8 flex justify-center gap-6 sm:justify-start md:gap-8">
-              {socialLinks.map(({ icon: Icon, label, href }) => (
-                <li key={label}>
-                  <Link
-                    href={href}
-                    className="text-primary hover:text-primary/80 transition"
-                  >
-                    <span className="sr-only">{label}</span>
-                    <Icon className="size-6" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:col-span-2">
-            <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">About Us</p>
-              <ul className="mt-8 space-y-4 text-sm">
-                {aboutLinks.map(({ text, href }) => (
-                  <li key={text}>
-                    <a
-                      className="text-secondary-foreground/70 transition"
-                      href={href}
-                    >
-                      {text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Our Services</p>
-              <ul className="mt-8 space-y-4 text-sm">
-                {serviceLinks.map(({ text, href }) => (
-                  <li key={text}>
-                    <a
-                      className="text-secondary-foreground/70 transition"
-                      href={href}
-                    >
-                      {text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Helpful Links</p>
-              <ul className="mt-8 space-y-4 text-sm">
-                {helpfulLinks.map(({ text, href, hasIndicator }) => (
-                  <li key={text}>
-                    <a
-                      href={href}
-                      className={`${
-                        hasIndicator
-                          ? 'group flex justify-center gap-1.5 sm:justify-start'
-                          : 'text-secondary-foreground/70 transition'
-                      }`}
-                    >
-                      <span className="text-secondary-foreground/70 transition">
-                        {text}
-                      </span>
-                      {hasIndicator && (
-                        <span className="relative flex size-2">
-                          <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
-                          <span className="bg-primary relative inline-flex size-2 rounded-full" />
-                        </span>
-                      )}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Contact Us</p>
-              <ul className="mt-8 space-y-4 text-sm">
-                {contactInfo.map(({ icon: Icon, text, isAddress }) => (
-                  <li key={text}>
-                    <a
-                      className="flex items-center justify-center gap-1.5 sm:justify-start"
-                      href="#"
-                    >
-                      <Icon className="text-primary size-5 shrink-0 shadow-sm" />
-                      {isAddress ? (
-                        <address className="text-secondary-foreground/70 -mt-0.5 flex-1 not-italic transition">
-                          {text}
-                        </address>
-                      ) : (
-                        <span className="text-secondary-foreground/70 flex-1 transition">
-                          {text}
-                        </span>
-                      )}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-12 border-t pt-6">
-          <div className="text-center sm:flex sm:justify-between sm:text-left">
-            <p className="text-sm">
-              <span className="block sm:inline">All rights reserved.</span>
-            </p>
-
-            <p className="text-secondary-foreground/70 mt-4 text-sm transition sm:order-first sm:mt-0">
-              &copy; 2025 {data.company.name}
-            </p>
-          </div>
+      {/* Marquee Background */}
+      <div className="absolute inset-0 flex items-center overflow-hidden pointer-events-none z-0">
+        <div
+          className={`
+            whitespace-nowrap animate-marquee font-extrabold text-transparent bg-clip-text
+            bg-gradient-to-r from-purple-600 via-indigo-500 to-purple-600 opacity-10
+            select-none text-[10rem] md:text-[16rem] lg:text-[20rem] leading-none
+          `}
+        >
+          PaisaMastery&nbsp;PaisaMastery&nbsp;PaisaMastery&nbsp;PaisaMastery&nbsp;
+          PaisaMastery&nbsp;PaisaMastery&nbsp;PaisaMastery&nbsp;PaisaMastery
         </div>
       </div>
+
+      {/* Foreground Content */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 mt-30 flex flex-col md:flex-row justify-between gap-10">
+
+        {/* Left Column */}
+        <div className="flex-1 flex flex-col items-start space-y-4">
+          {/* Logo */}
+          <img src="demologo.png" alt="logo" width={120} height={100} />
+
+          {/* Description */}
+          <p className="text-gray-800 max-w-sm text-sm md:text-base font-semibold">
+            Simplifying finance for everyone to plan smarter, grow faster, and achieve your goals with ease.
+          </p>
+
+          {/* Navigation Links */}
+          <div className="flex flex-wrap gap-4 text-gray-800 text-sm font-semibold">
+            <Link href="#features" className="hover:text-blue-600 transition-colors">Features</Link>  
+            <Link href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</Link>
+            <Link href="#resources" className="hover:text-blue-600 transition-colors">Resources</Link>
+            <Link href="#about" className="hover:text-blue-600 transition-colors">About</Link>
+            <Link href="#contact" className="hover:text-blue-600 transition-colors">Contact</Link>
+          </div>
+
+          {/* Social Icons */}
+          <div className="flex gap-3 pt-1">
+            <Link href="https://facebook.com" target="_blank" className="p-2 rounded-full border border-gray-200 bg-white hover:bg-blue-50 transition">
+              <Facebook size={16} className="text-gray-700" />
+            </Link>
+            <Link href="https://twitter.com" target="_blank" className="p-2 rounded-full border border-gray-200 bg-white hover:bg-blue-50 transition">
+              <Twitter size={16} className="text-gray-700" />
+            </Link>
+            <Link href="https://instagram.com" target="_blank" className="p-2 rounded-full border border-gray-200 bg-white hover:bg-blue-50 transition">
+              <Instagram size={16} className="text-gray-700" />
+            </Link>
+            <Link href="https://github.com" target="_blank" className="p-2 rounded-full border border-gray-200 bg-white hover:bg-blue-50 transition">
+              <Github size={16} className="text-gray-700" />
+            </Link>
+            <Link href="mailto:hello@paisamastery.com" className="p-2 rounded-full border border-gray-200 bg-white hover:bg-blue-50 transition">
+              <Mail size={16} className="text-gray-700" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Right Column (Contact + Quick Links side by side) */}
+        <div className="flex-1 flex flex-col md:flex-row justify-between gap-10 text-gray-700 text-sm md:text-base">
+          {/* Contact */}
+          <div className="flex-1 flex flex-col space-y-2">
+            <h3 className="font-semibold text-gray-900">Contact Us</h3>
+            <p>Email: hello@paisamastery.com</p>
+            <p>Phone: +91 98765 43210</p>
+            <p>Address: 123 Finance Street, Mumbai, India</p>
+          </div>
+
+          {/* Quick Links */}
+          <div className="flex-1 flex flex-col space-y-2">
+            <h3 className="font-semibold text-gray-900">Quick Links</h3>
+            <p className="hover:text-blue-600 cursor-pointer transition">Privacy Policy</p>
+            <p className="hover:text-blue-600 cursor-pointer transition">Terms of Service</p>
+            <p className="hover:text-blue-600 cursor-pointer transition">Support</p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Bottom Text */}
+      <div className="relative z-10 mt-10 text-center text-xs text-gray-500">
+        © {new Date().getFullYear()} PaisaMastery. All rights reserved.
+      </div>
+
+      {/* Marquee Animation */}
+      <style jsx>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          display: inline-block;
+          animation: marquee 80s linear infinite;
+        }
+      `}</style>
     </footer>
   );
 }

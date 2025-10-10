@@ -50,7 +50,7 @@ export function HeroSection() {
                                     <Link
                                         href="#link"
                                         className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto mb-8 flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 lg:mx-0 dark:border-t-white/5 dark:shadow-zinc-950">
-                                        <span className="text-foreground text-sm">Introducing Smart Financial Planning Tools</span>
+                                        <span className="text-blue-900 text-sm">Introducing Smart Financial Planning Tools</span>
                                         <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
                                         <div className="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
                                             <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
@@ -92,7 +92,7 @@ export function HeroSection() {
         key={1}
         asChild
         size="lg"
-        className="w-full rounded-[14px] border bg-blue-950 p-0.5 px-5 text-base sm:w-auto hover:bg-blue-500">
+        className="w-full rounded-[14px] border bg-blue-900 p-0.5 px-5 text-base sm:w-auto hover:bg-blue-500">
         
             <span className="text-nowrap">Start Calculating</span>
        
@@ -114,16 +114,30 @@ export function HeroSection() {
                         </div>
 
                         {/* Right side: Image */}
-                        <div className="hidden lg:block lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-                           
+                      <AnimatedGroup
+                        variants={{
+                            container: {
+                                visible: {
+                                    transition: {
+                                        staggerChildren: 0.05,
+                                        delayChildren: 0.4, // starts right after text animation
+                                    },
+                                },
+                            },
+                            ...transitionVariants,
+                        }}
+                        className="relative flex items-center justify-center lg:justify-end mt-12 lg:mt-0"
+                    >
+                        <div className="relative w-[110%] max-w-2xl lg:max-w-3xl">
                             <img
-                                className="absolute inset-0 h-full w-full object-cover"
                                 src="/heroimage.png"
-                                alt="Financial planning application screenshot"
-                                width="2000"
-                                height="1240"
+                                alt="Financial Planning Illustration"
+                                width={1200}
+                                height={900}
+                                className="w-full h-auto object-contain drop-shadow-2xl transition-transform duration-700 ease-out hover:scale-105"
                             />
                         </div>
+                    </AnimatedGroup>
                     </div>
                 </section>
             </main>

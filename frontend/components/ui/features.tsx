@@ -3,11 +3,11 @@ import { Shield, Users } from 'lucide-react'
 
 export function Features() {
     return (
-        <section className="bg-gray-50 py-16 md:py-32 dark:bg-transparent">
+        <section className="py-16 md:py-32 dark:bg-transparent">
             <div className="mx-auto max-w-3xl lg:max-w-5xl px-6">
                 <div className="relative">
                     <div className="relative z-10 grid grid-cols-6 gap-3">
-                        <Card className="relative col-span-full flex overflow-hidden lg:col-span-2">
+                        <Card className="relative col-span-full flex overflow-hidden lg:col-span-2 border-blue-900">
                             <CardContent className="relative m-auto size-fit pt-6">
                                 <div className="relative flex h-24 w-56 items-center">
                                     <svg className="text-muted absolute inset-0 size-full" viewBox="0 0 254 104" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,7 +21,7 @@ export function Features() {
                                 <h2 className="mt-6 text-center text-3xl font-semibold">Customizable</h2>
                             </CardContent>
                         </Card>
-                        <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2">
+                        <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2 border-blue-900">
                             <CardContent className="pt-6">
                                 <div className="relative mx-auto flex aspect-square size-32 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
                                     <svg className="m-auto h-fit w-24" viewBox="0 0 212 143" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,7 +54,7 @@ export function Features() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2">
+                        <Card className="relative col-span-full overflow-hidden sm:col-span-3 lg:col-span-2 border-blue-900">
                             <CardContent className="pt-6">
                                 <div className="pt-6 lg:px-6">
                                     <svg className="dark:text-muted-foreground w-full" viewBox="0 0 386 123" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -101,7 +101,7 @@ export function Features() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="relative col-span-full overflow-hidden lg:col-span-3">
+                        <Card className="relative col-span-full overflow-hidden lg:col-span-3 border-blue-900">
                             <CardContent className="grid pt-6 sm:grid-cols-2">
                                 <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                                     <div className="relative flex aspect-square size-12 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
@@ -141,7 +141,7 @@ export function Features() {
                                 </div>
                             </CardContent>
                         </Card>
-                        <Card className="relative col-span-full overflow-hidden lg:col-span-3">
+                        <Card className="relative col-span-full overflow-hidden lg:col-span-3 border-blue-900">
                             <CardContent className="grid h-full pt-6 sm:grid-cols-2">
                                 <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                                     <div className="relative flex aspect-square size-12 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:before:border-white/5">
