@@ -13,6 +13,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 // Original Navbar and Footer Imports
 import { NavbarDemo } from "@/components/Navbar";
 import Footer4Col from "@/components/footer-column";
+import BackButton from "@/components/BackButton";
 
 // --- CUSTOM HOOK for Media Queries ---
 const useMediaQuery = (query: string) => {
@@ -343,7 +344,8 @@ export default function OnePageFinancialRoadmap() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50 text-gray-800">
-        <NavbarDemo />
+        {/* <NavbarDemo /> */}
+        <BackButton />
 
         <main className="max-w-5xl mx-auto px-4 py-8 md:py-16">
           <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5}} className="text-center mb-12">
@@ -408,7 +410,7 @@ export default function OnePageFinancialRoadmap() {
           <Section title="Section 3: Financial Goals" defaultOpen>
               <div className="overflow-x-auto">
                 <Table>
-                    <TableCaption>Add and manage your life's financial goals (optional).</TableCaption>
+                    <TableCaption>Add and manage your life&apos;s financial goals (optional).</TableCaption>
                     <TableHeader className="hidden md:table-header-group">
                         <TableRow>
                             <TableHeaderWithTooltip isDesktop={isDesktop} info="Give your goal a name (e.g., 'Child's Education').">Goal Name</TableHeaderWithTooltip>
@@ -470,7 +472,7 @@ export default function OnePageFinancialRoadmap() {
                         <Card className="border-none shadow-none">
                             <CardHeader className="text-center">
                                 <CardTitle className="text-3xl font-bold">Your Financial Roadmap</CardTitle>
-                                <p className="text-gray-600">Here's the detailed breakdown based on your inputs.</p>
+                                <p className="text-gray-600">Here&apos;s the detailed breakdown based on your inputs.</p>
                             </CardHeader>
                             <CardContent className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -516,7 +518,7 @@ export default function OnePageFinancialRoadmap() {
             )}
         </AnimatePresence>
 
-        <Footer4Col />
+        {/* <Footer4Col /> */}
       </div>
       <style jsx global>{`
         @media (max-width: 767px) {

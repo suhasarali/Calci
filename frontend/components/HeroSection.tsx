@@ -92,7 +92,7 @@ export function HeroSection() {
         key={1}
         asChild
         size="lg"
-        className="w-full rounded-[14px] border bg-blue-900 p-0.5 px-5 text-base sm:w-auto hover:bg-blue-500">
+        className="w-full rounded-[14px] border bg-blue-900 p-0.5 px-5 text-base sm:w-auto hover:bg-blue-800 transform ">
         
             <span className="text-nowrap">Start Calculating</span>
        

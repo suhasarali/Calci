@@ -196,7 +196,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#fdfbf7]">
       <div className="mt-2" >
-        <NavbarDemo />
+        {/* <NavbarDemo /> */}
       </div>
 
       <div className="max-w-6xl mx-auto py-10 px-4">

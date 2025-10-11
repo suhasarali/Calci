@@ -75,7 +75,7 @@ export default function DashboardPage() {
         transition={{ duration: 0.5 }}
         className="mb-8 flex justify-center"
       >
-        <div className="flex items-center bg-white border rounded-lg shadow-sm px-4 py-2 w-full max-w-md transition-all focus-within:ring-2 ring-gray-300">
+        <div className="flex items-center mt-10 bg-white border rounded-lg shadow-sm px-4 py-2 w-full max-w-md transition-all focus-within:ring-2 ring-gray-300">
           <Search className="w-5 h-5 text-gray-500 mr-2" />
           <input
             type="text"
