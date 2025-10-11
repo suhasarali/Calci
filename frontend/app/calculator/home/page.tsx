@@ -36,6 +36,13 @@ const calculators = [
     color: "bg-[#f8f9ff]",
     icon: PiggyBank,
   },
+  {
+    title: "Fixed Deposit and Mutual Fund",
+    desc: "Calculate Equated Monthly Installments for any type of loan with flexible tenure and interest rate options. Understand your monthly outflow, total interest payable, and plan your finances efficiently.",
+    link: "/calculator/fd_md",
+    color: "bg-[#fefaf6]",
+    icon: Coins,
+  },
   // {
   //   title: "One page financial Roadmap",
   //   desc: "Estimate potential returns from your Systematic Investment Plan investments with compounding benefits over your chosen time horizon. Compare different SIP amounts, durations, and expected returns.",
