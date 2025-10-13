@@ -7,6 +7,7 @@ import { Features } from "@/components/ui/features";
 import  Footer4Col from "@/components/footer-column";
 import { CTA } from "@/components/Cta";
 import { QuantityLanding } from "@/components/quantity-landing";
+import { Testimonials } from "@/components/Testimonials";
 
 export default function LandingPage() {
   return (
@@ -25,6 +26,7 @@ export default function LandingPage() {
       <HeroSection />
       <Features />
       <QuantityLanding/>
+      <Testimonials/>
       <CTA/>
       <Footer4Col/>
       
