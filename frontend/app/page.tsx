@@ -6,6 +6,7 @@ import { Logos3Demo } from "@/components/ui/logos3-demo";
 import { Features } from "@/components/ui/features";
 import  Footer4Col from "@/components/footer-column";
 import { CTA } from "@/components/Cta";
+import { QuantityLanding } from "@/components/quantity-landing";
 
 export default function LandingPage() {
   return (
@@ -23,6 +24,7 @@ export default function LandingPage() {
       <NavbarDemo />
       <HeroSection />
       <Features />
+      <QuantityLanding/>
       <CTA/>
       <Footer4Col/>
       
