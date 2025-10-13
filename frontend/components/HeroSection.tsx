@@ -171,7 +171,7 @@ export function HeroSection() {
                 },
                 ...transitionVariants,
               }}
-              className="relative flex items-center justify-center lg:justify-end mt-12 lg:mt-0"
+              className="relative flex items-center justify-center lg:justify-end mt-8 lg:mt-0"
             >
               <div className="relative w-[110%] max-w-2xl lg:max-w-3xl">
                 <img
