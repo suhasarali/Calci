@@ -22,7 +22,6 @@ export default function LandingPage() {
     }}>
       <NavbarDemo />
       <HeroSection />
-      <Logos3Demo />
       <Features />
       <CTA/>
       <Footer4Col/>
