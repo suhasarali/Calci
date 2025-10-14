@@ -96,7 +96,7 @@ const initialNumeric: NumericField[] = [
     { key: "incomeProtection", label: "Income Protection (life cover)", defaultValue: 0, value: "", higherBetter: true, info: "Recommended life cover (example: annual income × ~20).", type: 'rated' },
     { key: "emergencyFund", label: "Emergency Fund", defaultValue: 0, value: "", higherBetter: true, info: "Recommended emergency fund is 6 months of your expenses.", type: 'rated' },
     { key: "retirementGoals", label: "Retirement Corpus Goal", defaultValue: 0, value: "", higherBetter: true, info: "Estimated retirement corpus required (placeholder rule).", type: 'rated' },
-    { key: "healthInsurance", label: "Health Insurance Sum Insured", defaultValue: 0, value: "", higherBetter: true, info: "Recommended health cover is ₹10 Lakh per family member.", type: 'rated' },
+    { key: "healthInsurance", label: "Health Insurance Sum Insured", defaultValue: 0, value: "", higherBetter: true, info: "Recommended health cover is ₹5 Lakh per family member.", type: 'rated' },
     { key: "criticalIllness", label: "Critical Illness Cover", defaultValue: 0, value: "", higherBetter: true, info: "Recommended cover is 3-5 times your annual income. We use 4x as a target.", type: 'rated' },
     { key: "disabilityInsurance", label: "Disability Insurance", defaultValue: 0, value: "", higherBetter: true, info: "Recommended cover is 5-10 times your annual income. We use 7.5x as a target.", type: 'rated' },
     { key: "debtManagement", label: "Debt Management", defaultValue: 0, value: "", higherBetter: false, info: "Your total EMIs should be less than 40% of your monthly income for a good score.", type: 'rated' },
@@ -528,7 +528,7 @@ export default function FinancialHealthCheckupPage() {
             switch (field.key) {
                 case "incomeProtection": return { ...field, defaultValue: annualIncome * 20 };
                 case "emergencyFund": return { ...field, defaultValue: monthlyExpenses * 6 };
-                case "healthInsurance": return { ...field, defaultValue: familyMembers * 1000000 };
+                case "healthInsurance": return { ...field, defaultValue: familyMembers * 500000 };
                 case "criticalIllness": return { ...field, defaultValue: annualIncome * 4 };
                 case "disabilityInsurance": return { ...field, defaultValue: annualIncome * 7.5 };
                 case "retirementGoals": return { ...field, defaultValue: monthlyExpenses * 300 };
