@@ -2,12 +2,25 @@
 
 import React, { useEffect, useRef, ReactNode } from 'react';
 
+// A small utility to convert hex colors to an RGB object
+const hexToRgb = (hex: string): { r: number; g: number; b: number } | null => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : null;
+};
+
 interface GlowCardProps {
   children: ReactNode;
   className?: string;
-  // Added 'cyan' to the list of possible glow colors and removed 'white'
   glowColor?: 'blue' | 'purple' | 'green' | 'red' | 'orange' | 'cyan';
   cardBgColor?: string;
+  // NEW: Prop to control background opacity for the glass effect
+  bgOpacity?: number;
   size?: 'sm' | 'md' | 'lg';
   width?: string | number;
   height?: string | number;
@@ -20,7 +33,6 @@ const glowColorMap = {
   green: { base: 120, spread: 200 },
   red: { base: 0, spread: 200 },
   orange: { base: 30, spread: 200 },
-  // Added a new cyan color option
   cyan: { base: 180, spread: 100 },
 };
 
@@ -30,11 +42,13 @@ const sizeMap = {
   lg: 'w-80 h-96'
 };
 
-const GlowCard: React.FC<GlowCardProps> = ({ 
-  children, 
-  className = '', 
+const GlowCard: React.FC<GlowCardProps> = ({
+  children,
+  className = '',
   glowColor = 'blue',
   cardBgColor,
+  // NEW: Default opacity set to 0.15 for a nice glass effect
+  bgOpacity = 0.15,
   size = 'md',
   width,
   height,
@@ -76,12 +90,17 @@ const GlowCard: React.FC<GlowCardProps> = ({
       position: 'relative',
       touchAction: 'none',
     };
-    
-    // Set the card's background color from the prop
+
+    // MODIFIED: Logic to handle color with opacity
     if (cardBgColor) {
-      baseStyles.backgroundColor = cardBgColor;
+      const rgb = hexToRgb(cardBgColor);
+      if (rgb) {
+        baseStyles.backgroundColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${bgOpacity})`;
+      } else {
+        baseStyles.backgroundColor = cardBgColor; // Fallback to original color if hex is invalid
+      }
     } else {
-      baseStyles.backgroundColor = 'hsl(0 0% 60% / 0.12)'; // Fallback default
+      baseStyles.backgroundColor = `hsl(0 0% 60% / ${bgOpacity})`; // Fallback with opacity
     }
 
     if (width !== undefined) {
@@ -94,7 +113,6 @@ const GlowCard: React.FC<GlowCardProps> = ({
     return baseStyles;
   };
 
-  // Reverted to the original style to support colored glows and white edge highlights
   const beforeAfterStyles = `
     [data-glow]::before,
     [data-glow]::after {
@@ -136,8 +154,11 @@ const GlowCard: React.FC<GlowCardProps> = ({
           ${!customSize ? 'aspect-[3/4]' : ''}
           rounded-2xl 
           relative 
-          border-0
           shadow-lg shadow-black/20
+          
+          /* MODIFIED: Added a subtle border to complete the glass effect */
+          border border-white/10
+          
           ${className}
         `}
       >

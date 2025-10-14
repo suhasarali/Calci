@@ -15,16 +15,18 @@ const statsData = [
 
 export function QuantityLanding() {
   return (
-    // The root div's background is preserved
-    <div className="w-full bg-white flex flex-col md:flex-row items-center justify-center gap-5 p-8">
+    // The root div's background should have an image or gradient for the glass effect to be visible
+    <div className="w-full  flex flex-col md:flex-row items-center justify-center gap-5 p-8">
       {statsData.map((stat, index) => (
-        <GlowCard 
+        <GlowCard
           key={index}
+          glowColor="orange"
+          cardBgColor="#1e40af"       // This is Tailwind's blue-800
           // --- THE ONLY CHANGE YOU NEED IS HERE ---
-          glowColor="purple"           // Changed from "white" to "cyan"
-          // --- ----------------------------- ---
-          cardBgColor="#1e40af"      // This is Tailwind's blue-800
-          className="p-6"
+          bgOpacity={0.95}            // Add this to set transparency
+          // --- -------------------------------- ---
+
+          className="p-6 backdrop-blur-xl" // This class is essential for the blur
           customSize={true}
           width={280}
           height={280}

@@ -8,6 +8,8 @@ import  Footer4Col from "@/components/footer-column";
 import { CTA } from "@/components/Cta";
 import { QuantityLanding } from "@/components/quantity-landing";
 import { Testimonials } from "@/components/Testimonials";
+import {Timeline} from '@/components/timeline'; 
+
 
 export default function LandingPage() {
   return (
@@ -27,6 +29,7 @@ export default function LandingPage() {
       <Features />
       <QuantityLanding/>
       <Testimonials/>
+      <Timeline/>
       <CTA/>
       <Footer4Col/>
       

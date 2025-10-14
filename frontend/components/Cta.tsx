@@ -9,7 +9,7 @@ function CTA() {
       className="w-full py-8 lg:py-16"
     >
       <div className="container mx-auto">
-        <div className="mx-auto max-w-5xl rounded-xl bg-blue-800 text-white p-8 lg:p-12 shadow-xl text-center border-1 border-blue-900">
+        <div className="mx-auto max-w-5xl rounded-xl bg-blue-600 text-white p-8 lg:p-12 shadow-xl text-center border-1 border-blue-900">
           <Badge className="mx-auto bg-white text-black hover:bg-black hover:text-white">Get started</Badge>
 
           <h2 id="cta-heading" className="mt-6 text-2xl text-white md:text-4xl font-semibold tracking-tight">
@@ -47,7 +47,7 @@ function CTA() {
 
             <Button
               aria-label="Create an account"
-              className="flex items-center gap-2 bg-blue-900 rounded-4xl"
+              className="flex items-center gap-2 bg-blue-950  hover:bg-white hover:text-black text-white rounded-4xl"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
               Create account
