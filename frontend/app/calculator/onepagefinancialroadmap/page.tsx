@@ -14,6 +14,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { NavbarDemo } from "@/components/Navbar";
 import Footer4Col from "@/components/footer-column";
 import BackButton from "@/components/BackButton";
+import { NavbarHome } from "@/components/NavbarHome";
 
 // --- CUSTOM HOOK for Media Queries ---
 const useMediaQuery = (query: string) => {
@@ -344,7 +345,18 @@ export default function OnePageFinancialRoadmap() {
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50 text-gray-800">
-        {/* <NavbarDemo /> */}
+        {/* <NavbarHome /> */}
+        <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 0.6 }}
+                className="text-center mb-4"
+              >
+                <NavbarHome />
+                
+              </motion.div>
         <BackButton />
 
         <main className="max-w-5xl mx-auto px-4 py-8 md:py-16">

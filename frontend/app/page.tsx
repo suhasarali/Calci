@@ -1,6 +1,6 @@
 "use client";
 
-import { NavbarDemo } from "@/components/Navbar";
+import { NavbarLanding } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
 import { Logos3Demo } from "@/components/ui/logos3-demo";
 import { Features } from "@/components/ui/features";
@@ -23,7 +23,7 @@ export default function LandingPage() {
       // The backgroundSize is automatically handled by the browser for radial gradients,
       // so we can remove it or leave it, but removing it is cleaner.
     }}>
-      <NavbarDemo />
+      <NavbarLanding/>
       <HeroSection />
       <Features />
       <QuantityLanding/>

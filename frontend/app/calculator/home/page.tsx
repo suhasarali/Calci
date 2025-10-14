@@ -19,7 +19,7 @@ import {
   House,
   CreditCard,
 } from "lucide-react";
-import { NavbarDemo } from "@/components/Navbar";
+import { NavbarHome } from "@/components/NavbarHome";
 
 const calculators = [
   {
@@ -72,7 +72,7 @@ export default function DashboardPage() {
         transition={{ duration: 0.6 }}
         className="text-center mb-6"
       >
-        <NavbarDemo />
+        <NavbarHome />
       </motion.div>
 
       {/* Search Bar */}

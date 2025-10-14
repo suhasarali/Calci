@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { NavbarHome } from "@/components/NavbarHome";
 import { useAuth, AppUser } from "@/context/AuthContext";
 import { LoginModal } from "@/components/LoginModal";
 
@@ -36,9 +37,6 @@ import {
     PopoverTrigger,
     PopoverContent,
 } from "@/components/ui/popover";
-
-// Original Navbar and Footer Imports
-import { NavbarDemo } from "@/components/Navbar";
 import BackButton from "@/components/BackButton";
 
 // --- CUSTOM HOOK for Media Queries ---
@@ -636,7 +634,16 @@ export default function FinancialHealthCheckupPage() {
     return (
         <TooltipProvider>
             <div className="flex flex-col min-h-screen bg-gray-50">
-                {/* <NavbarDemo /> */}
+                <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        viewport={{ once: false, amount: 0.3 }}
+                        transition={{ duration: 0.6 }}
+                        className="text-center mb-6"
+                      >
+                        <NavbarHome />
+                      </motion.div>
                 <BackButton />
                 <main className="flex-grow">
                     {view === "landing" && <LandingView setView={setView} numericDone={numericDone} yesNoDone={yesNoDone} />}
