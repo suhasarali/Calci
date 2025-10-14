@@ -52,7 +52,7 @@ const BentoItem = ({ className, children }: { className?: string; children: Reac
 // Main Component with your specific content and layout
 export const Features = () => {
     return (
-        <section className="w-full  py-5 sm:py-12">
+        <section id="features" className="w-full  py-5 sm:py-12">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
                 <div className="mx-auto max-w-2xl text-center">
                     <h2 className="text-3xl font-bold tracking-tight text-blue-950 sm:text-6xl">

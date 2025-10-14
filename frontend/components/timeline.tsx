@@ -53,7 +53,8 @@ export const Timeline = () => {
   }, []);
 
   return (
-    <div ref={timelineRef} className=" py-4 px-2 sm:px-6">
+    <section id="working">
+      <div ref={timelineRef} className=" py-4 px-2 sm:px-6">
      <h2 className="text-4xl sm:text-6xl text-center font-bold my-12 text-gray-800">
         How It  <span className="text-blue-900">Works ?</span>
       </h2>
@@ -118,6 +119,8 @@ export const Timeline = () => {
         </div>
       </div>
     </div>
+    </section>
+    
   );
 };
 

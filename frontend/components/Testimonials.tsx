@@ -67,7 +67,7 @@ const thirdColumn = testimonials.slice(6, 9);
 
 export const Testimonials = () => {
   return (
-    <section className="my-20 relative">
+    <section id="testimonials" className="my-20 relative">
 
       <div className="container z-10 mx-auto">
         <motion.div

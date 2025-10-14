@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Footer4Col() {
   return (
-    <footer className="relative py-10 mt-20 overflow-hidden dark:bg-transparent">
+    <footer id="contact" className="relative py-10 mt-20 overflow-hidden dark:bg-transparent">
       <div
         className="absolute inset-0 z-0"
         style={{
