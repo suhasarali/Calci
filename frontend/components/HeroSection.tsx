@@ -13,7 +13,6 @@ import animationData from '@/components/ui/heroimage1.json'
 import animationData2 from '@/components/ui/heroimage2.json'
 import animationData3 from '@/components/ui/heroimage3.json'
 
-// The `motion(Lottie)` constant is no longer needed
 
 const transitionVariants = {
   item: {
@@ -98,10 +97,13 @@ export function HeroSection() {
         <div aria-hidden className="absolute inset-0 -z-10 size-full [background:radial-gradient(125%_125%_at_50%_100%,transparent_0%,var(--background)_75%)]" />
 
         <section className="relative pb-32">
-          <div className="mx-auto max-w-7xl px-6 lg:grid lg:grid-cols-2 lg:gap-x-12">
+          {/* === MODIFIED: Changed from lg:grid to flex for responsive ordering === */}
+          <div className="mx-auto flex max-w-7xl flex-col-reverse items-center px-6 lg:flex-row lg:gap-x-12">
+            
+            {/* === MODIFIED: Adjusted padding for mobile and set width for desktop === */}
             {/* Left side: Text content */}
-            <div className="relative z-10 py-24 sm:py-32 lg:py-48">
-              <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
+            <div className="relative z-10 w-full lg:w-1/2 pt-12 pb-16 text-center lg:py-48 lg:text-left">
+              <div className="mx-auto max-w-2xl lg:mx-0">
                 <AnimatedGroup variants={transitionVariants}>
                   <Link
                     href="#link"
@@ -121,10 +123,10 @@ export function HeroSection() {
                     </div>
                   </Link>
 
-                  <h1 className="text-balance text-5xl text-gray-800 font-bold tracking-tight md:text-6xl xl:text-7xl">
+                  <h1 className="text-balance text-5xl font-bold tracking-tight text-gray-800 md:text-6xl xl:text-7xl">
                     Master Your Financial Future with 
-                    <span className='flex text-blue-900 font-bold'>
-                       PaisaMastery
+                    <span className='flex justify-center text-blue-900 font-bold lg:justify-start'>
+                      PaisaMastery
                     </span>
                   </h1>
                   <p className="mt-6 text-lg text-balance text-muted-foreground">
@@ -170,6 +172,7 @@ export function HeroSection() {
               </div>
             </div>
 
+            {/* === MODIFIED: Set width for desktop === */}
             {/* Right side: Lottie Animation */}
             <AnimatedGroup
               variants={{
@@ -183,10 +186,9 @@ export function HeroSection() {
                 },
                 ...transitionVariants,
               }}
-              className="relative flex items-center justify-center lg:justify-end mt-8 lg:mt-0"
+              className="relative flex w-full items-center justify-center lg:w-1/2 pt-24 lg:pt-0"
             >
               <div className="relative w-[110%] max-w-2xl lg:max-w-3xl">
-                {/* === UPDATED: Using motion.div wrapper for transition === */}
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentAnimationIndex}
@@ -206,8 +208,9 @@ export function HeroSection() {
             </AnimatedGroup>
           </div>
 
+          {/* === MODIFIED: Changed -mt-24 to mt-16 lg:-mt-24 for responsive overlap === */}
           {/* Stats Section */}
-          <div className="relative z-20 mx-auto -mt-24 max-w-7xl px-6 lg:px-8">
+          <div className="relative z-20 mx-auto mt-16 max-w-7xl px-6 lg:-mt-24 lg:px-8">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               {stats.map((stat, index) => (
                 <div
@@ -216,10 +219,10 @@ export function HeroSection() {
                 >
                   <h2 className={cn('text-5xl font-bold tracking-tight', stat.color)}>
                      {stat.suffix === 'k+' ? (
-                       <AnimatedCounter value={100} suffix="k+" />
-                     ) : (
-                       /* === FIXED: Corrected component name from Animated-counter to AnimatedCounter === */
-                       <AnimatedCounter value={stat.value} suffix="+" />
+                      <AnimatedCounter value={100} suffix="k+" />
+                    ) : (
+                       /* === Corrected component name from Animated-counter to AnimatedCounter === */
+                      <AnimatedCounter value={stat.value} suffix="+" />
                    )}
                   </h2>
                   <p className="mt-2 text-base text-muted-foreground">{stat.label}</p>
