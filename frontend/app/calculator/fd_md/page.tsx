@@ -19,6 +19,8 @@ const parseCurrency = (value) => {
     return Number(value.replace(/[^0-9.-]+/g,""));
 };
 
+
+// Main Calculator Component
 export default function FdVsMfCalculator() {
   const [mode, setMode] = useState("compare");
   const [investmentAmount, setInvestmentAmount] = useState(1000000);
@@ -26,7 +28,6 @@ export default function FdVsMfCalculator() {
   const [fdRate, setFdRate] = useState(7.5);
   const [taxBracket, setTaxBracket] = useState(25);
   const [mfRate, setMfRate] = useState(12);
-  // NEW: State for Long-Term Capital Gains tax rate
   const [ltcgRate, setLtcgRate] = useState(12.5);
 
   const fdCalculations = useMemo(() => {
@@ -45,17 +46,16 @@ export default function FdVsMfCalculator() {
     const principal = investmentAmount;
     const rate = mfRate / 100;
     const time = investmentPeriod;
-    const ltcgTaxRate = ltcgRate / 100; // Use state for LTCG tax
+    const ltcgTaxRate = ltcgRate / 100; 
 
     const maturity = principal * Math.pow(1 + rate, time);
     const gains = maturity - principal;
-    const taxableGains = Math.max(0, gains - 100000); // Exemption is 1 Lakh
-    const tax = taxableGains * ltcgTaxRate; // Use dynamic LTCG rate
+    const taxableGains = Math.max(0, gains - 100000); 
+    const tax = taxableGains * ltcgTaxRate; 
     const netReturn = maturity - tax;
     return { maturity, gains, tax, netReturn };
-  }, [investmentAmount, investmentPeriod, mfRate, ltcgRate]); // Add ltcgRate to dependency array
+  }, [investmentAmount, investmentPeriod, mfRate, ltcgRate]); 
 
-  // MODIFIED: Removed "Tax Paid" from chart data
   const chartData = [
     { name: "Maturity Value", FD: fdCalculations.maturity, MF: mfCalculations.maturity },
     { name: "Wealth After Tax", FD: fdCalculations.netReturn, MF: mfCalculations.netReturn },
@@ -68,7 +68,6 @@ export default function FdVsMfCalculator() {
       maximumFractionDigits: 0,
     }).format(value);
     
-  // NEW: Calculate differences for the new result box
   const preTaxDifference = mfCalculations.maturity - fdCalculations.maturity;
   const postTaxDifference = mfCalculations.netReturn - fdCalculations.netReturn;
 
@@ -99,7 +98,6 @@ export default function FdVsMfCalculator() {
                   <h3 className="text-lg font-semibold text-gray-700">Investment Details</h3>
                   <div>
                     <label className="block text-sm font-medium text-gray-600">Investment Amount (₹)</label>
-                    {/* MODIFIED: Changed input type to 'text' for formatting */}
                     <input
                       type="text"
                       value={`₹ ${new Intl.NumberFormat('en-IN').format(investmentAmount)}`}
@@ -111,7 +109,6 @@ export default function FdVsMfCalculator() {
                       }}
                       className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 font-semibold"
                     />
-                    {/* NEW: Display amount in words */}
                     <p className="text-xs text-blue-600 mt-1">
                       {capitalize(toWords(investmentAmount))} Rupees
                     </p>
@@ -163,7 +160,6 @@ export default function FdVsMfCalculator() {
                     />
                     <p className="text-sm text-blue-600 mt-1 font-semibold">{mfRate}%</p>
                   </div>
-                   {/* NEW: LTCG Tax Rate input */}
                   <div>
                     <label className="block text-sm font-medium text-gray-600">LTCG Tax Rate (%)</label>
                      <input
@@ -183,7 +179,6 @@ export default function FdVsMfCalculator() {
                   {["fd", "compare"].includes(mode) && (
                     <ResultCard
                       title="Fixed Deposit Results"
-                      color="text-black"
                       data={[
                         ["Invested Amount", investmentAmount],
                         ["Maturity Value", fdCalculations.maturity],
@@ -196,7 +191,6 @@ export default function FdVsMfCalculator() {
                   {["mf", "compare"].includes(mode) && (
                     <ResultCard
                       title="Mutual Fund Results"
-                      color="text-black"
                       data={[
                         ["Invested Amount", investmentAmount],
                         ["Maturity Value", mfCalculations.maturity],
@@ -208,7 +202,6 @@ export default function FdVsMfCalculator() {
                   )}
                 </div>
 
-                {/* NEW: Difference card, appears only in compare mode */}
                 {mode === "compare" && (
                     <DifferenceCard 
                         preTax={preTaxDifference}
@@ -238,15 +231,22 @@ export default function FdVsMfCalculator() {
             </Tabs>
           </CardContent>
         </Card>
+        
+        {/* NEW: Detailed Comparison Table Section */}
+        <Card className="bg-white shadow-lg rounded-2xl mt-8">
+            <CardContent className="p-6 md:p-8">
+                <DetailedComparison />
+            </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
 
-// ResultCard Component (Unchanged)
-const ResultCard = ({ title, color, data }) => (
+// ResultCard Component
+const ResultCard = ({ title, data }) => (
   <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-    <h3 className={`text-xl font-bold text-center mb-4 ${color}`}>{title}</h3>
+    <h3 className={`text-xl font-bold text-center mb-4 text-black`}>{title}</h3>
     <div className="space-y-2 text-sm">
       {data.map(([label, value], i) => (
         <div key={i} className={`flex justify-between py-2 ${i === data.length - 1 ? "border-t-2 border-dashed mt-2 pt-2" : "border-b border-gray-100"}`}>
@@ -260,7 +260,7 @@ const ResultCard = ({ title, color, data }) => (
   </div>
 );
 
-// NEW: Component for showing the difference
+// DifferenceCard Component
 const DifferenceCard = ({ preTax, postTax }) => (
     <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mt-6">
         <h3 className="text-xl font-bold text-center mb-4 text-gray-800">Investment Difference (MF vs FD)</h3>
@@ -276,6 +276,40 @@ const DifferenceCard = ({ preTax, postTax }) => (
                 <p className={`font-bold text-xl ${postTax >= 0 ? 'text-green-700' : 'text-red-700'}`}>
                     {new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(postTax)}
                 </p>
+            </div>
+        </div>
+    </div>
+);
+
+
+// NEW: Detailed Comparison Table Component
+const comparisonData = [
+    { feature: 'Risk Level', fd: 'Very Low', mf: 'Low to High' },
+    { feature: 'Returns', fd: 'Fixed (5-8% p.a.)', mf: 'Variable (8-15%+ p.a.)' },
+    { feature: 'Liquidity', fd: 'Moderate (penalty on early withdrawal)', mf: 'High (can redeem anytime)' },
+    { feature: 'Taxation', fd: 'Interest taxed as per slab', mf: 'Capital gains tax applicable' },
+    { feature: 'Best For', fd: 'Short-term goals, risk-averse investors', mf: 'Long-term wealth creation, growth seekers' },
+];
+
+const DetailedComparison = () => (
+    <div className="w-full">
+        <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Detailed Comparison</h2>
+        <div className="space-y-4 text-sm md:text-base">
+            {/* Header Row */}
+            <div className="grid grid-cols-3 gap-4 font-bold p-4 bg-gray-50 rounded-lg">
+                <p className="text-gray-700">Feature</p>
+                <p className="text-blue-600">Fixed Deposit</p>
+                <p className="text-green-600">Mutual Fund</p>
+            </div>
+            {/* Data Rows */}
+            <div className="divide-y divide-gray-200">
+                {comparisonData.map((item, index) => (
+                    <div key={index} className="grid grid-cols-3 gap-4 py-4 px-4 items-center">
+                        <p className="font-semibold text-gray-800">{item.feature}</p>
+                        <p className="text-gray-600">{item.fd}</p>
+                        <p className="text-gray-600">{item.mf}</p>
+                    </div>
+                ))}
             </div>
         </div>
     </div>
