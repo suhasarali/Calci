@@ -43,13 +43,13 @@ const calculators = [
     color: "bg-[#fefaf6]",
     icon: Coins,
   },
-  // {
-  //   title: "One page financial Roadmap",
-  //   desc: "Estimate potential returns from your Systematic Investment Plan investments with compounding benefits over your chosen time horizon. Compare different SIP amounts, durations, and expected returns.",
-  //   link: "/calculator/onepagefinancialroadmap",
-  //   color: "bg-[#f8f9ff]",
-  //   icon: PiggyBank,
-  // },
+  {
+    title: "3 in 1 finacial planner",
+    desc: "Estimate potential returns from your Systematic Investment Plan investments with compounding benefits over your chosen time horizon. Compare different SIP amounts, durations, and expected returns.",
+    link: "/calculator/3in1financialplanner",
+    color: "bg-[#f8f9ff]",
+    icon: BarChart3,
+  },
   
 ];
 
