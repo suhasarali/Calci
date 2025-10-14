@@ -84,7 +84,7 @@ export function HeroSection() {
 
   return (
     <>
-      <main className="relative overflow-hidden">
+      <main className="relative overflow-hidden ">
         {/* Decorative background elements */}
         <div
           aria-hidden
@@ -105,23 +105,19 @@ export function HeroSection() {
             <div className="relative z-10 w-full lg:w-1/2 pt-12 pb-16 text-center lg:py-48 lg:text-left">
               <div className="mx-auto max-w-2xl lg:mx-0">
                 <AnimatedGroup variants={transitionVariants}>
-                  <Link
-                    href="#link"
-                    className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto mb-8 flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 lg:mx-0 dark:border-t-white/5 dark:shadow-zinc-950"
-                  >
-                    <span className="text-blue-900 text-sm">Introducing Smart Financial Planning Tools</span>
+                  
                     <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
                     <div className="bg-background group-hover:bg-muted size-6 overflow-hidden rounded-full duration-500">
                       <div className="flex w-12 -translate-x-1/2 duration-500 ease-in-out group-hover:translate-x-0">
                         <span className="flex size-6">
-                          <ArrowRight className="m-auto size-3" />
+                          
                         </span>
                         <span className="flex size-6">
-                          <ArrowRight className="m-auto size-3" />
+                        
                         </span>
                       </div>
                     </div>
-                  </Link>
+                  
 
                   <h1 className="text-balance text-5xl font-bold tracking-tight text-gray-800 md:text-6xl xl:text-7xl">
                     Master Your Financial Future with 
