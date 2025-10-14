@@ -1,14 +1,20 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { motion, useInView, useSpring } from 'framer-motion'
+import { motion, useInView, useSpring, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { AnimatedGroup } from '@/components/ui/animated-group'
 import { cn } from '@/lib/utils'
 
-// Animation variants from your original code
+import Lottie from 'lottie-react'
+import animationData from '@/components/ui/heroimage1.json'
+import animationData2 from '@/components/ui/heroimage2.json'
+import animationData3 from '@/components/ui/heroimage3.json'
+
+// The `motion(Lottie)` constant is no longer needed
+
 const transitionVariants = {
   item: {
     hidden: {
@@ -29,14 +35,10 @@ const transitionVariants = {
   },
 }
 
-/**
- * NEW: Component to animate numbers when they scroll into view.
- */
 function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: string }) {
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
 
-  // Spring animation for a smoother count-up effect
   const animatedValue = useSpring(0, {
     damping: 50,
     stiffness: 200,
@@ -45,13 +47,11 @@ function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: strin
 
   useEffect(() => {
     if (isInView) {
-      // Start the animation when the component is in view
       animatedValue.set(value)
     }
   }, [isInView, value, animatedValue])
 
   useEffect(() => {
-    // This will update the displayed number as the spring animates
     const unsubscribe = animatedValue.on("change", (latest) => {
       if (ref.current) {
         ref.current.textContent = Math.round(latest).toLocaleString() + suffix
@@ -70,6 +70,18 @@ export function HeroSection() {
     { value: 50, suffix: '+', label: 'Knowledge Quizzes', color: 'text-green-500' },
     { value: 100, suffix: 'k+', label: 'Happy Investors', color: 'text-blue-600' },
   ]
+
+  const animations = [animationData, animationData2, animationData3];
+  const [currentAnimationIndex, setCurrentAnimationIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentAnimationIndex((prevIndex) => (prevIndex + 1) % animations.length);
+    }, 3000); 
+
+    return () => clearInterval(interval);
+  }, [animations.length]);
+
 
   return (
     <>
@@ -112,7 +124,7 @@ export function HeroSection() {
                   <h1 className="text-balance text-5xl text-gray-800 font-bold tracking-tight md:text-6xl xl:text-7xl">
                     Master Your Financial Future with 
                     <span className='flex text-blue-900 font-bold'>
-                        PaisaMastery
+                       PaisaMastery
                     </span>
                   </h1>
                   <p className="mt-6 text-lg text-balance text-muted-foreground">
@@ -158,7 +170,7 @@ export function HeroSection() {
               </div>
             </div>
 
-            {/* Right side: Image */}
+            {/* Right side: Lottie Animation */}
             <AnimatedGroup
               variants={{
                 container: {
@@ -174,22 +186,27 @@ export function HeroSection() {
               className="relative flex items-center justify-center lg:justify-end mt-8 lg:mt-0"
             >
               <div className="relative w-[110%] max-w-2xl lg:max-w-3xl">
-                <img
-                  src="/heroimage.png"
-                  alt="Financial Planning Illustration"
-                  width={1200}
-                  height={900}
-                  className="w-full h-auto object-contain drop-shadow-2xl transition-transform duration-700 ease-out hover:scale-105"
-                />
+                {/* === UPDATED: Using motion.div wrapper for transition === */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentAnimationIndex}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Lottie 
+                      animationData={animations[currentAnimationIndex]}
+                      loop={true}
+                      className="w-full h-auto drop-shadow-2xl transition-transform duration-700 ease-out hover:scale-105"
+                    />
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </AnimatedGroup>
           </div>
 
-          {/* ================================================================== */}
-          {/* NEW: Stats Section                                               */}
-          {/* This section sits just below the hero content.                   */}
-          {/* The negative margin pulls it up for a nice visual overlap.       */}
-          {/* ================================================================== */}
+          {/* Stats Section */}
           <div className="relative z-20 mx-auto -mt-24 max-w-7xl px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               {stats.map((stat, index) => (
@@ -198,12 +215,12 @@ export function HeroSection() {
                   className="flex flex-col items-center rounded-2xl border bg-background/80 p-8 text-center shadow-lg backdrop-blur-sm"
                 >
                   <h2 className={cn('text-5xl font-bold tracking-tight', stat.color)}>
-                     {/* For the last stat, we animate the number and append the 'k+' suffix */}
                      {stat.suffix === 'k+' ? (
                        <AnimatedCounter value={100} suffix="k+" />
-                    ) : (
+                     ) : (
+                       /* === FIXED: Corrected component name from Animated-counter to AnimatedCounter === */
                        <AnimatedCounter value={stat.value} suffix="+" />
-                    )}
+                   )}
                   </h2>
                   <p className="mt-2 text-base text-muted-foreground">{stat.label}</p>
                 </div>
