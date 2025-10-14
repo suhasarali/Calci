@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import BackButton from "@/components/BackButton";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +10,7 @@ import {
 } from "recharts";
 // Import the library to convert numbers to words
 import { toWords } from 'number-to-words';
+import { NavbarHome } from "@/components/NavbarHome";
 
 // Helper function to capitalize the first letter of a string
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -73,10 +75,23 @@ export default function FdVsMfCalculator() {
 
   return (
     <div className="min-h-screen bg-[#fdfbf7] p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
+      <BackButton/>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-6"
+      >
+        <NavbarHome />
+        
+      </motion.div>
+       
+      <div className="max-w-7xl mx-auto mt-10">
         <Card className="bg-white shadow-lg rounded-2xl">
           <CardHeader>
-            <BackButton />
+           
             <CardTitle className="text-2xl font-bold text-gray-800 text-center">
               Fixed Deposit vs. Mutual Fund Calculator
             </CardTitle>

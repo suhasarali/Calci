@@ -20,16 +20,15 @@ import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
-export function NavbarLanding() {
+export function NavbarHome() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Features", link: "#features" },
-    { name: "Testimonials", link: "#testimonials" },
-    { name: "Working", link: "#working" },
-    { name: "Contact", link: "#contact" },
+    { name: "Calculators", link: "#calculators" },
+    { name: "Quizzes", link: "#quizzes" },
+    { name: "Analysis Tools", link: "#tools" },
   ];
 
   const handleSignOut = async () => {
