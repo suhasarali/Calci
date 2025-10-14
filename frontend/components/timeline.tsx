@@ -78,7 +78,7 @@ export const Timeline = () => {
               <div key={index} className="relative">
                 
                 {/* Mobile Line (static) */}
-                <div className="sm:hidden absolute top-0 h-full w-1 bg-blue-200 left-5"></div>
+                <div className="sm:hidden absolute top-0 h-full w-1 bg-blue-200 left-10"></div>
 
                 {/* The Circle */}
                 <div className={`absolute w-10 h-10 bg-white border-4 rounded-full left-5 sm:left-1/2 sm:-translate-x-1/2 z-10 flex items-center justify-center transition-colors duration-300 ${isActive ? 'border-blue-600' : 'border-blue-200'}`}>
@@ -97,7 +97,7 @@ export const Timeline = () => {
                       index % 2 === 0
                         ? 'left-full -translate-x-1/2'
                         : 'right-full translate-x-1/2'
-                    } ${isActive ? 'border-t border-r border-gray-200' : ''}`} // Optional: add border to arrow
+                    } ${isActive ? 'border-t border-r border-gray-200' : 'border-blue-600'}`} // Optional: add border to arrow
                   ></div>
                   
                   <div className={`bg-white p-6 rounded-lg shadow-lg relative transition-all duration-300 ${isActive ? 'shadow-blue-200' : ''}`}>
