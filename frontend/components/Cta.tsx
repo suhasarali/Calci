@@ -6,7 +6,7 @@ function CTA() {
   return (
     <section
       aria-labelledby="cta-heading"
-      className="w-full py-8 lg:py-16"
+      className="w-full py-6  sm:-mt-15 lg:py-12"
     >
       <div className="container mx-auto">
         <div className="mx-auto max-w-5xl rounded-xl bg-blue-600 text-white p-8 lg:p-12 shadow-xl text-center border-1 border-blue-900">
