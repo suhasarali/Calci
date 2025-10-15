@@ -43,6 +43,25 @@ export const initDatabase = async () => {
     )
   `);
 
+  await query(`
+    CREATE TABLE IF NOT EXISTS calculators (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) UNIQUE NOT NULL,
+      description TEXT
+    )
+  `);
+
+  // 2. Links users to the calculators they've used (Junction Table)
+  await query(`
+    CREATE TABLE IF NOT EXISTS user_calculator_usage (
+      id SERIAL PRIMARY KEY,
+      user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      calculator_id INT NOT NULL REFERENCES calculators(id) ON DELETE CASCADE,
+      used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE (user_id, calculator_id)
+    )
+  `);
+
   console.log("✅ Database tables initialized");
 };
 
