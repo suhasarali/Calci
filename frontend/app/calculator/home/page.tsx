@@ -24,38 +24,45 @@ import { NavbarHome } from "@/components/NavbarHome";
 const calculators = [
   {
     title: "Financial health Checkup",
-    desc: "Calculate Equated Monthly Installments for any type of loan with flexible tenure and interest rate options. Understand your monthly outflow, total interest payable, and plan your finances efficiently.",
+    desc: "Assess your overall financial well-being with our comprehensive checkup tool. Get a clear picture of your assets, liabilities, and cash flow to identify areas for improvement and secure your financial future.",
     link: "/calculator/financialchecklist",
     color: "bg-[#fefaf6]",
     icon: CreditCard,
   },
   {
     title: "One page financial Roadmap",
-    desc: "Estimate potential returns from your Systematic Investment Plan investments with compounding benefits over your chosen time horizon. Compare different SIP amounts, durations, and expected returns.",
+    desc: "Create a personalized, one-page financial plan to map out your long-term goals. This tool helps you visualize your path to achieving your dreams, from retirement to major life purchases.",
     link: "/calculator/onepagefinancialroadmap",
     color: "bg-[#f8f9ff]",
     icon: PiggyBank,
   },
   {
     title: "Fixed Deposit and Mutual Fund",
-    desc: "Calculate Equated Monthly Installments for any type of loan with flexible tenure and interest rate options. Understand your monthly outflow, total interest payable, and plan your finances efficiently.",
+    desc: "Deciding between the safety of a Fixed Deposit and the growth potential of a Mutual Fund? This calculator helps you compare post-tax returns from both to make an informed investment choice.",
     link: "/calculator/fd_md",
     color: "bg-[#fefaf6]",
     icon: Coins,
   },
   {
     title: "3 in 1 finacial planner",
-    desc: "Estimate potential returns from your Systematic Investment Plan investments with compounding benefits over your chosen time horizon. Compare different SIP amounts, durations, and expected returns.",
+    desc: "Simplify your financial life with our integrated planner. This tool combines your investment, term insurance, and health insurance planning into one seamless experience, helping you balance growth with protection.",
     link: "/calculator/3in1financialplanner",
     color: "bg-[#f8f9ff]",
     icon: BarChart3,
   },
   {
     title: "Systematic Withdrawal Plan (SWP)",
-    desc: "Calculate Equated Monthly Installments for any type of loan with flexible tenure and interest rate options. Understand your monthly outflow, total interest payable, and plan your finances efficiently.",
+    desc: "Plan your post-retirement income with our SWP calculator. Estimate how much you can withdraw from your investments periodically to ensure a steady cash flow throughout your retirement years.",
     link: "/calculator/swp",
     color: "bg-[#fefaf6]",
     icon: Wallet,
+  },
+  {
+    title:"SIP and Lumpsum",
+    desc:"Explore the two primary ways to invest: a disciplined Systematic Investment Plan (SIP) or a one-time Lumpsum payment. This calculator projects the potential growth for both strategies to help you decide which is right for you.",
+    link:"/calculator/sipandlumpsum",
+    color:"bg-[#f8f9ff]",
+    icon:TrendingUp,
   }
   
 ];
