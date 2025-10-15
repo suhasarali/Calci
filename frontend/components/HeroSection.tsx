@@ -135,13 +135,13 @@ export function HeroSection() {
                     </div>
                   </div>
 
-                  <h1 className="text-balance text-5xl font-bold tracking-tight text-gray-800 md:text-6xl xl:text-6xl">
+                  <h1 className="text-wrap font-bold tracking-tight text-gray-800 md:text-xl xl:text-6xl">
                     Master Your Financial Future with
-                    <span className="flex justify-center text-blue-900 font-bold lg:justify-start">
+                    <span className=" text-wrap flex justify-center text-blue-900 font-bold lg:justify-start">
                       PaisaMastery
                     </span>
                   </h1>
-                  <p className="mt-6 text-lg text-balance font-bold text-foreground">
+                  <p className="mt-6 text-lg text-balance font-medium text-foreground">
                     Empower your investment journey with smart calculators,
                     knowledge quizzes, and powerful analysis tools designed for
                     Indian investors.

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react';
-import { Shield, Users, ShieldCheck,IndianRupee } from 'lucide-react';
+import { Shield, Users, ShieldCheck,IndianRupee, Award } from 'lucide-react';
 import { cn } from '@/lib/utils'; // Assuming you have this utility for classnames
 
 import { Zap } from 'lucide-react';
@@ -91,7 +91,6 @@ export const Features = () => {
     {/* Card 3: Instant Results */}
     <BentoItem className="lg:col-span-1">
         <div className="pt-6 lg:px-6">
-...
 <Zap className="m-auto size-16 text-blue-600" strokeWidth={1.5}/>
         </div>
         <div className="relative z-10 mt-14 space-y-2 text-center">
@@ -201,11 +200,12 @@ export const Features = () => {
     <BentoItem className="lg:col-span-1">
         <div className="mx-auto flex aspect-square size-32 rounded-full border border-slate-200 before:absolute before:-inset-2 before:rounded-full before:border before:border-slate-200/50">
             {/* You would replace the icon here */}
-            <Shield className="m-auto size-16 text-blue-600" strokeWidth={1.5}/>
+            
+            <Award className="m-auto size-16 text-blue-600" strokeWidth={1.5}/>
         </div>
         <div className="relative z-10 mt-6 space-y-2 text-center">
-            <h3 className="text-xl font-semibold text-blue-950">Add Your 6th Card Title Here</h3>
-            <p className="text-gray-600">Add the description for your sixth card here.</p>
+            <h3 className="text-xl font-semibold text-blue-950">Learn and Earn</h3>
+            <p className="text-gray-600">Build financial knowledge while making smarter investment decisions.</p>
         </div>
     </BentoItem>
 </div>
