@@ -234,13 +234,13 @@ export const NavbarLogo = () => {
   return (
     <a
       href="/"
-      className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
+      className="relative z-20 mr-4 flex items-center space-x-2 px-2  text-sm font-normal text-black"
     >
       <img
-        src="/paisaMasteryLogo.png"
+        src="/transparentlogo.png"
         alt="logo"
-        width={120}
-        height={100}
+        width={130}
+        height={60}
       />
     </a>
   );

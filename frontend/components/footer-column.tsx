@@ -32,7 +32,7 @@ export default function Footer4Col() {
         {/* Left Column */}
         <div className="flex-1 flex flex-col items-start space-y-4">
           {/* Logo */}
-          <img src="demologo.png" alt="logo" width={120} height={100} />
+          <img src="transparentlogo.png" alt="logo" width={130} height={140} />
 
           {/* Description */}
           <p className="text-gray-800 max-w-sm text-sm md:text-base font-semibold">

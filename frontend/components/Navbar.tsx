@@ -44,13 +44,13 @@ export function NavbarLanding() {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full py-0">
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>
           <NavbarLogo />
           <NavItems items={navItems} />
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {loading ? (
               <NavbarButton variant="secondary" disabled>Loading...</NavbarButton>
             ) : user ? (
