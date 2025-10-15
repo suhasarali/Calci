@@ -88,7 +88,6 @@ const GlowCard: React.FC<GlowCardProps> = ({
       '--spotlight-size': 'calc(var(--size, 150) * 1px)',
       '--hue': 'calc(var(--base) + (var(--xp, 0) * var(--spread, 0)))',
       position: 'relative',
-      touchAction: 'none',
     };
 
     // MODIFIED: Logic to handle color with opacity
