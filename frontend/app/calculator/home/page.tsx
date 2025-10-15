@@ -50,6 +50,13 @@ const calculators = [
     color: "bg-[#f8f9ff]",
     icon: BarChart3,
   },
+  {
+    title: "Systematic Withdrawal Plan (SWP)",
+    desc: "Calculate Equated Monthly Installments for any type of loan with flexible tenure and interest rate options. Understand your monthly outflow, total interest payable, and plan your finances efficiently.",
+    link: "/calculator/swp",
+    color: "bg-[#fefaf6]",
+    icon: Wallet,
+  }
   
 ];
 
