@@ -1,49 +1,74 @@
-// app/page.tsx
+// app/admin/page.tsx
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom'; // 👈 Add this import for the portal
 import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Search, Plus, SlidersHorizontal } from 'lucide-react';
-import AnalyticsView from '../../components/AnalyticsView'; // <-- IMPORT THE NEW COMPONENT
+import AnalyticsView from '../../components/AnalyticsView';
 
-// --- DUMMY DATA ---
-const dummyUsers = [
-  { id: 1, name: 'Stern Thireau', email: 'sthireau0@prlog.org', phone: '+1-555-123-4567', calculatorsUsed: ['BMI', 'Loan', 'Savings'] },
-  { id: 2, name: 'Ford McKibbin', email: 'fmckibbin1@slate.com', phone: '+1-555-987-6543', calculatorsUsed: ['Mortgage', 'Retirement'] },
-  { id: 3, name: 'Foss Rogliero', email: 'froglier2@ixing.com', phone: '+1-555-345-6789', calculatorsUsed: ['BMI', 'Savings'] },
-  { id: 4, name: 'Maurits Eigey', email: 'melgey3@blogger.com', phone: '+1-555-555-5555', calculatorsUsed: ['Loan'] },
-  { id: 5, name: 'Gun Kaasmann', email: 'gkaasmann4@economist.com', phone: '+1-555-111-2222', calculatorsUsed: ['BMI', 'Mortgage', 'Retirement'] },
-  { id: 6, name: 'Edmund McCrae', email: 'emccrae5@woothemes.com', phone: '+1-555-333-4444', calculatorsUsed: ['Savings'] },
-  { id: 7, name: 'Samuel Totman', email: 'stotman6@wisc.edu', phone: '+1-555-777-8888', calculatorsUsed: ['Loan', 'BMI'] },
-  { id: 8, name: 'Patsy Cuardall', email: 'pcuardall7@barnesandnoble.com', phone: '+1-555-999-0000', calculatorsUsed: ['Retirement'] },
-  { id: 9, name: 'Barnaby Cart', email: 'bcart8@alexa.com', phone: '+1-555-222-1111', calculatorsUsed: ['BMI', 'Savings', 'Mortgage'] },
-  { id: 10, name: 'Mary Stivens', email: 'mstivens9@facebook.com', phone: '+1-555-444-3333', calculatorsUsed: ['Loan'] },
-];
+// --- 1. Portal Component (defined directly in this file) ---
+// This component "teleports" its children to the end of the document body,
+// allowing them to render on top of everything else without being clipped.
+const Portal = ({ children }: { children: React.ReactNode }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  return mounted ? createPortal(children, document.body) : null;
+};
+// --- End of Portal Component ---
 
 
-// --- USER TABLE COMPONENTS ---
-const UserTableRow = ({ user }) => {
+// --- 2. Updated UserTableRow Component ---
+const UserTableRow = ({ user }: { user: any }) => {
     const [popoverOpen, setPopoverOpen] = useState(false);
-    const popoverRef = useRef(null);
-    const buttonRef = useRef(null);
+    // State to hold the screen coordinates for the popover
+    const [coords, setCoords] = useState<{ top: number; right: number } | null>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
-    const getInitials = (name) => {
+    const getInitials = (name: string) => {
         const names = name.split(' ');
-        if (names.length > 1) {
+        if (names.length > 1 && names[1]) {
             return `${names[0][0]}${names[1][0]}`;
         }
         return name.substring(0, 2);
     };
 
+    // This function now calculates the button's position on the screen
+    const handlePopoverToggle = () => {
+        if (popoverOpen) {
+            setPopoverOpen(false);
+            return;
+        }
+        if (buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            setCoords({
+                top: rect.top + window.scrollY + rect.height + 4, // Position below the button
+                right: window.innerWidth - rect.right - window.scrollX, // Align to the right
+            });
+            setPopoverOpen(true);
+        }
+    };
+    
+    // Effect to close popover when clicking elsewhere
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (popoverRef.current && !popoverRef.current.contains(event.target) && buttonRef.current && !buttonRef.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
                 setPopoverOpen(false);
             }
         };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+        if (popoverOpen) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [popoverOpen]);
 
     return (
         <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
@@ -59,49 +84,83 @@ const UserTableRow = ({ user }) => {
             <td className="p-4 whitespace-nowrap text-slate-600 dark:text-slate-300">{user.phone}</td>
             <td className="p-4 whitespace-nowrap text-center text-slate-600 dark:text-slate-300">{user.calculatorsUsed.length}</td>
             <td className="p-4 whitespace-nowrap text-center">
-                <div className="relative inline-block text-left">
-                    <button
-                        ref={buttonRef}
-                        onClick={() => setPopoverOpen(!popoverOpen)}
-                        className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700"
-                    >
-                        <MoreHorizontal className="w-5 h-5 text-slate-500" />
-                    </button>
-                    <AnimatePresence>
-                        {popoverOpen && (
+                {/* The button now calls our new position-calculating function */}
+                <button ref={buttonRef} onClick={handlePopoverToggle} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700">
+                    <MoreHorizontal className="w-5 h-5 text-slate-500" />
+                </button>
+                
+                <AnimatePresence>
+                    {popoverOpen && coords && (
+                        // 👇 The popover is now rendered via the Portal
+                        <Portal>
                             <motion.div
-                                ref={popoverRef}
-                                initial={{ opacity: 0, scale: 0.9, y: -10 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
                                 transition={{ duration: 0.15 }}
-                                className="absolute right-0 mt-2 w-56 origin-top-right bg-white dark:bg-slate-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 border dark:border-slate-700"
+                                // We use the calculated coordinates to position the popover
+                                style={{
+                                    position: 'absolute',
+                                    top: `${coords.top}px`,
+                                    right: `${coords.right}px`,
+                                }}
+                                className="w-56 bg-white dark:bg-slate-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 border dark:border-slate-700"
                             >
                                 <div className="py-1">
                                     <div className="px-4 py-2 text-xs font-semibold text-slate-400 uppercase">Calculators Used</div>
-                                    {user.calculatorsUsed.map(calc => (
+                                    {user.calculatorsUsed.length > 0 ? user.calculatorsUsed.map((calc: string) => (
                                         <a href="#" key={calc} className="block px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700">
                                             {calc}
                                         </a>
-                                    ))}
+                                    )) : <span className="block px-4 py-2 text-sm text-slate-500">None</span>}
                                 </div>
                             </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
+                        </Portal>
+                    )}
+                </AnimatePresence>
             </td>
         </tr>
     );
 };
+// --- End of Updated Component ---
+
 
 const UsersView = () => {
+    const [users, setUsers] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await fetch('/api/users');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to fetch users');
+                }
+                const data = await response.json();
+                setUsers(data.users);
+} catch (err: any) {
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchUsers();
+    }, []);
+
+    if (isLoading) {
+        return <div className="flex justify-center items-center p-10"><p className="text-slate-500">Loading users...</p></div>;
+    }
+
+    if (error) {
+        return <div className="flex justify-center items-center p-10"><p className="text-red-500">Error: {error}</p></div>;
+    }
+
     return (
         <motion.div 
             className="bg-white dark:bg-slate-800/50 rounded-xl shadow-lg border border-slate-200/50 dark:border-slate-700/50"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}
         >
             <div className="p-4 md:p-6 border-b border-slate-200 dark:border-slate-700">
                 <div className="flex items-center justify-between">
@@ -135,12 +194,12 @@ const UsersView = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-                        {dummyUsers.map(user => <UserTableRow key={user.id} user={user} />)}
+                        {users.map((user: any) => <UserTableRow key={user.id} user={user} />)}
                     </tbody>
                 </table>
             </div>
             <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                <p className="text-sm text-slate-500 dark:text-slate-400">Showing 1 to {dummyUsers.length} of {dummyUsers.length} results</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Showing 1 to {users.length} of {users.length} results</p>
                 <div className="flex items-center gap-2">
                     <button className="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded-md text-sm hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50" disabled>Previous</button>
                     <button className="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded-md text-sm hover:bg-slate-100 dark:hover:bg-slate-700">Next</button>
@@ -150,8 +209,7 @@ const UsersView = () => {
     );
 };
 
-// --- SHARED COMPONENTS ---
-const ViewToggle = ({ view, setView }) => {
+const ViewToggle = ({ view, setView }: { view: string; setView: (view: string) => void; }) => {
     return (
         <div className="p-1 flex bg-slate-200/80 dark:bg-slate-800 rounded-full border border-slate-300/80 dark:border-slate-700/80">
             <button
@@ -184,7 +242,6 @@ const ViewToggle = ({ view, setView }) => {
     );
 };
 
-// --- MAIN APP PAGE ---
 export default function Page() {
     const [view, setView] = useState('users');
 
