@@ -135,13 +135,13 @@ export function HeroSection() {
                     </div>
                   </div>
 
-                  <h1 className="text-wrap font-bold tracking-tight text-gray-800 md:text-xl xl:text-6xl">
+                  <h1 className="text-wrap text-5xl font-bold tracking-tight text-gray-800 md:text-xl xl:text-6xl">
                     Master Your Financial Future with
                     <span className=" text-wrap flex justify-center text-blue-900 font-bold lg:justify-start">
                       PaisaMastery
                     </span>
                   </h1>
-                  <p className="mt-6 text-lg text-balance font-medium text-foreground">
+                  <p className="mt-6 text-md sm:text-lg text-balance text-gray-900 font-medium">
                     Empower your investment journey with smart calculators,
                     knowledge quizzes, and powerful analysis tools designed for
                     Indian investors.
@@ -160,7 +160,7 @@ export function HeroSection() {
                     },
                     ...transitionVariants,
                   }}
-                  className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row lg:justify-start"
+                  className="mt-10 ml-5 flex flex-col  items-center justify-center gap-4 sm:flex-row lg:justify-start"
                 >
                   <Link href="/calculator/home">
                     <Button
@@ -200,9 +200,9 @@ export function HeroSection() {
                 },
                 ...transitionVariants,
               }}
-              className="relative flex w-full items-center justify-center lg:w-1/2 pt-24 lg:pt-0"
+              className="relative align-middle flex w-full items-center justify-center lg:w-1/2 pt-24 lg:pt-0"
             >
-              <div className="relative w-[70%] max-w-xl lg:max-w-3xl gap-4 ">
+              <div className="relative items-center w-[70%] max-w-xl lg:max-w-3xl gap-4 ">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentAnimationIndex}
@@ -214,7 +214,7 @@ export function HeroSection() {
                     <Lottie
                       animationData={animations[currentAnimationIndex]}
                       loop={true}
-                      className="w-full h-auto drop-shadow-2xl transition-transform duration-700 ease-out hover:scale-103"
+                      className="w-full h-auto ml-10 drop-shadow-2xl items-center transition-transform duration-700 ease-out hover:scale-103"
                     />
                   </motion.div>
                 </AnimatePresence>
