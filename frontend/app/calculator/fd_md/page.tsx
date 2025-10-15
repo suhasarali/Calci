@@ -75,16 +75,15 @@ export default function FdVsMfCalculator() {
 
   return (
     <div className="min-h-screen bg-[#fdfbf7] p-4 sm:p-6 lg:p-8">
-      <BackButton/>
+      <NavbarHome></NavbarHome>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
         viewport={{ once: false, amount: 0.3 }}
         transition={{ duration: 0.6 }}
-        className="text-center mb-6"
+        className="text-center mt-18 mb-6"
       >
-        <NavbarHome />
         
       </motion.div>
        

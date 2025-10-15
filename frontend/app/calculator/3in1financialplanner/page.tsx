@@ -12,6 +12,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import  BackButton  from "@/components/BackButton";
+import { NavbarHome } from "@/components/NavbarHome";
 
 const Card = ({ className, ...props }) => (
   <div className={`rounded-2xl border bg-white text-gray-800 shadow-lg ${className}`} {...props} />
@@ -111,8 +112,8 @@ export default function ThreeInOnePlanner() {
 
   return (
       <div className="min-h-screen bg-[#fdfbf7] p-4 sm:p-6 lg:p-8">
-        
-      <div className="max-w-7xl mx-auto">
+        <NavbarHome/>
+      <div className="max-w-7xl mt-18 mx-auto">
         <Card><BackButton/>
           <CardHeader>
             <CardTitle>3-in-1 Financial Planner</CardTitle>

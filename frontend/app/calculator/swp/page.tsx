@@ -185,8 +185,9 @@ export default function SWPCalculator() {
     }).format(value);
 
   return (
-    <div className="min-h-screen bg-[#fdfbf7] p-4 sm:p-6 lg:p-8"> 
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#fdfbf7] p-4 sm:p-6 lg:p-8">
+      <NavbarHome />
+      <div className="max-w-7xl mt-18 mx-auto">
         <Card>
           <CardHeader>
             <CardTitle>Systematic Withdrawal Plan (SWP) Calculator</CardTitle>

@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Using Shadcn Tabs
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { toWords } from 'number-to-words';
+import { NavbarHome } from "@/components/NavbarHome";
 
 // --- ICONS ---
 const RupeeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12"/><path d="M6 8h12"/><path d="M6 13h12"/><path d="M6 18h12"/><path d="M14.5 21V3"/><path d="M8 21V3"/></svg>;
@@ -73,7 +74,8 @@ export default function LumpsumInflationCalculator() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto">
+      <NavbarHome></NavbarHome>
+      <div className="max-w-6xl mt-18 mx-auto">
         <Card className="bg-white shadow-xl rounded-2xl border-gray-200">
           <CardHeader className="border-b-2 border-gray-100 p-6">
             <BackButton />

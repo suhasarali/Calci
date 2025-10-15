@@ -26,7 +26,7 @@ export function NavbarHome() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Calculators", link: "#calculators" },
+    { name: "Calculators", link: "/calculator/home" },
     { name: "Quizzes", link: "#quizzes" },
     { name: "Analysis Tools", link: "#tools" },
   ];
