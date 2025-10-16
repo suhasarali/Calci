@@ -1,9 +1,9 @@
 'use client';
 
-import { GlowCard } from "@/components/ui/spotlight-card";
 import { Users, Calculator, Award, TrendingUp } from 'lucide-react';
 import React from 'react';
 
+// --- Data for the stats cards ---
 const statsData = [
   { icon: Users, value: "100,000+", label: "Active Users" },
   { icon: Calculator, value: "1M+", label: "Calculations Done" },
@@ -16,18 +16,16 @@ export function QuantityLanding() {
     // The root div's background should have an image or gradient for the glass effect to be visible
     <div className="w-full flex flex-col md:flex-row items-center justify-center gap-5 p-8">
       {statsData.map((stat, index) => (
-        <GlowCard
+        // --- Replaced GlowCard with a standard div ---
+        // The glow effect has been removed, but the glass-like appearance is maintained.
+        <div
           key={index}
-          // --- FIX: Changed glowColor to a predefined theme color name ---
-          // The GlowCard component expects a name (e.g., "blue") for the glow, not a hex code.
-          glowColor="blue"
-          // The background color can still be your custom hex code.
-          cardBgColor="#0065FF"
-          bgOpacity={0.95}           // Kept transparency
-          className="p-6 backdrop-blur-xl" // This class is essential for the blur
-          customSize={true}
-          width={280}
-          height={280}
+          className="p-6 backdrop-blur-xl rounded-2xl" // This class is essential for the blur
+          style={{
+            backgroundColor: '#0d6eff', // This is Tailwind's blue-800 with 95% opacity
+            width: 280,
+            height: 280,
+          }}
         >
           <div className="flex flex-col items-center justify-center h-full text-center gap-4">
             <stat.icon className="size-12 text-white/80 mb-2" strokeWidth={1.5} />
@@ -38,9 +36,8 @@ export function QuantityLanding() {
               {stat.label}
             </p>
           </div>
-        </GlowCard>
+        </div>
       ))}
     </div>
   );
 };
-
