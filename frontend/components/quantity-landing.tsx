@@ -1,5 +1,3 @@
-// Your page file, e.g., QuantityLanding.tsx
-
 'use client';
 
 import { GlowCard } from "@/components/ui/spotlight-card";
@@ -16,16 +14,16 @@ const statsData = [
 export function QuantityLanding() {
   return (
     // The root div's background should have an image or gradient for the glass effect to be visible
-    <div className="w-full  flex flex-col md:flex-row items-center justify-center gap-5 p-8">
+    <div className="w-full flex flex-col md:flex-row items-center justify-center gap-5 p-8">
       {statsData.map((stat, index) => (
         <GlowCard
           key={index}
-          glowColor="orange"
-          cardBgColor="#1e40af"       // This is Tailwind's blue-800
-          // --- THE ONLY CHANGE YOU NEED IS HERE ---
-          bgOpacity={0.95}            // Add this to set transparency
-          // --- -------------------------------- ---
-
+          // --- FIX: Changed glowColor to a predefined theme color name ---
+          // The GlowCard component expects a name (e.g., "blue") for the glow, not a hex code.
+          glowColor="blue"
+          // The background color can still be your custom hex code.
+          cardBgColor="#0065FF"
+          bgOpacity={0.95}           // Kept transparency
           className="p-6 backdrop-blur-xl" // This class is essential for the blur
           customSize={true}
           width={280}
@@ -45,3 +43,4 @@ export function QuantityLanding() {
     </div>
   );
 };
+

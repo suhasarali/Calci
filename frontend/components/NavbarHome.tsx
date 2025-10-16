@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import {
@@ -36,7 +34,8 @@ export function NavbarHome() {
       await signOut(auth);
       setIsMobileMenuOpen(false); // Close mobile menu on sign out
       router.push("/");
-    } catch (error){      console.error("Error signing out:", error);
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
   };
 
@@ -66,7 +65,8 @@ export function NavbarHome() {
                 <NavbarButton variant="secondary">Login</NavbarButton>
               </Link>
             )}
-            <NavbarButton className="bg-blue-900 text-white rounded-2xl">Book a call</NavbarButton>
+            {/* --- MODIFIED: Updated button color --- */}
+            <NavbarButton className="bg-[#0065FF] text-white rounded-2xl hover:bg-[#0052CC]">Book a call</NavbarButton>
           </div>
         </NavBody>
 
@@ -76,7 +76,7 @@ export function NavbarHome() {
             <NavbarLogo />
             <MobileNavToggle
               isOpen={isMobileMenuOpen}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenu-Open)}
             />
           </MobileNavHeader>
 
@@ -93,9 +93,9 @@ export function NavbarHome() {
             ))}
             <div className="flex w-full flex-col gap-4 mt-4">
               {loading ? (
-                 <NavbarButton variant="secondary" className="w-full" disabled>Loading...</NavbarButton>
+                <NavbarButton variant="secondary" className="w-full" disabled>Loading...</NavbarButton>
               ) : user ? (
-                 <NavbarButton variant="secondary" className="w-full" onClick={handleSignOut}>
+                <NavbarButton variant="secondary" className="w-full" onClick={handleSignOut}>
                   Sign Out
                 </NavbarButton>
               ) : (
@@ -105,10 +105,10 @@ export function NavbarHome() {
                   </NavbarButton>
                 </Link>
               )}
+              {/* --- MODIFIED: Updated button color --- */}
               <NavbarButton
                 onClick={closeMobileMenu}
-                
-                className="w-full bg-blue-900 text-white rounded-2xl"
+                className="w-full bg-[#0065FF] text-white rounded-2xl hover:bg-[#0052CC]"
               >
                 Book a call
               </NavbarButton>
