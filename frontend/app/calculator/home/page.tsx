@@ -5,66 +5,54 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Search } from "lucide-react"; // Search icon
+import { Search } from "lucide-react";
 import {
-  Calculator,
-  Landmark,
-  PiggyBank,
-  TrendingUp,
-  Wallet,
-  BarChart3,
-  Car,
-  GraduationCap,
-  Coins,
-  House,
   CreditCard,
+  PiggyBank,
+  Coins,
+  BarChart3,
+  Wallet,
+  TrendingUp,
 } from "lucide-react";
 import { NavbarHome } from "@/components/NavbarHome";
 
 const calculators = [
   {
-    title: "Financial health Checkup",
-    desc: "Assess your overall financial well-being with our comprehensive checkup tool. Get a clear picture of your assets, liabilities, and cash flow to identify areas for improvement and secure your financial future.",
+    title: "Financial Health Checkup",
+    desc: "Assess your financial well-being by analyzing your assets, liabilities, and cash flow.",
     link: "/calculator/financialchecklist",
-    color: "bg-[#fefaf6]",
     icon: CreditCard,
   },
   {
-    title: "One page financial Roadmap",
-    desc: "Create a personalized, one-page financial plan to map out your long-term goals. This tool helps you visualize your path to achieving your dreams, from retirement to major life purchases.",
+    title: "One Page Financial Roadmap",
+    desc: "Create a personalized, one-page plan to map out and visualize your long-term financial goals.",
     link: "/calculator/onepagefinancialroadmap",
-    color: "bg-[#f8f9ff]",
     icon: PiggyBank,
   },
   {
-    title: "Fixed Deposit and Mutual Fund",
-    desc: "Deciding between the safety of a Fixed Deposit and the growth potential of a Mutual Fund? This calculator helps you compare post-tax returns from both to make an informed investment choice.",
+    title: "Fixed Deposit vs Mutual Fund",
+    desc: "Compare post-tax returns from FDs and Mutual Funds to make an informed investment choice.",
     link: "/calculator/fd_md",
-    color: "bg-[#fefaf6]",
     icon: Coins,
   },
   {
-    title: "3 in 1 finacial planner",
-    desc: "Simplify your financial life with our integrated planner. This tool combines your investment, term insurance, and health insurance planning into one seamless experience, helping you balance growth with protection.",
+    title: "3-in-1 Financial Planner",
+    desc: "Combine your investment, term, and health insurance planning into one seamless experience.",
     link: "/calculator/3in1financialplanner",
-    color: "bg-[#f8f9ff]",
     icon: BarChart3,
   },
   {
     title: "Systematic Withdrawal Plan (SWP)",
-    desc: "Plan your post-retirement income with our SWP calculator. Estimate how much you can withdraw from your investments periodically to ensure a steady cash flow throughout your retirement years.",
+    desc: "Estimate periodic withdrawals from your investments to ensure a steady post-retirement income.",
     link: "/calculator/swp",
-    color: "bg-[#fefaf6]",
     icon: Wallet,
   },
   {
-    title:"SIP and Lumpsum",
-    desc:"Explore the two primary ways to invest: a disciplined Systematic Investment Plan (SIP) or a one-time Lumpsum payment. This calculator projects the potential growth for both strategies to help you decide which is right for you.",
-    link:"/calculator/sipandlumpsum",
-    color:"bg-[#f8f9ff]",
-    icon:TrendingUp,
-  }
-  
+    title: "SIP vs Lumpsum",
+    desc: "Project the potential growth of both SIP and Lumpsum strategies to find the right one for you.",
+    link: "/calculator/sipandlumpsum",
+    icon: TrendingUp,
+  },
 ];
 
 export default function DashboardPage() {
@@ -107,13 +95,13 @@ export default function DashboardPage() {
               (e.target.placeholder = "Search which calculator you want")
             }
             onBlur={(e) => (e.target.placeholder = "Search")}
-            className="w-full outline-none text-gray-700 placeholder-gray-400"
+            className="w-full outline-none text-gray-700 placeholder-gray-400 bg-transparent"
           />
         </div>
       </motion.div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredCalculators.length > 0 ? (
           filteredCalculators.map((calc, i) => {
             const Icon = calc.icon;
@@ -132,13 +120,10 @@ export default function DashboardPage() {
                 }}
                 whileHover={{ y: -8, scale: 1.02 }}
               >
-                <Card
-                  className={`${calc.color} shadow-md rounded-2xl hover:shadow-2xl transition-all duration-300 border border-gray-100 flex flex-col`}
-                  style={{ aspectRatio: "1 / 1" }}
-                >
+                <Card className="bg-white shadow-md rounded-2xl hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#0065FF] flex flex-col h-full">
                   {/* Icon and Title */}
                   <CardHeader className="pb-3 flex flex-row items-center gap-3">
-                    <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <div className="p-2 bg-gray-100 rounded-lg shadow-sm">
                       <Icon className="w-6 h-6 text-gray-700" />
                     </div>
                     <CardTitle className="font-bold text-lg text-gray-800">
@@ -146,17 +131,17 @@ export default function DashboardPage() {
                     </CardTitle>
                   </CardHeader>
 
-                  {/* Centered Description */}
-                  <CardContent className="flex-grow flex flex-col items-center justify-center text-center px-4">
-                    <p className="font-bold text-gray-800 text-sm leading-relaxed">
+                  {/* Description */}
+                  <CardContent className="flex-grow px-4">
+                    <p className="text-gray-600 text-sm leading-relaxed">
                       {calc.desc}
                     </p>
                   </CardContent>
 
                   {/* Button at Bottom */}
-                  <div className="px-4 pb-4">
+                  <div className="px-4 pb-4 mt-4"> {/* <-- Change is here */}
                     <Link href={calc.link}>
-                      <Button className="w-full bg-gray-900 text-white hover:bg-gray-800 rounded-lg py-2 transition-colors duration-300">
+                      <Button className="w-full bg-[#0065FF] text-white hover:bg-[#0052cc] rounded-lg py-2 transition-colors duration-300">
                         Calculate Now
                       </Button>
                     </Link>
@@ -174,5 +159,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-
