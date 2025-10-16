@@ -395,7 +395,7 @@ export function HeroSection() {
                     },
                     ...transitionVariants,
                   }}
-                  className="mt-10 ml-6 flex flex-col  items-center justify-center gap-4 sm:flex-row lg:justify-start"
+                  className="mt-10 ml-7 flex flex-col  items-center justify-center gap-4 sm:flex-row lg:justify-start"
                 >
                   <Link href="/calculator/home">
                     <Button
