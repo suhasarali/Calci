@@ -84,13 +84,12 @@ export default function FdVsMfCalculator() {
         transition={{ duration: 0.6 }}
         className="text-center mt-18 mb-6"
       >
-        
       </motion.div>
        
       <div className="max-w-7xl mx-auto mt-10">
         <Card className="bg-white shadow-lg rounded-2xl">
-          <CardHeader>
-           
+          <BackButton></BackButton>
+          <CardHeader>          
             <CardTitle className="text-2xl font-bold text-gray-800 text-center">
               Fixed Deposit vs. Mutual Fund Calculator
             </CardTitle>

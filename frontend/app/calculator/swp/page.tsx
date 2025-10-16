@@ -194,6 +194,7 @@ export default function SWPCalculator() {
       <NavbarHome />
       <div className="max-w-7xl mt-18 mx-auto">
         <Card>
+          <BackButton />
           <CardHeader>
             <CardTitle>Systematic Withdrawal Plan (SWP) Calculator</CardTitle>
           </CardHeader>
