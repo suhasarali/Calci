@@ -13,6 +13,11 @@ import {
 } from "recharts";
 import BackButton from "@/components/BackButton";
 import { NavbarHome } from "@/components/NavbarHome";
+// --- Import icons ---
+import { FaRegCalendarAlt, FaPercentage } from "react-icons/fa";
+import { BsCurrencyRupee } from "react-icons/bs";
+import { FiTrendingUp, FiRepeat } from "react-icons/fi";
+
 
 const Card = ({ className, ...props }) => (
   <div className={`rounded-2xl border bg-white text-gray-800 shadow-lg ${className}`} {...props} />
@@ -206,19 +211,19 @@ export default function SWPCalculator() {
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1 space-y-4">
-                    <InputRow label="Initial Investment (₹)">
+                    <InputRow label="Initial Investment (₹)" icon={<BsCurrencyRupee className="text-gray-500"/>}>
                         <input type="number" value={initialInvestment} onChange={(e) => setInitialInvestment(e.target.value)} className="input-field" required/>
                         {Number(initialInvestment) > 0 && (
                             <p className="text-sm text-blue-600 mt-1 font-semibold">{numberToWordsInIndianSystem(Number(initialInvestment))} Rupees</p>
                         )}
                     </InputRow>
-                    <InputRow label="Annual Rate of Return (%)">
+                    <InputRow label="Annual Rate of Return (%)" icon={<FiTrendingUp className="text-gray-500"/>}>
                         <input type="number" value={annualReturn} onChange={(e) => setAnnualReturn(e.target.value)} className="input-field" required/>
                     </InputRow>
-                    <InputRow label="Investment Duration (Years)">
+                    <InputRow label="Investment Tenure (Years)" icon={<FaRegCalendarAlt className="text-gray-500"/>}>
                         <input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} className="input-field" required/>
                     </InputRow>
-                    <InputRow label="Withdrawal Frequency">
+                    <InputRow label="Withdrawal Frequency" icon={<FiRepeat className="text-gray-500"/>}>
                         <select value={frequency} onChange={(e) => setFrequency(e.target.value)} className="input-field" required>
                             <option>Monthly</option>
                             <option>Quarterly</option>
@@ -228,14 +233,14 @@ export default function SWPCalculator() {
                     </InputRow>
                     
                     {mode === 'amount' ? (
-                        <InputRow label={`Withdrawal Amount per ${frequency.replace('ly', '')} (₹)`}>
+                        <InputRow label={`Withdrawal Amount per ${frequency.replace('ly', '')} (₹)`} icon={<BsCurrencyRupee className="text-gray-500"/>}>
                             <input type="number" value={withdrawalAmount} onChange={(e) => setWithdrawalAmount(e.target.value)} className="input-field" required/>
                             {Number(withdrawalAmount) > 0 && (
                                 <p className="text-sm text-blue-600 mt-1 font-semibold">{numberToWordsInIndianSystem(Number(withdrawalAmount))} Rupees</p>
                             )}
                         </InputRow>
                     ) : (
-                        <InputRow label="Annual Withdrawal Percentage (%)">
+                        <InputRow label="Annual Withdrawal Percentage (%)" icon={<FaPercentage className="text-gray-500"/>}>
                            <input type="number" value={withdrawalPercentage} onChange={(e) => setWithdrawalPercentage(e.target.value)} className="input-field" required/>
                         </InputRow>
                     )}
@@ -273,7 +278,7 @@ export default function SWPCalculator() {
           </CardContent>
         </Card>
       </div>
-       <style jsx global>{`
+      <style jsx global>{`
         .input-field {
             width: 100%;
             margin-top: 4px;
@@ -297,9 +302,12 @@ export default function SWPCalculator() {
 
 // --- Helper Sub-components ---
 
-const InputRow = ({ label, children }) => (
+const InputRow = ({ label, children, icon }) => (
     <div>
-        <label className="block text-sm font-medium text-gray-600">{label}</label>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-600">
+          {icon}
+          <span>{label}</span>
+        </label>
         {children}
     </div>
 );
@@ -312,4 +320,3 @@ const ResultRow = ({ label, value, isFinal = false }) => (
     </p>
   </div>
 );
-
