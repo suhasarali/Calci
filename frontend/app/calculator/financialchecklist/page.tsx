@@ -644,13 +644,19 @@ export default function FinancialHealthCheckupPage() {
                       >
                         <NavbarHome />
                       </motion.div>
-                <BackButton />
-                <main className="flex-grow">
-                    {view === "landing" && <LandingView setView={setView} numericDone={numericDone} yesNoDone={yesNoDone} />}
-                    {view === "numeric" && <NumericFullscreen numericState={recalculateTargets(numericState)} updateNumericValue={updateNumericValue} computeGap={computeGap} computeRating={computeRating} handleNumericSubmit={handleNumericSubmit} setView={setView} isDesktop={isDesktop} />}
-                    {view === "yesno" && <YesNoFullscreen yesNoState={yesNoState} updateYesNoValue={updateYesNoValue} handleYesNoSubmit={handleYesNoSubmit} setView={setView} isDesktop={isDesktop} />}
-                    {view === "results" && <ResultsFullscreen finalScore={finalScore} numericScoreWeighted={numericScoreWeighted} yesScoreWeighted={yesScoreWeighted} setView={setView} onOpenReport={() => setIsReportModalOpen(true)} />}
-                </main>
+                <div className="max-w-5xl mx-auto mt-22 px-4 w-full">
+                  <Card className="bg-white shadow-lg rounded-2xl">
+                    <BackButton />
+                    <CardContent className="p-6">
+                      <main className="flex-grow">
+                        {view === "landing" && <LandingView setView={setView} numericDone={numericDone} yesNoDone={yesNoDone} />}
+                        {view === "numeric" && <NumericFullscreen numericState={recalculateTargets(numericState)} updateNumericValue={updateNumericValue} computeGap={computeGap} computeRating={computeRating} handleNumericSubmit={handleNumericSubmit} setView={setView} isDesktop={isDesktop} />}
+                        {view === "yesno" && <YesNoFullscreen yesNoState={yesNoState} updateYesNoValue={updateYesNoValue} handleYesNoSubmit={handleYesNoSubmit} setView={setView} isDesktop={isDesktop} />}
+                        {view === "results" && <ResultsFullscreen finalScore={finalScore} numericScoreWeighted={numericScoreWeighted} yesScoreWeighted={yesScoreWeighted} setView={setView} onOpenReport={() => setIsReportModalOpen(true)} />}
+                      </main>
+                    </CardContent>
+                  </Card>
+                </div>
                 {/* <Footer4Col /> */}
                 
                 <ReportModal 

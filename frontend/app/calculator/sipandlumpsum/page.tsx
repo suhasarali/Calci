@@ -77,17 +77,17 @@ export default function LumpsumInflationCalculator() {
       <NavbarHome></NavbarHome>
       <div className="max-w-6xl mt-18 mx-auto">
         <Card className="bg-white shadow-xl rounded-2xl border-gray-200">
-          <CardHeader className="border-b-2 border-gray-100 p-6">
-            <BackButton />
+          <BackButton />
+          <CardHeader className="border-b-2 border-gray-100 p-2">
             <CardTitle className="text-3xl font-bold text-gray-800 text-center">Lumpsum Inflation Calculator</CardTitle>
           </CardHeader>
-          <CardContent className="p-6 md:p-8">
+          <CardContent className="p-2 md:p-8">
             {/* --- INPUTS SECTION --- */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 mb-8">
               <InputWithIcon Icon={RupeeIcon} label="Lumpsum Amount (₹)" value={formatCurrency(lumpsumAmount)} onChange={(e) => { const num = parseCurrency(e.target.value); if (!isNaN(num)) setLumpsumAmount(num); }} subText={`${capitalize(toWords(lumpsumAmount))} Rupees`}/>
-              <InputWithIcon Icon={CalendarIcon} label="Investment Tenure (Years)" type="number" min={1} max={50} value={investmentTenure} onChange={(e) => setInvestmentTenure(Number(e.target.value))}/>
-              <InputWithIcon Icon={PercentIcon} label="Rate of Interest (% p.a.)" type="number" min={1} max={30} step={0.5} value={interestRate} onChange={(e) => setInterestRate(Number(e.target.value))}/>
-              <InputWithIcon Icon={TrendingUpIcon} label="Inflation Rate (% p.a.)" type="number" min={1} max={20} step={0.5} value={inflationRate} onChange={(e) => setInflationRate(Number(e.target.value))}/>
+              <InputWithIcon Icon={CalendarIcon} label="Investment Tenure (Years)" type="number" min={1} max={50} value={investmentTenure} onChange={(e) => setInvestmentTenure(Number(e.target.value))} subText={undefined}/>
+              <InputWithIcon Icon={PercentIcon} label="Rate of Interest (% p.a.)" type="number" min={1} max={30} step={0.5} value={interestRate} onChange={(e) => setInterestRate(Number(e.target.value))} subText={undefined}/>
+              <InputWithIcon Icon={TrendingUpIcon} label="Inflation Rate (% p.a.)" type="number" min={1} max={20} step={0.5} value={inflationRate} onChange={(e) => setInflationRate(Number(e.target.value))} subText={undefined}/>
             </div>
             
             {/* --- TOGGLE FOR SPECIFIC YEAR --- */}
@@ -125,7 +125,7 @@ export default function LumpsumInflationCalculator() {
                                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                                     <XAxis dataKey="year" />
                                     <YAxis tickFormatter={(value) => formatCurrency(value)} />
-                                    <Tooltip content={<CustomTooltip />} />
+                                    <Tooltip content={<CustomTooltip active={undefined} payload={undefined} label={undefined} />} />
                                     <Legend />
                                     <Line type="monotone" dataKey="Generated Wealth" stroke="#10b981" strokeWidth={3} dot={false} />
                                     <Line type="monotone" dataKey="Inflation-Adjusted Wealth" stroke="#3b82f6" strokeWidth={3} dot={false} />

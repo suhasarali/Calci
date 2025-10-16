@@ -114,7 +114,8 @@ export default function ThreeInOnePlanner() {
       <div className="min-h-screen bg-[#fdfbf7] p-4 sm:p-6 lg:p-8">
         <NavbarHome/>
       <div className="max-w-7xl mt-18 mx-auto">
-        <Card><BackButton/>
+        <Card>
+          <BackButton/>
           <CardHeader>
             <CardTitle>3-in-1 Financial Planner</CardTitle>
           </CardHeader>

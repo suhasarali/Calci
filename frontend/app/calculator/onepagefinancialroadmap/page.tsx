@@ -346,27 +346,24 @@ export default function OnePageFinancialRoadmap() {
     <TooltipProvider>
       <div className="min-h-screen bg-gray-50 text-gray-800">
         {/* <NavbarHome /> */}
+       <NavbarHome></NavbarHome>
         <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 viewport={{ once: false, amount: 0.3 }}
                 transition={{ duration: 0.6 }}
-                className="text-center mb-4"
+                className="text-center"
               >
-                <NavbarHome />
-                
               </motion.div>
-        <BackButton />
-
-        <main className="max-w-5xl mx-auto px-4 py-8 md:py-16">
+        <main className="max-w-5xl mx-auto mt-[105px] mb-16 px-4 pt-4 md:pt-6 md:pb-16 border-2 border-gray-300 rounded-3xl shadow-lg">
+          <BackButton />
           <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5}} className="text-center mb-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">Your One-Page Financial Roadmap</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 No more guesswork. Input your details to generate a clear, actionable financial plan in seconds.
             </p>
           </motion.div>
-
           <Section title="Section 1: Personal Details" defaultOpen isComplete={isPersonalDetailsComplete}>
             <Card className={`transition-all border-2 ${isPersonalDetailsComplete ? 'border-green-400' : 'border-transparent'}`}>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 pt-6">
