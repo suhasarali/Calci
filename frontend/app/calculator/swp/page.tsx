@@ -17,6 +17,7 @@ import { NavbarHome } from "@/components/NavbarHome";
 import { FaRegCalendarAlt, FaPercentage } from "react-icons/fa";
 import { BsCurrencyRupee } from "react-icons/bs";
 import { FiTrendingUp, FiRepeat } from "react-icons/fi";
+import { ToWords } from 'to-words';
 
 
 const Card = ({ className, ...props }) => (
@@ -189,6 +190,14 @@ export default function SWPCalculator() {
       maximumFractionDigits: 0,
     }).format(value);
 
+    const toWords = new ToWords({
+    localeCode: 'en-IN',
+    converterOptions: {
+      currency: true,
+      ignoreDecimal: true,
+    }
+  });
+
   return (
     <div className="min-h-screen bg-[#fdfbf7] p-4 sm:p-6 lg:p-8">
       <NavbarHome />
@@ -215,7 +224,7 @@ export default function SWPCalculator() {
                     <InputRow label="Initial Investment (₹)" icon={<BsCurrencyRupee className="text-gray-500"/>}>
                         <input type="number" value={initialInvestment} onChange={(e) => setInitialInvestment(e.target.value)} className="input-field" required/>
                         {Number(initialInvestment) > 0 && (
-                            <p className="text-sm text-blue-600 mt-1 font-semibold">{numberToWordsInIndianSystem(Number(initialInvestment))} Rupees</p>
+                            <p className="text-sm text-blue-600 mt-1 font-semibold">{toWords.convert(Number(initialInvestment))}</p>
                         )}
                     </InputRow>
                     <InputRow label="Annual Rate of Return (%)" icon={<FiTrendingUp className="text-gray-500"/>}>
@@ -237,7 +246,7 @@ export default function SWPCalculator() {
                         <InputRow label={`Withdrawal Amount per ${frequency.replace('ly', '')} (₹)`} icon={<BsCurrencyRupee className="text-gray-500"/>}>
                             <input type="number" value={withdrawalAmount} onChange={(e) => setWithdrawalAmount(e.target.value)} className="input-field" required/>
                             {Number(withdrawalAmount) > 0 && (
-                                <p className="text-sm text-blue-600 mt-1 font-semibold">{numberToWordsInIndianSystem(Number(withdrawalAmount))} Rupees</p>
+                                <p className="text-sm text-blue-600 mt-1 font-semibold">{toWords.convert(Number(withdrawalAmount))}</p>
                             )}
                         </InputRow>
                     ) : (

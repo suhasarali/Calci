@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid,
 } from "recharts";
-import { toWords } from 'number-to-words';
+import { ToWords } from 'to-words';
 import { NavbarHome } from "@/components/NavbarHome";
 // Import icons from lucide-react
 import { IndianRupee, CalendarDays, Percent, ReceiptText, TrendingUp } from "lucide-react";
@@ -63,12 +63,13 @@ export default function FdVsMfCalculator() {
     { name: "Wealth After Tax", FD: fdCalculations.netReturn, MF: mfCalculations.netReturn },
   ];
 
-  const formatCurrency = (value) =>
-    new Intl.NumberFormat("en-IN", {
-      style: "currency",
-      currency: "INR",
-      maximumFractionDigits: 0,
-    }).format(value);
+  const toWords = new ToWords({
+  localeCode: 'en-IN',
+  converterOptions: {
+    currency: true,
+    ignoreDecimal: true,
+  }
+});
     
   const preTaxDifference = mfCalculations.maturity - fdCalculations.maturity;
   const postTaxDifference = mfCalculations.netReturn - fdCalculations.netReturn;
@@ -132,7 +133,7 @@ export default function FdVsMfCalculator() {
                       className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 font-semibold"
                     />
                     <p className="text-xs text-blue-600 mt-1">
-                      {capitalize(toWords(investmentAmount))} Rupees
+                      {capitalize(toWords.convert(investmentAmount))}
                     </p>
                   </div>
 

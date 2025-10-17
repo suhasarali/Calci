@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import BackButton from "@/components/BackButton";
 import { NavbarHome } from "@/components/NavbarHome";
-import { toWords } from 'number-to-words';
+import { ToWords } from 'to-words';
 import {
     IndianRupee,
     TrendingUp,
@@ -125,6 +125,14 @@ export default function ThreeInOnePlanner() {
       maximumFractionDigits: 0,
     }).format(value);
 
+    const toWords = new ToWords({
+    localeCode: 'en-IN',
+    converterOptions: {
+      currency: true,
+      ignoreDecimal: true,
+    }
+  });
+
   return (
       <div className="min-h-screen bg-[#fdfbf7] p-4 sm:p-6 lg:p-8">
         <NavbarHome/>
@@ -141,7 +149,7 @@ export default function ThreeInOnePlanner() {
                 <InputSection title="Investment Plan">
                     <InputRow label="Monthly Contribution (₹)" icon={<IndianRupee />}>
                         <input type="number" value={monthlyContribution} onChange={(e) => setMonthlyContribution(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
-                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(monthlyContribution))} Rupees</p>
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords.convert(monthlyContribution))}</p>
                     </InputRow>
                     <InputRow label="Annual Step-Up (%)" icon={<TrendingUp />}>
                         <input type="number" value={annualStepUp} onChange={(e) => setAnnualStepUp(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
@@ -161,19 +169,19 @@ export default function ThreeInOnePlanner() {
                 <InputSection title="Insurance Details">
                     <InputRow label="Term Insurance Cover Amount (₹)" icon={<ShieldCheck />}>
                         <input type="number" value={termCoverAmount} onChange={(e) => setTermCoverAmount(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
-                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(termCoverAmount))} Rupees</p>
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords.convert(termCoverAmount))}</p>
                     </InputRow>
                     <InputRow label="Yearly Term Insurance Premium (₹)" icon={<ReceiptText />}>
                         <input type="number" value={termPremium} onChange={(e) => setTermPremium(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
-                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(termPremium))} Rupees</p>
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords.convert(termPremium))}</p>
                     </InputRow>
                      <InputRow label="Health Insurance Cover Amount (₹)" icon={<HeartPulse />}>
                         <input type="number" value={healthCoverAmount} onChange={(e) => setHealthCoverAmount(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
-                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(healthCoverAmount))} Rupees</p>
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords.convert(healthCoverAmount))}</p>
                      </InputRow>
                     <InputRow label="Yearly Health Insurance Premium (₹)" icon={<ReceiptText />}>
                         <input type="number" value={healthPremium} onChange={(e) => setHealthPremium(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
-                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(healthPremium))} Rupees</p>
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords.convert(healthPremium))}</p>
                     </InputRow>
                      <InputRow label="Health Premium Increase on Renewal (%)" icon={<TrendingUp />}>
                         <input type="number" value={premiumIncreaseRate} onChange={(e) => setPremiumIncreaseRate(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
