@@ -8,9 +8,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid,
 } from "recharts";
-// Import the library to convert numbers to words
 import { toWords } from 'number-to-words';
 import { NavbarHome } from "@/components/NavbarHome";
+// Import icons from lucide-react
+import { IndianRupee, CalendarDays, Percent, ReceiptText, TrendingUp } from "lucide-react";
 
 // Helper function to capitalize the first letter of a string
 const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -20,7 +21,6 @@ const parseCurrency = (value) => {
     if (typeof value !== 'string') return value;
     return Number(value.replace(/[^0-9.-]+/g,""));
 };
-
 
 // Main Calculator Component
 export default function FdVsMfCalculator() {
@@ -98,9 +98,15 @@ export default function FdVsMfCalculator() {
             <Tabs defaultValue={mode} className="w-full">
               <div className="flex justify-center mb-6">
                 <TabsList className="grid w-full max-w-md grid-cols-3">
-                  <TabsTrigger value="fd" onClick={() => setMode("fd")}>FD</TabsTrigger>
-                  <TabsTrigger value="mf" onClick={() => setMode("mf")}>MF</TabsTrigger>
-                  <TabsTrigger value="compare" onClick={() => setMode("compare")}>Compare</TabsTrigger>
+                  <TabsTrigger value="fd" onClick={() => setMode("fd")} className="data-[state=active]:text-blue-700">
+                    FD
+                  </TabsTrigger>
+                  <TabsTrigger value="mf" onClick={() => setMode("mf")} className="data-[state=active]:text-blue-700">
+                    MF
+                  </TabsTrigger>
+                  <TabsTrigger value="compare" onClick={() => setMode("compare")} className="data-[state=active]:text-blue-700">
+                    Compare
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
@@ -110,7 +116,10 @@ export default function FdVsMfCalculator() {
                 <div className="space-y-6">
                   <h3 className="text-lg font-semibold text-gray-700">Investment Details</h3>
                   <div>
-                    <label className="block text-sm font-medium text-gray-600">Investment Amount (₹)</label>
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
+                      <IndianRupee className="h-4 w-4 text-gray-500" />
+                      <span>Investment Amount (₹)</span>
+                    </label>
                     <input
                       type="text"
                       value={`₹ ${new Intl.NumberFormat('en-IN').format(investmentAmount)}`}
@@ -128,7 +137,10 @@ export default function FdVsMfCalculator() {
                   </div>
 
                   <div className="pt-2">
-                    <label className="block text-sm font-medium text-gray-600">Investment Period (Years)</label>
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
+                        <CalendarDays className="h-4 w-4 text-gray-500" />
+                        <span>Investment Period (Years)</span>
+                    </label>
                     <input
                       type="number" min={1} max={30} step={1} value={investmentPeriod}
                       onChange={(e) => setInvestmentPeriod(Number(e.target.value))}
@@ -142,7 +154,10 @@ export default function FdVsMfCalculator() {
                 <div className={`${mode === "mf" ? "opacity-40 pointer-events-none" : ""} space-y-6`}>
                   <h3 className="text-lg font-semibold text-gray-700">Fixed Deposit (FD)</h3>
                   <div>
-                    <label className="block text-sm font-medium text-gray-600">Rate of Interest (% p.a.)</label>
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
+                        <Percent className="h-4 w-4 text-gray-500" />
+                        <span>Rate of Interest (% p.a.)</span>
+                    </label>
                     <input
                       type="number" min={4} max={10} step={0.25} value={fdRate}
                       onChange={(e) => setFdRate(Number(e.target.value))}
@@ -151,7 +166,10 @@ export default function FdVsMfCalculator() {
                     <p className="text-sm text-blue-600 mt-1 font-semibold">{fdRate}%</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-600">Income Tax Bracket (%)</label>
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
+                        <ReceiptText className="h-4 w-4 text-gray-500" />
+                        <span>Income Tax Bracket (%)</span>
+                    </label>
                     <input
                       type="number" min={0} max={30} step={5} value={taxBracket}
                       onChange={(e) => setTaxBracket(Number(e.target.value))}
@@ -165,7 +183,10 @@ export default function FdVsMfCalculator() {
                 <div className={`${mode === "fd" ? "opacity-40 pointer-events-none" : ""} space-y-6`}>
                   <h3 className="text-lg font-semibold text-gray-700">Mutual Fund (MF)</h3>
                   <div>
-                    <label className="block text-sm font-medium text-gray-600">Expected Return (% p.a.)</label>
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
+                        <TrendingUp className="h-4 w-4 text-gray-500" />
+                        <span>Expected Return (% p.a.)</span>
+                    </label>
                     <input
                       type="number" min={5} max={25} step={0.5} value={mfRate}
                       onChange={(e) => setMfRate(Number(e.target.value))}
@@ -174,7 +195,10 @@ export default function FdVsMfCalculator() {
                     <p className="text-sm text-blue-600 mt-1 font-semibold">{mfRate}%</p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-600">LTCG Tax Rate (%)</label>
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
+                        <ReceiptText className="h-4 w-4 text-gray-500" />
+                        <span>LTCG Tax Rate (%)</span>
+                    </label>
                      <input
                       type="number" min={0} max={20} step={0.5} value={ltcgRate}
                       onChange={(e) => setLtcgRate(Number(e.target.value))}

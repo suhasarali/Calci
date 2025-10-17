@@ -11,9 +11,29 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import  BackButton  from "@/components/BackButton";
+import BackButton from "@/components/BackButton";
 import { NavbarHome } from "@/components/NavbarHome";
+import { toWords } from 'number-to-words';
+import {
+    IndianRupee,
+    TrendingUp,
+    CalendarDays,
+    Percent,
+    TrendingDown,
+    ShieldCheck,
+    ReceiptText,
+    HeartPulse
+} from 'lucide-react';
 
+
+// --- Helper Functions ---
+const capitalize = (s) => {
+    if (typeof s !== 'string') return '';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+
+// --- UI Components ---
 const Card = ({ className, ...props }) => (
   <div className={`rounded-2xl border bg-white text-gray-800 shadow-lg ${className}`} {...props} />
 );
@@ -48,7 +68,6 @@ export default function ThreeInOnePlanner() {
 
   // --- Derived Calculations ---
   const calculations = useMemo(() => {
-    const termMonthly = termPremium / 12; // Assumed constant
     const inflation = inflationRate / 100;
     const annualReturnRate = expectedReturn / 100;
     const stepUpRate = annualStepUp / 100;
@@ -59,6 +78,7 @@ export default function ThreeInOnePlanner() {
     
     let currentMonthlyContribution = monthlyContribution;
     let currentHealthPremium = healthPremium;
+    const termMonthly = termPremium / 12;
 
     const chartData = [{ year: 0, invested: 0, wealth: 0 }];
 
@@ -68,11 +88,6 @@ export default function ThreeInOnePlanner() {
       const currentAnnualSip = actualMonthlySip * 12;
       
       totalInvested += currentAnnualSip;
-
-      // Revised annual calculation:
-      // Assumes the annual contribution is made at the start of the year,
-      // then the entire corpus grows over that year. This is a common
-      // simplification that aligns better with spreadsheet models.
       totalWealth = (totalWealth + currentAnnualSip) * (1 + annualReturnRate);
 
       chartData.push({
@@ -91,7 +106,7 @@ export default function ThreeInOnePlanner() {
     const initialSip = Math.max(0, monthlyContribution - (termPremium / 12) - (healthPremium / 12));
 
     return {
-      termMonthly: termPremium / 12,
+      termMonthly,
       healthMonthly: healthPremium / 12,
       actualSip: initialSip,
       totalWealth,
@@ -124,38 +139,43 @@ export default function ThreeInOnePlanner() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                 {/* Investment Inputs */}
                 <InputSection title="Investment Plan">
-                    <InputRow label="Monthly Contribution (₹)">
+                    <InputRow label="Monthly Contribution (₹)" icon={<IndianRupee />}>
                         <input type="number" value={monthlyContribution} onChange={(e) => setMonthlyContribution(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(monthlyContribution))} Rupees</p>
                     </InputRow>
-                    <InputRow label="Annual Step-Up (%)">
+                    <InputRow label="Annual Step-Up (%)" icon={<TrendingUp />}>
                         <input type="number" value={annualStepUp} onChange={(e) => setAnnualStepUp(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
                     </InputRow>
-                    <InputRow label="Contribution Period (Years)">
+                    <InputRow label="Contribution Period (Years)" icon={<CalendarDays />}>
                         <input type="number" value={contributionPeriod} onChange={(e) => setContributionPeriod(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
                     </InputRow>
-                    <InputRow label="Expected Annual Return (%)">
+                    <InputRow label="Expected Annual Return (%)" icon={<Percent />}>
                         <input type="number" value={expectedReturn} onChange={(e) => setExpectedReturn(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
                     </InputRow>
-                     <InputRow label="Assumed Annual Inflation (%)">
+                     <InputRow label="Assumed Annual Inflation (%)" icon={<TrendingDown />}>
                         <input type="number" value={inflationRate} onChange={(e) => setInflationRate(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
                     </InputRow>
                 </InputSection>
 
                 {/* Insurance Inputs */}
                 <InputSection title="Insurance Details">
-                    <InputRow label="Term Insurance Cover Amount (₹)">
+                    <InputRow label="Term Insurance Cover Amount (₹)" icon={<ShieldCheck />}>
                         <input type="number" value={termCoverAmount} onChange={(e) => setTermCoverAmount(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(termCoverAmount))} Rupees</p>
                     </InputRow>
-                    <InputRow label="Yearly Term Insurance Premium (₹)">
+                    <InputRow label="Yearly Term Insurance Premium (₹)" icon={<ReceiptText />}>
                         <input type="number" value={termPremium} onChange={(e) => setTermPremium(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(termPremium))} Rupees</p>
                     </InputRow>
-                     <InputRow label="Health Insurance Cover Amount (₹)">
+                     <InputRow label="Health Insurance Cover Amount (₹)" icon={<HeartPulse />}>
                         <input type="number" value={healthCoverAmount} onChange={(e) => setHealthCoverAmount(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
-                    </InputRow>
-                    <InputRow label="Yearly Health Insurance Premium (₹)">
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(healthCoverAmount))} Rupees</p>
+                     </InputRow>
+                    <InputRow label="Yearly Health Insurance Premium (₹)" icon={<ReceiptText />}>
                         <input type="number" value={healthPremium} onChange={(e) => setHealthPremium(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
+                        <p className="text-xs text-blue-600 mt-1">{capitalize(toWords(healthPremium))} Rupees</p>
                     </InputRow>
-                     <InputRow label="Health Premium Increase on Renewal (%)">
+                     <InputRow label="Health Premium Increase on Renewal (%)" icon={<TrendingUp />}>
                         <input type="number" value={premiumIncreaseRate} onChange={(e) => setPremiumIncreaseRate(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
                     </InputRow>
                 </InputSection>
@@ -217,9 +237,12 @@ const InputSection = ({ title, children }) => (
     </div>
 );
 
-const InputRow = ({ label, children }) => (
+const InputRow = ({ label, icon, children }) => (
     <div>
-        <label className="block text-sm font-medium text-gray-600">{label}</label>
+        <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
+            {icon && React.cloneElement(icon, { className: "h-4 w-4 text-gray-500"})}
+            <span>{label}</span>
+          </label>
         {children}
     </div>
 );
@@ -232,5 +255,3 @@ const ResultRow = ({ label, value, isFinal = false }) => (
     </p>
   </div>
 );
-
-
