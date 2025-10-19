@@ -5,14 +5,15 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Search } from "lucide-react";
 import {
+  Search,
   CreditCard,
   PiggyBank,
   Coins,
   BarChart3,
   Wallet,
   TrendingUp,
+  Calendar, // Using Calendar for SIP
 } from "lucide-react";
 import { NavbarHome } from "@/components/NavbarHome";
 
@@ -47,10 +48,17 @@ const calculators = [
     link: "/calculator/swp",
     icon: Wallet,
   },
+  // --- NEW SEPARATE CARDS ---
   {
-    title: "SIP vs Lumpsum",
-    desc: "Project the potential growth of both SIP and Lumpsum strategies to find the right one for you.",
-    link: "/calculator/sipandlumpsum",
+    title: "SIP Calculator",
+    desc: "Project the future value of your monthly investments with a Systematic Investment Plan.",
+    link: "/calculator/Sip_l", // New link for the dedicated SIP page
+    icon: Calendar,
+  },
+  {
+    title: "Lumpsum Calculator",
+    desc: "Estimate the future value of a one-time investment to see how your money can grow over time.",
+    link: "/calculator/lumpsum", // New link for the dedicated Lumpsum page
     icon: TrendingUp,
   },
 ];
@@ -58,14 +66,12 @@ const calculators = [
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter calculators by title based on search query
   const filteredCalculators = calculators.filter((calc) =>
     calc.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 md:p-10">
-      {/* Header / Navbar */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -77,7 +83,6 @@ export default function DashboardPage() {
         <NavbarHome />
       </motion.div>
 
-      {/* Search Bar */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -100,7 +105,6 @@ export default function DashboardPage() {
         </div>
       </motion.div>
 
-      {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredCalculators.length > 0 ? (
           filteredCalculators.map((calc, i) => {
@@ -121,7 +125,6 @@ export default function DashboardPage() {
                 whileHover={{ y: -8, scale: 1.02 }}
               >
                 <Card className="bg-white shadow-md rounded-2xl hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#0065FF] flex flex-col h-full">
-                  {/* Icon and Title */}
                   <CardHeader className="pb-3 flex flex-row items-center gap-3">
                     <div className="p-2 bg-gray-100 rounded-lg shadow-sm">
                       <Icon className="w-6 h-6 text-gray-700" />
@@ -130,16 +133,12 @@ export default function DashboardPage() {
                       {calc.title}
                     </CardTitle>
                   </CardHeader>
-
-                  {/* Description */}
                   <CardContent className="flex-grow px-4">
                     <p className="text-gray-600 text-sm leading-relaxed">
                       {calc.desc}
                     </p>
                   </CardContent>
-
-                  {/* Button at Bottom */}
-                  <div className="px-4 pb-4 mt-4"> {/* <-- Change is here */}
+                  <div className="px-4 pb-4 mt-4">
                     <Link href={calc.link}>
                       <Button className="w-full bg-[#0065FF] text-white hover:bg-[#0052cc] rounded-lg py-2 transition-colors duration-300">
                         Calculate Now
