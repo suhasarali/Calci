@@ -29,7 +29,7 @@ const CardHeader = ({ className, ...props }) => (
 );
 
 const CardTitle = ({ className, ...props }) => (
-  <h2 className={`text-2xl font-bold tracking-tight text-center ${className}`} {...props} />
+  <h2 className={`text-2xl font-bold tracking-tight text-blue-600 text-center ${className}`} {...props} />
 );
 
 const CardContent = ({ className, ...props }) => (

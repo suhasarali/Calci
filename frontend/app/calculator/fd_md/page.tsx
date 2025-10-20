@@ -62,6 +62,14 @@ export default function FdVsMfCalculator() {
     { name: "Maturity Value", FD: fdCalculations.maturity, MF: mfCalculations.maturity },
     { name: "Wealth After Tax", FD: fdCalculations.netReturn, MF: mfCalculations.netReturn },
   ];
+const formatCurrency = (value) => {
+  if (isNaN(value)) return "₹0";
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(value);
+};
 
   const toWords = new ToWords({
   localeCode: 'en-IN',
@@ -91,7 +99,7 @@ export default function FdVsMfCalculator() {
         <Card className="bg-white shadow-lg rounded-2xl">
           <BackButton></BackButton>
           <CardHeader>          
-            <CardTitle className="text-2xl font-bold text-gray-800 text-center">
+            <CardTitle className="text-2xl font-bold text-blue-600 text-center">
               Fixed Deposit vs. Mutual Fund Calculator
             </CardTitle>
           </CardHeader>
@@ -112,9 +120,9 @@ export default function FdVsMfCalculator() {
               </div>
 
               {/* Inputs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 px-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 px-4 ">
                 {/* Investment Details */}
-                <div className="space-y-6">
+                <div className="space-y-6 ">
                   <h3 className="text-lg font-semibold text-gray-700">Investment Details</h3>
                   <div>
                     <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
@@ -137,7 +145,7 @@ export default function FdVsMfCalculator() {
                     </p>
                   </div>
 
-                  <div className="pt-2">
+                  <div className="-mt-4">
                     <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
                         <CalendarDays className="h-4 w-4 text-gray-500" />
                         <span>Investment Period (Years)</span>
@@ -145,9 +153,8 @@ export default function FdVsMfCalculator() {
                     <input
                       type="number" min={1} max={30} step={1} value={investmentPeriod}
                       onChange={(e) => setInvestmentPeriod(Number(e.target.value))}
-                      className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
                     />
-                    <p className="text-sm text-blue-600 mt-1 font-semibold">{investmentPeriod} years</p>
                   </div>
                 </div>
 
@@ -164,7 +171,6 @@ export default function FdVsMfCalculator() {
                       onChange={(e) => setFdRate(Number(e.target.value))}
                       className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
                     />
-                    <p className="text-sm text-blue-600 mt-1 font-semibold">{fdRate}%</p>
                   </div>
                   <div>
                     <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
@@ -176,7 +182,6 @@ export default function FdVsMfCalculator() {
                       onChange={(e) => setTaxBracket(Number(e.target.value))}
                       className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
                     />
-                    <p className="text-sm text-blue-600 mt-1 font-semibold">{taxBracket}%</p>
                   </div>
                 </div>
 
@@ -193,7 +198,6 @@ export default function FdVsMfCalculator() {
                       onChange={(e) => setMfRate(Number(e.target.value))}
                       className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-green-500 focus:border-green-500"
                     />
-                    <p className="text-sm text-blue-600 mt-1 font-semibold">{mfRate}%</p>
                   </div>
                   <div>
                     <label className="flex items-center space-x-2 text-sm font-medium text-gray-600">
@@ -205,7 +209,6 @@ export default function FdVsMfCalculator() {
                       onChange={(e) => setLtcgRate(Number(e.target.value))}
                       className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-green-500 focus:border-green-500"
                     />
-                    <p className="text-sm text-blue-600 mt-1 font-semibold">{ltcgRate}%</p>
                     <p className="text-xs text-gray-500 pt-1">Tax on gains above ₹1 Lakh.</p>
                   </div>
                 </div>

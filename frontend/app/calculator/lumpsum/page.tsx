@@ -240,7 +240,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BackButton from "@/components/BackButton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { NavbarHome } from "@/components/NavbarHome";
-import { toWords } from "number-to-words"; // ✅ Added number-to-words import
+import { ToWords } from 'to-words'; 
 
 // --- INLINE COMPONENTS TO FIX DEPENDENCY ERRORS ---
 
@@ -270,6 +270,15 @@ export default function LumpsumPage() {
     const [inflationRate, setInflationRate] = useState(6);
     const [showFutureValue, setShowFutureValue] = useState(false);
     const [futureValueYear, setFutureValueYear] = useState(1);
+
+    const toWordsConverter = useMemo(() => new ToWords({
+      localeCode: 'en-IN',
+      converterOptions: {
+        currency: true, // We'll add "Rupees" manually
+        ignoreDecimal: true,
+        ignoreZeroCurrency: true,
+      }
+    }), []);
     
     const { primaryCalculations, yearlyData } = useMemo(() => {
         const principal = lumpsumAmount;
@@ -310,11 +319,11 @@ export default function LumpsumPage() {
     return (
         <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
             <NavbarHome />
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-6xl mt-18 mx-auto">
                 <Card className="bg-white shadow-xl rounded-2xl border-gray-200">
                     <CardHeader className="border-b-2 border-gray-100 p-6">
                         <BackButton />
-                        <CardTitle className="text-3xl font-bold text-gray-800 text-center">Lumpsum Calculator</CardTitle>
+                        <CardTitle className="text-3xl font-bold text-blue-600 text-center">Lumpsum Calculator</CardTitle>
                     </CardHeader>
                     <CardContent className="p-6 md:p-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 mb-8">
@@ -327,8 +336,8 @@ export default function LumpsumPage() {
                                     value={formatCurrency(lumpsumAmount)} 
                                     onChange={(e) => { const num = parseCurrency(e.target.value); if (!isNaN(num)) setLumpsumAmount(num); }} 
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
-                                    {toWords(lumpsumAmount)} rupees
+                                <p className="text-xs text-blue-600 font-semibold mt-1">
+                                    {toWordsConverter.convert(lumpsumAmount)}
                                 </p>
                             </div>
                             
@@ -384,8 +393,12 @@ const CalculatorResults = ({ primaryCalculations, yearlyData, showSpecificYear, 
     return (
         <Tabs defaultValue="summary" className="w-full">
             <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-                <TabsTrigger value="summary">Summary</TabsTrigger>
-                <TabsTrigger value="chart">Growth Chart</TabsTrigger>
+                <TabsTrigger value="summary" className="data-[state=active]:text-blue-600 data-[state=active]:font-semibold">
+                    Summary
+                </TabsTrigger>
+                <TabsTrigger value="chart" className="data-[state=active]:text-blue-600 data-[state=active]:font-semibold">
+                    Growth Chart
+                </TabsTrigger>
             </TabsList>
             <TabsContent value="summary" className="mt-6 space-y-6">
                 <ResultCard title="Final Investment Results" data={[["Invested Amount", primaryCalculations.investedAmount], ["Total Interest Earned", primaryCalculations.totalInterest], ["Generated Wealth (Maturity)", primaryCalculations.generatedWealth]]} finalLabel="Inflation-Adjusted Wealth" finalValue={primaryCalculations.inflationAdjustedWealth}/>

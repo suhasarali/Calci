@@ -26,7 +26,7 @@ export function NavbarHome() {
   const navItems = [
     { name: "Calculators", link: "/calculator/home" },
     { name: "Quizzes", link: "#quizzes" },
-    { name: "Analysis Tools", link: "#tools" },
+    { name: "Analysis Tools", link: "/analysistool/home" },
   ];
 
   const handleSignOut = async () => {

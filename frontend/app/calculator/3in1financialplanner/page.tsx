@@ -43,7 +43,7 @@ const CardHeader = ({ className, ...props }) => (
 );
 
 const CardTitle = ({ className, ...props }) => (
-  <h2 className={`text-2xl font-bold tracking-tight text-center ${className}`} {...props} />
+  <h2 className={`text-2xl text-blue-600 font-bold tracking-tight text-center ${className}`} {...props} />
 );
 
 const CardContent = ({ className, ...props }) => (
@@ -140,7 +140,7 @@ export default function ThreeInOnePlanner() {
         <Card>
           <BackButton/>
           <CardHeader>
-            <CardTitle>3-in-1 Financial Planner</CardTitle>
+            <CardTitle classname>3-in-1 Financial Planner</CardTitle>
           </CardHeader>
           <CardContent>
             {/* --- Input Section --- */}

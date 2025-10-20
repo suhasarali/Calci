@@ -11,7 +11,6 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/comp
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 // Original Navbar and Footer Imports
-import { NavbarDemo } from "@/components/Navbar";
 import Footer4Col from "@/components/footer-column";
 import BackButton from "@/components/BackButton";
 import { NavbarHome } from "@/components/NavbarHome";
@@ -359,7 +358,7 @@ export default function OnePageFinancialRoadmap() {
         <main className="max-w-5xl mx-auto mt-[105px] mb-16 px-4 pt-4 md:pt-6 md:pb-16 border-2 border-gray-300 rounded-3xl shadow-lg">
           <BackButton />
           <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5}} className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">Your One-Page Financial Roadmap</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-blue-600">Your One-Page Financial Roadmap</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 No more guesswork. Input your details to generate a clear, actionable financial plan in seconds.
             </p>
@@ -461,7 +460,7 @@ export default function OnePageFinancialRoadmap() {
           </Section>
 
           <div className="flex justify-center mt-8">
-            <Button onClick={handleSubmit} disabled={submitting} size="lg" className="bg-purple-700 hover:bg-purple-800 text-lg px-8 py-6 rounded-full shadow-lg w-full sm:w-auto">
+            <Button onClick={handleSubmit} disabled={submitting} size="lg" className="bg-blue-600 hover:bg-blue-800 text-lg px-8 py-6 rounded-full shadow-lg w-full sm:w-auto">
               {submitting ? (<><Calculator className="w-5 h-5 mr-2 animate-spin" /> Calculating...</>) : "Calculate My Roadmap"}
             </Button>
           </div>

@@ -2,14 +2,20 @@
 'use client'; 
 
 import React from 'react';
-import { useRouter } from 'next/navigation'; 
+import { useRouter, usePathname } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 
 const BackButton = () => {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleGoBack = () => {
-    router.push('/calculator/home');
+    // Check if we're in an analysis-related page
+    if (pathname.includes('/analysistool')) {
+      router.push('/analysistool/home');
+    } else {
+      router.push('/calculator/home');
+    }
   };
 
   return (

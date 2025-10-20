@@ -222,7 +222,7 @@ const NumericFullscreen = ({
     });
 
   return (
-    <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-[#fdfbf7] text-black">
+    <div className="flex items-start justify-center min-h-screen px-4 py-12 text-black">
       <div className="w-full max-w-5xl space-y-6">
         <div className="text-center">
           <h2 className="text-3xl font-bold">Step 1: Your Financial Numbers</h2>
@@ -332,7 +332,7 @@ const NumericFullscreen = ({
 };
 
 const YesNoFullscreen = ({ yesNoState, updateYesNoValue, handleYesNoSubmit, setView, isDesktop }: YesNoFullscreenProps) => (
-    <div className="flex items-start justify-center min-h-screen px-4 py-12 bg-[#fdfbf7] text-black">
+    <div className="flex items-start justify-center min-h-screen px-4 py-12 text-black">
         <div className="w-full max-w-3xl">
             <Card className="bg-white">
                 <CardHeader>
@@ -368,7 +368,7 @@ const YesNoFullscreen = ({ yesNoState, updateYesNoValue, handleYesNoSubmit, setV
 );
 
 const ResultsFullscreen = ({ finalScore, numericScoreWeighted, yesScoreWeighted, setView, onOpenReport }: ResultsFullscreenProps) => (
-  <div className="flex items-start justify-center min-h-screen px-2 py-6 md:px-6 md:py-10 bg-[#fdfbf7] text-black">
+  <div className="flex items-start justify-center min-h-screen px-2 py-6 md:px-6 md:py-10 text-black">
     <div className="w-full max-w-4xl">
       <Card className="bg-white shadow-lg rounded-2xl">
         <CardHeader className="pb-4">
@@ -413,9 +413,9 @@ const LandingView = ({ setView, numericDone, yesNoDone }: LandingViewProps) => {
     };
 
     return (
-        <div className="flex flex-col items-center min-h-screen px-4 pt-12 pb-24 bg-[#fdfbf7] text-black">
+        <div className="flex flex-col items-center min-h-screen px-4 pt-12 pb-24 text-black">
             <div className="mb-12 text-center">
-                <motion.h1 initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5}} className="mb-4 text-3xl md:text-5xl font-bold text-gray-800">Your Financial Health Checkup</motion.h1>
+                <motion.h1 initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5}} className="mb-4 text-3xl md:text-5xl font-bold text-blue-600">Your Financial Health Checkup</motion.h1>
                 <motion.p initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} transition={{duration: 0.5, delay: 0.2}} className="max-w-2xl mx-auto text-base md:text-lg text-gray-600">Confused about money stuff? 😵‍💫 This quick checkup gives you a simple score and personalized tips to get your finances on track. ✨</motion.p>
             </div>
 

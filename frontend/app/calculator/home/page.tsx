@@ -19,18 +19,6 @@ import { NavbarHome } from "@/components/NavbarHome";
 
 const calculators = [
   {
-    title: "Financial Health Checkup",
-    desc: "Assess your financial well-being by analyzing your assets, liabilities, and cash flow.",
-    link: "/calculator/financialchecklist",
-    icon: CreditCard,
-  },
-  {
-    title: "One Page Financial Roadmap",
-    desc: "Create a personalized, one-page plan to map out and visualize your long-term financial goals.",
-    link: "/calculator/onepagefinancialroadmap",
-    icon: PiggyBank,
-  },
-  {
     title: "Fixed Deposit vs Mutual Fund",
     desc: "Compare post-tax returns from FDs and Mutual Funds to make an informed investment choice.",
     link: "/calculator/fd_md",
@@ -124,7 +112,7 @@ export default function DashboardPage() {
                 }}
                 whileHover={{ y: -8, scale: 1.02 }}
               >
-                <Card className="bg-white shadow-md rounded-2xl hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#0065FF] flex flex-col h-full">
+                <Card className="bg-white shadow-md rounded-2xl hover:shadow-xl hover:shadow-blue-200 transition-all duration-300 border-2 border-transparent hover:border-[#0065FF] flex flex-col h-full">
                   <CardHeader className="pb-3 flex flex-row items-center gap-3">
                     <div className="p-2 bg-gray-100 rounded-lg shadow-sm">
                       <Icon className="w-6 h-6 text-gray-700" />
