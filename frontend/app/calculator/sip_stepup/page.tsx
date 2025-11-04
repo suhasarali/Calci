@@ -35,75 +35,61 @@ export default function SipTopUpComparisonPage() {
   const [topUpRate, setTopUpRate] = useState(10);
 
   const { primaryCalculations, yearlyData } = useMemo(() => {
-    const p = monthlyInvestment;
-    const r = interestRate / 100;
-    const stepUpPct = topUpRate / 100;
-    const months = investmentTenure * 12;
+   const p = monthlyInvestment;
+const r = interestRate / 100;
+const stepUpPct = topUpRate / 100;
+const months = investmentTenure * 12;
 
-    // ✅ Excel equivalent monthly rate
-    const monthlyRate = Math.pow(1 + r, 1 / 12) - 1;
 
-    let investedStep = 0;
-    let wealthStep = 0;
-    let currentStepSip = p;
-    
-    let investedFixed = 0;
-    let wealthFixed = 0;
+// ✅ Excel equivalent monthly rate
+// ✅ Excel-equivalent monthly rate (CAGR/12)
+const monthlyRate = r / 12;
 
-    // Start with Year 0 data for the chart's origin
-    let chartData = [{
-        year: 'Year 0', 
-        "Step-Up Wealth": 0, 
-        "Fixed Wealth": 0, 
-        "Step-Up Invested": 0, 
-        "Fixed Invested": 0 
-    }];
 
-    for (let m = 1; m <= months; m++) {
-      // --- Step-Up Calculation ---
-      // Check for top-up at the start of the year (month 13, 25, etc.)
-      if (m > 1 && (m - 1) % 12 === 0) {
-        currentStepSip *= (1 + stepUpPct);
-      }
-      investedStep += currentStepSip;
-      wealthStep = (wealthStep + currentStepSip) * (1 + monthlyRate);
+// ✅ FV for fixed SIP using Excel formula
+// Excel: =FV(rate/12, years*12, -monthly,,1)
+const fvFixed = p * (((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate));
+const investedFixed = p * months;
+const interestFixed = fvFixed - investedFixed;
 
-      // --- Fixed SIP Calculation ---
-      investedFixed += p;
-      wealthFixed = (wealthFixed + p) * (1 + monthlyRate);
 
-      // --- Yearly Data for Chart ---
-      if (m % 12 === 0) {
-        chartData.push({
-          year: `Year ${m / 12}`,
-          "Step-Up Wealth": wealthStep,
-          "Fixed Wealth": wealthFixed,
-          "Step-Up Invested": investedStep,
-          "Fixed Invested": investedFixed
-        });
-      }
-    }
+// ✅ Step‑Up SIP — month‑by‑month compounding
+let investedStep = 0, wealthStep = 0, curr = p;
+let yearlyData = [];
 
-    const final_wealth_stepUp = wealthStep;
-    const final_totalInvested_stepUp = investedStep;
-    const final_interest_stepUp = final_wealth_stepUp - final_totalInvested_stepUp;
 
-    const final_wealth_fixed = wealthFixed;
-    const final_totalInvested_fixed = investedFixed;
-    const final_interest_fixed = final_wealth_fixed - final_totalInvested_fixed;
+for (let m = 1; m <= months; m++) {
+if (m > 1 && m % 12 === 1) curr *= (1 + stepUpPct);
 
-    return {
-      primaryCalculations: {
-        final_wealth_stepUp,
-        final_wealth_fixed,
-        final_totalInvested_stepUp,
-        final_totalInvested_fixed,
-        final_interest_stepUp,
-        final_interest_fixed,
-        extra_wealth: final_wealth_stepUp - final_wealth_fixed
-      },
-      yearlyData: chartData,
-    };
+
+investedStep += curr;
+wealthStep = (wealthStep + curr) * (1 + monthlyRate);
+
+
+if (m % 12 === 0) {
+yearlyData.push({
+year: `Year ${m/12}`,
+"Step-Up Wealth": wealthStep,
+"Fixed Wealth": fvFixed * ((m / months)), // scaled for chart
+"Step-Up Invested": investedStep,
+"Fixed Invested": investedFixed * ((m / months)) // scaled
+});
+}
+}
+
+
+return {
+primaryCalculations: {
+final_wealth_stepUp: wealthStep,
+final_wealth_fixed: fvFixed,
+final_totalInvested_stepUp: investedStep,
+final_totalInvested_fixed: investedFixed,
+final_interest_stepUp: wealthStep - investedStep,
+final_interest_fixed: interestFixed,
+extra_wealth: wealthStep - fvFixed
+},
+yearlyData,
+};
   }, [monthlyInvestment, interestRate, investmentTenure, topUpRate]);
 
   return (
