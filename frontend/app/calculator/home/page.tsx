@@ -49,6 +49,12 @@ const calculators = [
     link: "/calculator/lumpsum", // New link for the dedicated Lumpsum page
     icon: TrendingUp,
   },
+  {
+    title: "SIP Step-Up Calculator",
+    desc: "Estimate the future value of a one-time investment to see how your money can grow over time.",
+    link: "/calculator/sip_stepup", // New link for the dedicated sip_stepup page
+    icon: Calendar,
+  },
 ];
 
 export default function DashboardPage() {
