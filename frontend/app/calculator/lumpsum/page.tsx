@@ -318,7 +318,7 @@ export default function LumpsumPage() {
             <NavbarHome />
             <div className="max-w-6xl mt-18 mx-auto">
                 <Card className="bg-white shadow-xl rounded-2xl border-gray-200">
-                    <CardHeader className="border-b-2 border-gray-100 p-6">
+                    <CardHeader className=" p-6">
                         <BackButton />
                         <CardTitle className="text-3xl font-bold text-blue-600 text-center">Lumpsum Calculator</CardTitle>
                     </CardHeader>
