@@ -7,7 +7,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// Removed Tabs imports
 import BackButton from "@/components/BackButton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { NavbarHome } from "@/components/NavbarHome";
@@ -77,6 +77,19 @@ year: `Year ${m/12}`,
 }
 }
 
+// --- Manually fix chart data to match summary cards ---
+// The loop calculates end-of-year values. 
+// Let's replace the last year's data with the precise final calculation
+// to ensure the chart and summary cards are 100% aligned.
+const finalYearlyData = yearlyData.slice(0, -1); // Remove last entry
+finalYearlyData.push({
+    year: `Year ${investmentTenure}`,
+    "Step-Up Wealth": wealthStep,
+    "Fixed Wealth": fvFixed, // Use the exact final value
+    "Step-Up Invested": investedStep,
+    "Fixed Invested": investedFixed // Use the exact final value
+});
+
 
 return {
 primaryCalculations: {
@@ -88,7 +101,7 @@ final_interest_stepUp: wealthStep - investedStep,
 final_interest_fixed: interestFixed,
 extra_wealth: wealthStep - fvFixed
 },
-yearlyData,
+yearlyData: finalYearlyData, // Use the corrected data
 };
   }, [monthlyInvestment, interestRate, investmentTenure, topUpRate]);
 
@@ -178,80 +191,74 @@ const InputWithIcon = ({ Icon, label, subText, ...props }) => (
   </div>
 );
 
+// --- MODIFIED CalculatorResults component ---
 const CalculatorResults = ({ primaryCalculations: pc, yearlyData }) => (
-  <Tabs defaultValue="summary" className="w-full">
-    <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-      <TabsTrigger value="summary" className="data-[state=active]:text-blue-600 data-[state=active]:font-semibold">
-        Summary
-      </TabsTrigger>
-      <TabsTrigger value="chart" className="data-[state=active]:text-blue-600 data-[state=active]:font-semibold">
-        Growth Chart
-      </TabsTrigger>
-    </TabsList>
+  <div className="w-full mt-6 space-y-6">
+    
+    {/* 1. Summary Content (from "summary" tab) */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <ResultCard 
+        title="Step-Up SIP Results" 
+        data={[
+          ["Amount Invested", pc.final_totalInvested_stepUp],
+          ["Wealth Creation", pc.final_interest_stepUp]
+        ]} 
+        finalLabel="Expected Future Value" 
+        finalValue={pc.final_wealth_stepUp}
+      />
+      <ResultCard 
+        title="Fixed SIP Results" 
+        data={[
+          ["Amount Invested", pc.final_totalInvested_fixed],
+          ["Wealth Creation", pc.final_interest_fixed]
+        ]} 
+        finalLabel="Expected Future Value" 
+        finalValue={pc.final_wealth_fixed}
+      />
+    </div>
 
-    <TabsContent value="summary" className="mt-6 space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ResultCard 
-          title="Step-Up SIP Results" 
-          data={[
-            ["Amount Invested", pc.final_totalInvested_stepUp],
-            ["Wealth Creation", pc.final_interest_stepUp]
-          ]} 
-          finalLabel="Expected Future Value" 
-          finalValue={pc.final_wealth_stepUp}
-        />
-        <ResultCard 
-          title="Fixed SIP Results" 
-          data={[
-            ["Amount Invested", pc.final_totalInvested_fixed],
-            ["Wealth Creation", pc.final_interest_fixed]
-          ]} 
-          finalLabel="Expected Future Value" 
-          finalValue={pc.final_wealth_fixed}
-        />
+    {/* 2. Chart Content (from "chart" tab) */}
+    <h3 className="text-2xl font-bold text-blue-600 text-center pt-4">
+      Growth Chart
+    </h3>
+    <Card className="bg-white p-2 sm:p-4 rounded-xl shadow-lg border border-gray-200">
+      {/* ✅ Set a fixed aspect ratio for responsiveness */}
+      <div className="w-full h-96 pt-4 px-1">
+        <ResponsiveContainer>
+          <LineChart data={yearlyData} margin={{ top: 5, right: 5, left: 2, bottom: 50 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+            <XAxis 
+              dataKey="year" 
+              tick={{ fontSize: 12 }} // Smaller font on axis
+            />
+            <YAxis 
+              tickFormatter={formatCurrency} 
+              domain={['dataMin', 'dataMax']} 
+              tick={{ fontSize: 10 }} // Smaller font on axis
+              width={80} // Give Y-axis labels space
+            />
+            <Tooltip content={<CustomTooltip />} />
+            
+            {/* --- ✅ RESPONSIVE LEGEND --- */}
+            <Legend 
+              verticalAlign="bottom" 
+              align="center"
+              wrapperStyle={{
+                paddingTop: '20px', // Space between chart and legend
+                fontSize: '16px',  // Smaller font for legend
+                width: '100%',
+              }}
+            />
+            
+            {/* ✅ Updated Colors & Added Invested Lines */}
+            <Line type="monotone" dataKey="Step-Up Wealth" stroke="#10b981" strokeWidth={3} dot={false} />
+            <Line type="monotone" dataKey="Fixed Wealth" stroke="#3b82f6" strokeWidth={3} dot={false} />
+            
+          </LineChart>
+        </ResponsiveContainer>
       </div>
-    </TabsContent>
-
-    <TabsContent value="chart" className="mt-6">
-      <Card className="bg-white p-2 sm:p-4 rounded-xl shadow-lg border border-gray-200">
-        {/* ✅ Set a fixed aspect ratio for responsiveness */}
-        <div className="w-full h-96 pt-4 px-1">
-          <ResponsiveContainer>
-            <LineChart data={yearlyData} margin={{ top: 5, right: 5, left: 2, bottom: 50 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-              <XAxis 
-                dataKey="year" 
-                tick={{ fontSize: 12 }} // Smaller font on axis
-              />
-              <YAxis 
-                tickFormatter={formatCurrency} 
-                domain={['dataMin', 'dataMax']} 
-                tick={{ fontSize: 10 }} // Smaller font on axis
-                width={80} // Give Y-axis labels space
-              />
-              <Tooltip content={<CustomTooltip />} />
-              
-              {/* --- ✅ RESPONSIVE LEGEND --- */}
-              <Legend 
-                verticalAlign="bottom" 
-                align="center"
-                wrapperStyle={{
-                  paddingTop: '20px', // Space between chart and legend
-                  fontSize: '16px',  // Smaller font for legend
-                  width: '100%',
-                }}
-              />
-              
-              {/* ✅ Updated Colors & Added Invested Lines */}
-              <Line type="monotone" dataKey="Step-Up Wealth" stroke="#10b981" strokeWidth={3} dot={false} />
-              <Line type="monotone" dataKey="Fixed Wealth" stroke="#3b82f6" strokeWidth={3} dot={false} />
-              
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-    </TabsContent>
-  </Tabs>
+    </Card>
+  </div>
 );
 
 const ResultCard = ({ title, data, finalLabel, finalValue }) => (

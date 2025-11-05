@@ -229,14 +229,11 @@
 // };
 
 
-
-
-
 "use client";
 
 import React, { useState, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// Removed Tabs imports
 import BackButton from "@/components/BackButton";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { NavbarHome } from "@/components/NavbarHome";
@@ -385,48 +382,67 @@ const SpecificYearToggle = ({ show, setShow, year, setYear, maxYear }) => (
     </div>
 );
 
+// --- MODIFIED CalculatorResults component ---
 const CalculatorResults = ({ primaryCalculations, yearlyData, showSpecificYear, specificYear, specificYearCalculations, isSip }) => {
     const specificYearData = isSip 
         ? [["Invested Amount", specificYearCalculations.investedAmount], ["Generated Wealth", specificYearCalculations.futureValue]]
         : [["Future Value", specificYearCalculations.futureValue]];
 
     return (
-        <Tabs defaultValue="summary" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-                <TabsTrigger value="summary" className="data-[state=active]:text-blue-600 data-[state=active]:font-semibold">
-                    Summary
-                </TabsTrigger>
-                <TabsTrigger value="chart" className="data-[state=active]:text-blue-600 data-[state=active]:font-semibold">
-                    Growth Chart
-                </TabsTrigger>
-            </TabsList>
-            <TabsContent value="summary" className="mt-6 space-y-6">
-                <ResultCard title="Final Investment Results" data={[["Invested Amount", primaryCalculations.investedAmount], ["Total Interest Earned", primaryCalculations.totalInterest], ["Generated Wealth (Maturity)", primaryCalculations.generatedWealth]]} finalLabel="Inflation-Adjusted Wealth" finalValue={primaryCalculations.inflationAdjustedWealth}/>
-                {showSpecificYear && (
-                    <div className="animate-fade-in">
-                        <ResultCard title={`Results for Year ${specificYear}`} data={specificYearData} finalLabel="Inflation-Adjusted FV" finalValue={specificYearCalculations.inflationAdjustedFutureValue}/>
-                    </div>
-                )}
-            </TabsContent>
-            <TabsContent value="chart" className="mt-6">
-                <Card className="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
-                    <div className="w-full h-96">
-                        <ResponsiveContainer>
-                            <LineChart data={yearlyData} margin={{ top: 5, right: 20, left: 30, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                                <XAxis dataKey="year" />
-                                <YAxis tickFormatter={(value) => formatCurrency(value)} domain={['dataMin', 'dataMax']} />
-                                <Tooltip content={<CustomTooltip />} />
-                                <Legend />
-                                <Line type="monotone" dataKey="Generated Wealth" stroke="#10b981" strokeWidth={3} dot={false} />
-                                <Line type="monotone" dataKey="Inflation-Adjusted Wealth" stroke="#3b82f6" strokeWidth={3} dot={false} />
-                                <Line type="monotone" dataKey="Invested Amount" stroke="#8884d8" strokeWidth={2} strokeDasharray="5 5" dot={false} />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-                </Card>
-            </TabsContent>
-        </Tabs>
+        <div className="w-full mt-6 space-y-6">
+            
+            {/* 1. Summary Content */}
+            <ResultCard 
+                title="Final Investment Results" 
+                data={[
+                    ["Invested Amount", primaryCalculations.investedAmount], 
+                    ["Total Interest Earned", primaryCalculations.totalInterest], 
+                    ["Generated Wealth (Maturity)", primaryCalculations.generatedWealth]
+                ]} 
+                finalLabel="Inflation-Adjusted Wealth" 
+                finalValue={primaryCalculations.inflationAdjustedWealth}
+            />
+            
+            {showSpecificYear && (
+                <div className="animate-fade-in">
+                    <ResultCard 
+                        title={`Results for Year ${specificYear}`} 
+                        data={specificYearData} 
+                        finalLabel="Inflation-Adjusted FV" 
+                        finalValue={specificYearCalculations.inflationAdjustedFutureValue}
+                    />
+                </div>
+            )}
+
+            {/* 2. Chart Content */}
+            <h3 className="text-2xl font-bold text-blue-600 text-center pt-4">
+                Growth Chart
+            </h3>
+            <Card className="bg-white p-4 rounded-xl shadow-lg border border-gray-200">
+                <div className="w-full h-96">
+                    <ResponsiveContainer>
+                        <LineChart data={yearlyData} margin={{ top: 5, right: 20, left: 30, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis dataKey="year" />
+                            <YAxis tickFormatter={(value) => formatCurrency(value)} domain={['dataMin', 'dataMax']} />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend 
+                                            verticalAlign="bottom" 
+                                            align="center"
+                                            wrapperStyle={{
+                                              paddingTop: '20px', // Space between chart and legend
+                                              fontSize: '16px',  // Smaller font for legend
+                                              width: '100%',
+                                            }}
+                                          />
+                            <Line type="monotone" dataKey="Generated Wealth" stroke="#10b981" strokeWidth={3} dot={false} />
+                            <Line type="monotone" dataKey="Inflation-Adjusted Wealth" stroke="#3b82f6" strokeWidth={3} dot={false} />
+                            
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            </Card>
+        </div>
     );
 };
 
