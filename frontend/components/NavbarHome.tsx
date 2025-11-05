@@ -76,7 +76,7 @@ export function NavbarHome() {
             <NavbarLogo />
             <MobileNavToggle
               isOpen={isMobileMenuOpen}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenu-Open)}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             />
           </MobileNavHeader>
 
