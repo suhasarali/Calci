@@ -144,7 +144,7 @@ export default function ThreeInOnePlanner() {
           </CardHeader>
           <CardContent>
             {/* --- Input Section --- */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-6">
                 {/* Investment Inputs */}
                 <InputSection title="Investment Plan">
                     <InputRow label="Monthly Contribution (₹)" icon={<IndianRupee />}>
@@ -187,10 +187,10 @@ export default function ThreeInOnePlanner() {
                         <input type="number" value={premiumIncreaseRate} onChange={(e) => setPremiumIncreaseRate(Number(e.target.value))} className="w-full mt-1 border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"/>
                     </InputRow>
                 </InputSection>
-                
+            </div>
                 {/* Results & Breakdown */}
                 <div className="bg-gray-50 p-4 rounded-lg">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">Your Financial Plan Summary</h3>
+                    <h3 className="text-2xl text-center font-semibold text-gray-800 mb-3">Your Financial Plan Summary</h3>
                     <ResultRow label="Projected Wealth" value={formatCurrency(calculations.totalWealth)} isFinal={true} />
                     <ResultRow label="Wealth (in Today's Value)" value={formatCurrency(calculations.realValue)} isFinal={true} />
                     <ResultRow label="Total Amount Invested" value={formatCurrency(calculations.totalInvested)} />
@@ -207,7 +207,6 @@ export default function ThreeInOnePlanner() {
                         <ResultRow label="Health Insurance Cover" value={formatCurrency(healthCoverAmount)} />
                     </div>
                 </div>
-            </div>
 
             {/* --- Chart Section --- */}
             <div className="mt-10">
