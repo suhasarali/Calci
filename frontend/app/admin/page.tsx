@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom'; // 👈 Add this import for the portal
 import { motion, AnimatePresence } from 'framer-motion';
 import { MoreHorizontal, Search, Plus, SlidersHorizontal } from 'lucide-react';
 import AnalyticsView from '../../components/AnalyticsView';
+import QuizGeneratorView from '../../components/QuizGeneratorView';
 
 // --- 1. Portal Component (defined directly in this file) ---
 // This component "teleports" its children to the end of the document body,
@@ -238,6 +239,10 @@ const ViewToggle = ({ view, setView }: { view: string; setView: (view: string) =
                     />
                 )}
             </button>
+            <button onClick={() => setView('quizzes')} className="relative px-5 py-1.5 text-sm font-semibold rounded-full">
+                <span className={`relative z-10 transition-colors duration-300 ${view === 'quizzes' ? 'text-white' : 'text-slate-600 dark:text-slate-300'}`}>AI Quiz</span>
+                {view === 'quizzes' && <motion.div layoutId="toggle-active-bg" className="absolute inset-0 bg-indigo-600 rounded-full" />}
+            </button>
         </div>
     );
 };
@@ -263,7 +268,9 @@ export default function Page() {
                 
                 <main>
                     <AnimatePresence mode="wait">
-                        {view === 'users' ? <UsersView key="users" /> : <AnalyticsView key="analytics" />}
+                        {view === 'users' && <UsersView key="users" />}
+        {view === 'analytics' && <AnalyticsView key="analytics" />}
+        {view === 'quizzes' && <QuizGeneratorView key="quizzes" />}
                     </AnimatePresence>
                 </main>
             </div>

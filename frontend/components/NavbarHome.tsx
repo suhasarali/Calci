@@ -25,7 +25,7 @@ export function NavbarHome() {
 
   const navItems = [
     { name: "Calculators", link: "/calculator/home" },
-    { name: "Quizzes", link: "#quizzes" },
+    { name: "Quizzes", link: "/quiz" },
     { name: "Analysis Tools", link: "/analysistool/home" },
   ];
 
